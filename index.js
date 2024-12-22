@@ -57,10 +57,11 @@ let poiData = [];
 let tracks = [];
 let markers = [];
 
+let currentMapNav = {};
 let previousMapScale = -1;
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadTrackData('trackdata_dv.json');
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadTrackData('trackdata_dv.json');
     mapScrollSetup();
 });
 
@@ -72,8 +73,8 @@ async function loadTrackData(file){
 
 /** Handling for the map scrolling and zooming */
 function mapScrollSetup(){
-    let mapNav = {x:0, y:0, scale:1};
-    let prevMouse = {x:0, y:0, scale:1};
+    let mapNav = {x:currentMapNav.x, y:currentMapNav.y, scale:currentMapNav.scale};
+    let prevMouse = {x:mapNav.x, y:mapNav.y, scale:mapNav.scale};
     let scrollDat = {ticking:false};
     const mouseDownHandler = e => {
         map_container.style.cursor = 'grabbing';
@@ -128,6 +129,7 @@ function mapScrollSetup(){
 
 /** Readjust map view to focus on position */
 function updateMapview(navData = {x:0, y:0, scale:1}){
+    currentMapNav = navData;
     map.style.transform = `translate(${-navData.x}px, ${-navData.y}px) scale(${navData.scale})`;
     if(navData.scale !== previousMapScale){
         let dirtyScale = previousMapScale < 0;
@@ -176,13 +178,11 @@ function establishDimensions(){
     let width = maxX-minX;
     let height = maxY-minY;
     map.setAttribute('viewBox', `${minX-padding} ${minY-padding} ${width+2*padding} ${height+2*padding}`);
-    
-    /*updateMapview({
-        x: map_container.width/2-map.getAttribute('width')/2,
-        y: map_container.height/2-map.getAttribute('height')/2,
+    updateMapview({
+        x: map.clientWidth/2-map_container.clientWidth/2,
+        y: map.clientHeight/2-map_container.clientHeight/2,
         scale: 1
-    });*/
-    updateMapview();
+    });
     console.log(`(${minX}, ${minY}) to (${maxX}, ${maxY}). Altitude from ${minAlt} to ${maxAlt}`);
 
     // Flip the z coordinate so the map doesn't display upside-down
