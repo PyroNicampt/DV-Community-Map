@@ -43,6 +43,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     for(let thisSetting of settingEntries){
         addSettingEntry(thisSetting, settingsPanel);
     }
+    const legend = document.getElementById('legend');
+    const legendButton = document.getElementById('legendButton');
+    const legendArrow = legendButton.children[0];
+    let legendState = true;
+    let legendButtonEvent = e => {
+        legendArrow.style.transform = `rotate(${legendState ? 180 : 0}deg) translateY(${legendState ? -3 : 3}px)`;
+        legend.style.transform = `translateX(${legendState ? 0 : legendButton.clientWidth-legend.clientWidth}px)`;
+        legendState = !legendState;
+    };
+    legendButton.addEventListener('click', legendButtonEvent);
+    legendButtonEvent();
 });
 
 function addSettingEntry(thisSetting, parent, indent=0){

@@ -52,6 +52,18 @@ a:visited{
     border-radius: 0px 10px 10px 0px;
 }
 
+#legendButton{
+    cursor: pointer;
+    user-select: none;
+}
+
+#legend{
+    transition: transform 400ms cubic-bezier(0.445, 0.050, 0.550, 0.950);
+}
+#legendButton>*{
+    transition: transform 200ms ease;
+}
+
 #footer{
     position: fixed;
     width: fit-content;
