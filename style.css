@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Protest+Strike&display=swap');
+
+html, body, #map, #mapContainer, h1, h2, h3, h4, h5{
+    padding: 0px;
+    margin: 0px;
+}
+
+html, body{
+    height: 100vh;
+    width: 100vw;
+    font-family: "Noto Sans";
+    font-variation-settings: "wght" 400;
+}
+
+#headerbar{
+    position:fixed;
+    width: fit-content;
+    font-size: 30px;
+    background: linear-gradient(120deg, #3d5779, #121522);
+    border: 2px solid #b3b3b396;
+    border-left: 0px;
+    color: #e79830;
+    font-variation-settings: "wght" 500;
+    padding: 10px 30px 10px 30px;
+    margin: 10px 0px;
+    border-radius: 0px 10px 10px 0px;
+}
+
+#footer{
+    position:fixed;
+    width: fit-content;
+    right: 10px;
+    bottom: 5px;
+    font-size: 10px;
+    color: #e79830;
+    text-align: right;
+}
+
+#map{
+    transition: transform 100ms ease-out;
+    transform-origin: 0% 0%;
+    position:relative;
+}
+
+#mapContainer{
+    position:fixed;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    background: linear-gradient(#444, #333);
+}

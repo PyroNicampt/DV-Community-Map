@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link href="style.css" rel="stylesheet" type="text/css" media="all">
+    <title>Derail Valley Community Map</title>
+    <script type="module" src="index.js"></script>
+  </head>
+  <body>
+    <div id="mapContainer">
+        <svg id="map" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 10000 10000">
+            <style>
+                :root{
+                    --grade_flat: #ffff;
+                    --grade_0: #fdffde;
+                    --grade_1: #f8ff99;
+                    --grade_2: #edfc1b;
+                    --grade_3: #fcb520;
+                    --grade_4: #f07837;
+                    --grade_5: #e66441;
+                    --grade_6: #ce3f57;
+                    --grade_7: #c33577;
+                    --grade_8: #a3008d;
+                    --grade_9: #690097;
+                }
+                .sign, .rail, .signText{
+                    cursor: default;
+                }
+                .signText{
+                    fill:#000;
+                    font: 60px Arial;
+                    font-weight: bold;
+                }
+                .signText.gradeSign{
+                    font-size: 30px;
+                    stroke:#fff;
+                    stroke-width: 6px;
+                    paint-order: stroke fill;
+                }
+                .rail{
+                    fill: none;
+                }
+                .rail.grade_flat{
+                    stroke: var(--grade_flat);
+                }
+                .rail.grade_0{
+                    stroke: var(--grade_0);
+                }
+                .rail.grade_1{
+                    stroke: var(--grade_1);
+                }
+                .rail.grade_2{
+                    stroke: var(--grade_2);
+                }
+                .rail.grade_3{
+                    stroke: var(--grade_3);
+                }
+                .rail.grade_4{
+                    stroke: var(--grade_4);
+                }
+                .rail.grade_5{
+                    stroke: var(--grade_5);
+                }
+                .rail.grade_6{
+                    stroke: var(--grade_6);
+                }
+                .rail.grade_7{
+                    stroke: var(--grade_7);
+                }
+                .rail.grade_8{
+                    stroke: var(--grade_8);
+                }
+                .rail.grade_9{
+                    stroke: var(--grade_9);
+                }
+    
+                .gradeSign.grade_0{
+                    fill: var(--grade_0);
+                }
+                .gradeSign.grade_1{
+                    fill: var(--grade_1);
+                }
+                .gradeSign.grade_2{
+                    fill: var(--grade_2);
+                }
+                .gradeSign.grade_3{
+                    fill: var(--grade_3);
+                }
+                .gradeSign.grade_4{
+                    fill: var(--grade_4);
+                }
+                .gradeSign.grade_5{
+                    fill: var(--grade_5);
+                }
+                .gradeSign.grade_6{
+                    fill: var(--grade_6);
+                }
+                .gradeSign.grade_7{
+                    fill: var(--grade_7);
+                }
+                .gradeSign.grade_8{
+                    fill: var(--grade_8);
+                }
+                .gradeSign.grade_9{
+                    fill: var(--grade_9);
+                }
+            </style>
+            <style id="zoomStyle"></style>
+            <defs>
+                <g id="gradeArrow" transform="scale(10)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <path d="M 0 -5 L 3 4 L -3 4 z"/>
+                </g>
+                <g id="speedSign" transform="scale(15)" viewBox="0 0 10 10" refX="5" refY="5" style="fill:#fff; stroke:#e73819">
+                    <circle cx="0" cy="0" r="3"/>
+                </g>
+                <g id="speedSignWarning" transform="scale(15)" viewBox="0 0 10 10" refX="5" refY="5" style="fill:#702012; stroke:#e73819">
+                    <circle cx="0" cy="0" r="3"/>
+                </g>
+                <g id="speedSign_1" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSignWarning"></use>
+                    <text class="signText" style="fill:#fff;transform:translate(-15px, 20px)">1</text>
+                </g>
+                <g id="speedSign_2" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSignWarning"></use>
+                    <text class="signText" style="fill:#fff;transform:translate(-15px, 20px)">2</text>
+                </g>
+                <g id="speedSign_3" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSignWarning"></use>
+                    <text class="signText" style="fill:#fff;transform:translate(-15px, 20px)">3</text>
+                </g>
+                <g id="speedSign_4" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-15px, 20px)">4</text>
+                </g>
+                <g id="speedSign_5" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-16px, 20px)">5</text>
+                </g>
+                <g id="speedSign_6" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-15px, 20px)">6</text>
+                </g>
+                <g id="speedSign_7" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-15px, 20px)">7</text>
+                </g>
+                <g id="speedSign_8" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-16px, 20px)">8</text>
+                </g>
+                <g id="speedSign_9" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-15px, 20px)">9</text>
+                </g>
+                <g id="speedSign_10" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-35px, 20px)">10</text>
+                </g>
+                <g id="speedSign_12" transform="scale(1)" viewBox="0 0 10 10" refX="5" refY="5">
+                    <use href="#speedSign"></use>
+                    <text class="signText" style="transform:translate(-35px, 20px)">12</text>
+                </g>
+            </defs>
+        </svg>
+    </div>
+    <div id="headerbar">
+        <div>
+            DV Community Map
+        </div>
+    </div>
+    <div id="footer">
+        Map v0.1 alpha
+        <br>
+        Updated for Game Build 99.3
+    </div>
+  </body>
+</html>
