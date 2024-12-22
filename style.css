@@ -10,16 +10,42 @@ html, body{
     width: 100vw;
     font-family: "Noto Sans";
     font-variation-settings: "wght" 400;
+    color: #e9e9e9;
+}
+
+a{
+    color: #85c4f7;
+}
+a:visited{
+    color: #559bd4;
+}
+
+.orange{
+    color: #e79830;
+}
+
+#topleft{
+    position:fixed;
+    top: 0px;
+    left: 0px;
+    pointer-events: none;
+}
+
+.panel{
+    width: fit-content;
+    border: 2px solid #b3b3b396;
+    background: linear-gradient(120deg, #2c3f58, #191e2e);
+    text-shadow: 2px 2px 5px #0003;
+    margin: 5px;
+    padding: 8px 13px;
+    border-radius: 10px;
+    pointer-events: all;
 }
 
 #headerbar{
-    position:fixed;
-    width: fit-content;
-    font-size: 30px;
     background: linear-gradient(120deg, #3d5779, #121522);
-    border: 2px solid #b3b3b396;
+    font-size: 30px;
     border-left: 0px;
-    color: #e79830;
     font-variation-settings: "wght" 500;
     padding: 10px 30px 10px 30px;
     margin: 10px 0px;
@@ -27,23 +53,22 @@ html, body{
 }
 
 #footer{
-    position:fixed;
+    position: fixed;
     width: fit-content;
     right: 10px;
     bottom: 5px;
-    font-size: 10px;
-    color: #e79830;
+    font-size: 12px;
     text-align: right;
 }
 
 #map{
     transition: transform 100ms ease-out;
     transform-origin: 0% 0%;
-    position:relative;
+    position: relative;
 }
 
 #mapContainer{
-    position:fixed;
+    position: fixed;
     width: 100vw;
     height: 100vh;
     box-sizing: border-box;

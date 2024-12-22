@@ -5,6 +5,7 @@
     <link href="style.css" rel="stylesheet" type="text/css" media="all">
     <title>Derail Valley Community Map</title>
     <script type="module" src="index.js"></script>
+    <script type="module" src="legend.js"></script>
   </head>
   <body>
     <div id="mapContainer">
@@ -22,6 +23,18 @@
                     --grade_7: #c33577;
                     --grade_8: #a3008d;
                     --grade_9: #690097;
+
+                    --signScale: 1;
+                    --cullThreshold_state_0: none;
+                    --cullThreshold_state_1: none;
+                    --cullThreshold_state_2: none;
+                    --cullThreshold_state_3: none;
+                    --cullThreshold_state_4: none;
+                    --cullThreshold_state_5: none;
+                    --cullThreshold_state_6: none;
+                }
+                .sign{
+                    transform: scale(var(--signScale));
                 }
                 .sign, .rail, .signText{
                     cursor: default;
@@ -104,6 +117,27 @@
                 .gradeSign.grade_9{
                     fill: var(--grade_9);
                 }
+                .cullThreshold_0{
+                    display: var(--cullThreshold_state_0);
+                }
+                .cullThreshold_1{
+                    display: var(--cullThreshold_state_1);
+                }
+                .cullThreshold_2{
+                    display: var(--cullThreshold_state_2);
+                }
+                .cullThreshold_3{
+                    display: var(--cullThreshold_state_3);
+                }
+                .cullThreshold_4{
+                    display: var(--cullThreshold_state_4);
+                }
+                .cullThreshold_5{
+                    display: var(--cullThreshold_state_5);
+                }
+                .cullThreshold_6{
+                    display: var(--cullThreshold_state_6);
+                }
             </style>
             <style id="zoomStyle"></style>
             <defs>
@@ -163,15 +197,38 @@
             </defs>
         </svg>
     </div>
-    <div id="headerbar">
-        <div>
-            DV Community Map
+    <div id="topleft">
+        <div id="headerbar" class="panel orange">
+            <div>
+                DV Community Map
+            </div>
+        </div>
+        <div id="legend" style="display: flex;">
+            <div style="display:flex; flex-direction:column; width: 400px;">
+                <div class="panel">
+                    Welcome to the WIP community map of <a href="https://www.derailvalley.com/" style="white-space:nowrap;">Derail Valley</a>, a resource for documenting and displaying all tracks and points of interest.
+                    <hr>
+                    Hover over tracks and objects for detailed information.
+                </div>
+                <div id="settingsPanel" class="panel">
+                    <h3>Map Settings</h3>
+                    <hr>
+                </div>
+                <div class="panel">
+                    <a href="https://github.com/PyroNicampt/DV-Community-Map">Source</a> &#8226;
+                    <a href="https://github.com/PyroNicampt/DV-Community-Map/issues">Issue Tracker</a> &#8226;
+                    <a href="https://derailvalley.wiki.gg/wiki/Derail_Valley_Wiki">DV Wiki</a>
+                </div>
+            </div>
+            <div id="legendButton" class="panel orange" style="height: fit-content;"><svg height="25" viewBox="0 0 32 32"><path fill="currentColor" d="M31 16 20 31l-16 0L15 16 4 1l16 0Z"/></svg></div>
         </div>
     </div>
-    <div id="footer">
+    <div id="footer" class="orange">
         Map v0.1 alpha
         <br>
         Updated for Game Build 99.3
+        <br>
+        This tool is a fan work, Derail Valley owned by Altfuture
     </div>
   </body>
 </html>

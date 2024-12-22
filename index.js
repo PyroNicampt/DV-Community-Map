@@ -11,7 +11,7 @@ const bezierCurvatureResolution = 80;
 const padding = 500;
 const zoomFactor = 1.2;
 const trackWidth = {
-    base: 90,
+    base: 110,
     min: 3,
     max: 90,
 }
@@ -20,28 +20,20 @@ const signSize = {
     min: 0.05,
     max: 2.4
 }
-const zoomThresholds = [
-    {zoom:1, distance:500},
-    {zoom:1.25, distance:200},
-    {zoom:1.5, distance:130},
-    {zoom:2.5, distance:80},
-    {zoom:5, distance:40},
-    {zoom:20, distance:20},
-    {zoom:60, distance:10},
+const scaleCullThresholds = [
+    {scale:1, distance:500},
+    {scale:1.25, distance:200},
+    {scale:1.5, distance:130},
+    {scale:2.5, distance:80},
+    {scale:5, distance:40},
+    {scale:20, distance:20},
+    {scale:60, distance:10},
 ];
-const scaleCullThresholds = {
-    [1.0]: 500,
-    [1.25]: 200,
-    [1.5]: 130,
-    [2.5]: 80,
-    [5]: 40,
-    [20]: 20,
-    [60]: 10
-}
 
 // CODE
 const map = document.getElementById('map');
 const map_container = document.getElementById('mapContainer');
+const styleRoot = document.querySelector(':root');
 const svgns = map.getAttribute('xmlns');
 
 const map_rails = document.createElementNS(svgns, 'g');
@@ -133,23 +125,18 @@ function updateMapview(navData = {x:0, y:0, scale:1}){
     map.style.transform = `translate(${-navData.x}px, ${-navData.y}px) scale(${navData.scale})`;
     if(navData.scale !== previousMapScale){
         let dirtyScale = previousMapScale < 0;
-        for(const cullThreshold in scaleCullThresholds){
-            if(dirtyScale || (previousMapScale < cullThreshold && navData.scale > cullThreshold) || (previousMapScale > cullThreshold && navData.scale < cullThreshold)){
+        for(const cullThreshold of scaleCullThresholds){
+            if(dirtyScale || (previousMapScale < cullThreshold.scale && navData.scale > cullThreshold.scale) || (previousMapScale > cullThreshold.scale && navData.scale < cullThreshold.scale)){
                 dirtyScale = true;
                 break;
             }
         }
         map_rails.setAttribute('stroke-width', Utils.clamp(trackWidth.base/navData.scale, trackWidth.min, trackWidth.max));
+        styleRoot.style.setProperty('--signScale', Utils.clamp(signSize.base/navData.scale, signSize.min, signSize.max));
         if(dirtyScale){
-            let zoomThresholdStyles = '';
-            for(let i=0; i<zoomThresholds.length; i++){
-                zoomThresholdStyles += `\n.zoomThreshold_${i}{display:${navData.scale > zoomThresholds[i].zoom ? 'unset' : 'none'}}`;
+            for(let i=0; i<scaleCullThresholds.length; i++){
+                styleRoot.style.setProperty(`--cullThreshold_state_${i}`, navData.scale >= scaleCullThresholds[i].scale ? 'initial' : 'none')
             }
-            map.getElementById('zoomStyle').innerHTML = `
-            .sign{
-                transform: scale(${Utils.clamp(signSize.base/navData.scale, signSize.min, signSize.max)});
-            }${zoomThresholdStyles}
-            `;
         }
         previousMapScale = navData.scale;
     }
@@ -322,7 +309,7 @@ function cleanMarkers(){
 /** Create the signage */
 function drawMarkers(){
     const gradeSigns = document.createElementNS(svgns, 'g');
-    gradeSigns.setAttribute('id', 'grade_Signs');
+    gradeSigns.setAttribute('id', 'grade_signs');
     map_markers.appendChild(gradeSigns);
     const speedSigns = document.createElementNS(svgns, 'g');
     speedSigns.setAttribute('id', 'speed_signs');
@@ -332,29 +319,23 @@ function drawMarkers(){
         let marker = document.createElementNS(svgns, 'g');
         let markerImg = document.createElementNS(svgns, 'use');
         let title = document.createElementNS(svgns, 'title');
-        let text = document.createElementNS(svgns, 'text');
         marker.appendChild(markerImg);
-        marker.appendChild(text);
         marker.appendChild(title);
         marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
         // Grade signs
         if(markerData.type == 'grade'){
             markerImg.setAttribute('href', '#gradeArrow');
             markerImg.classList.add('sign', 'gradeSign');
-            text.classList.add('signText', 'gradeSign');
             if(markerData.class) markerImg.classList.add(markerData.class);
             const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
             const rot = Math.atan2(markerData.tangent.x/tanLen, -markerData.tangent.z/tanLen) * (180/Math.PI);
             marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
-            text.setAttribute('transform', `rotate(${-rot})`);
             title.innerHTML = `${Math.round(markerData.value*1000)/10}%`;
-            text.innerHTML = `${Math.round(markerData.value*1000)/10}`;
             gradeSigns.appendChild(marker);
         // Speed Signs
         }else if(markerData.type == 'speed'){
             markerImg.setAttribute('href', `#speedSign_${Math.round(markerData.value/10)}`);
             markerImg.classList.add('sign', 'speedSign');
-            text.classList.add('signText', 'speedSign');
             title.innerHTML = `${Math.round(markerData.value)} km/h`;
             /*let offset = Vector.normalize({x:markerData.tangent.z, y:0, z:-markerData.tangent.x});
             marker.setAttribute('transform', `translate(${markerData.position.x + offset.x*100} ${markerData.position.z + offset.z*50})`);*/
@@ -362,10 +343,10 @@ function drawMarkers(){
             speedSigns.appendChild(marker);
         }
 
-        for(let i=zoomThresholds.length-1; i>= 0; i--){
-            if(markerData.nearestDist < zoomThresholds[i].distance || i==0){
+        for(let i=scaleCullThresholds.length-1; i>= 0; i--){
+            if(markerData.nearestDist < scaleCullThresholds[i].distance || i==0){
                 title.innerHTML += `\n${markerData.nearestDist}`;
-                marker.classList.add(`zoomThreshold_${i}`);
+                marker.classList.add(`cullThreshold_${i}`);
                 break;
             }
         }
