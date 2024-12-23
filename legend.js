@@ -1,5 +1,7 @@
 'use strict';
 
+import * as Utils from './js/utillib.js';
+
 let settingEntries = [
     {
         label: 'Signage',
@@ -38,6 +40,8 @@ let settingEntries = [
     },
 ];
 
+const legendKey = document.getElementById('legendKey');
+
 document.addEventListener('DOMContentLoaded', async () => {
     const settingsPanel = document.getElementById('settingsPanel');
     for(let thisSetting of settingEntries){
@@ -54,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     legendButton.addEventListener('click', legendButtonEvent);
     legendButtonEvent();
+    populateKey();
 });
 
 function addSettingEntry(thisSetting, parent, indent=0){
@@ -94,4 +99,44 @@ function addSettingEntry(thisSetting, parent, indent=0){
             addSettingEntry(child, parent, indent+1);
         }
     }
+}
+
+function populateKey(){
+    addKeyEntry(null, '<span style="font-size:smaller">(Grade arrows point uphill)</span>');
+    const getGradeValue = gradeIndex => {return Math.round(Utils.gradeIncrements[Utils.gradeIncrements.length-gradeIndex-1]*10000)/100};
+    for(let i=-1; i<Utils.gradeIncrements.length; i++){
+        let gradeValue = `< ${getGradeValue(0)}`;
+        let gradeIndex = 'flat';
+        if(i>=0){
+            gradeValue = `${getGradeValue(i)}`;
+            gradeIndex = i;
+        }
+        if(i == Utils.gradeIncrements.length-1){
+            gradeValue = '> '+gradeValue+'%';
+        }else if(i >= 0){
+            gradeValue += ` - ${getGradeValue(i+1)}%`;
+        }
+        let gradeIcon = document.createElement('svg');
+        gradeIcon.classList.add('inlineSvg');
+        gradeIcon.setAttribute('viewBox', '-50 -50 100 100');
+        gradeIcon.innerHTML = `<use class="gradeSign grade_${gradeIndex}" href="#gradeArrow" transform="rotate(90)"/>`;
+        addKeyEntry(gradeIcon, ` ${gradeValue} Grade`);
+    }
+    let speedSignIcon = document.createElement('svg');
+    speedSignIcon.classList.add('inlineSvg');
+    speedSignIcon.setAttribute('viewBox', '-50 -50 100 100');
+    speedSignIcon.innerHTML = `<use class="speedSign" href="#speedSign_5"/>`;
+    addKeyEntry(speedSignIcon, ' Speed Limit');
+}
+
+/**
+ * Add an entry to the map key.
+ * @param {Element} keyImage 
+ * @param {string} keyLabel 
+ */
+function addKeyEntry(keyImage, keyLabel){
+    let keyDiv = document.createElement('div');
+    if(keyImage) keyDiv.appendChild(keyImage);
+    keyDiv.innerHTML += keyLabel;
+    legendKey.appendChild(keyDiv);
 }

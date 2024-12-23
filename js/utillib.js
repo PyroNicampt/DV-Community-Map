@@ -1,6 +1,6 @@
 'use strict';
 
-const gradeIncrements = [
+export const gradeIncrements = [
     0.0498,
     0.04,
     0.035,

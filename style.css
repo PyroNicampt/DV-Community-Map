@@ -1,5 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Protest+Strike&display=swap');
 
+:root{
+    --grade_flat: #ffff;
+    --grade_0: #f4f7cd;
+    --grade_1: #f8ff99;
+    --grade_2: #edfc1b;
+    --grade_3: #fcb520;
+    --grade_4: #f07837;
+    --grade_5: #e66441;
+    --grade_6: #ce3f57;
+    --grade_7: #c33577;
+    --grade_8: #a3008d;
+    --grade_9: #690097;
+
+    --signScale: 1;
+    --cullThreshold_state_0: none;
+    --cullThreshold_state_1: none;
+    --cullThreshold_state_2: none;
+    --cullThreshold_state_3: none;
+    --cullThreshold_state_4: none;
+    --cullThreshold_state_5: none;
+    --cullThreshold_state_6: none;
+}
+
 html, body, #map, #mapContainer, h1, h2, h3, h4, h5{
     padding: 0px;
     margin: 0px;
@@ -64,6 +87,10 @@ a:visited{
     transition: transform 200ms ease;
 }
 
+#legendKey{
+    font-size: 15px;
+}
+
 #footer{
     position: fixed;
     width: fit-content;
@@ -88,4 +115,10 @@ a:visited{
     cursor: grab;
     user-select: none;
     background: linear-gradient(#444, #333);
+}
+
+.inlineSvg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.1em;
 }
