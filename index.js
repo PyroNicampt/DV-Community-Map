@@ -33,6 +33,7 @@ const scaleCullThresholds = [
 // CODE
 const map = document.getElementById('map');
 const map_container = document.getElementById('mapContainer');
+const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 const styleRoot = document.querySelector(':root');
 const svgns = map.getAttribute('xmlns');
 
@@ -124,6 +125,7 @@ function updateMapview(navData = {x:0, y:0, scale:1}){
     currentMapNav = navData;
     map.style.transform = `translate(${-navData.x}px, ${-navData.y}px) scale(${navData.scale})`;
     if(navData.scale !== previousMapScale){
+        zoomLevelDisplay.innerHTML = `Zoom: ${Math.round(navData.scale*100)/100}x`;
         let dirtyScale = previousMapScale < 0;
         for(const cullThreshold of scaleCullThresholds){
             if(dirtyScale || (previousMapScale < cullThreshold.scale && navData.scale > cullThreshold.scale) || (previousMapScale > cullThreshold.scale && navData.scale < cullThreshold.scale)){
