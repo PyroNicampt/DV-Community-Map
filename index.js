@@ -210,10 +210,10 @@ function drawTracks(bezierData){
         let genPath = 'M ';
         genPath += `${bezStart.x} ${bezStart.z} `;
         genPath += `C ${bezHandle1.x} ${bezHandle1.z} ${bezHandle2.x} ${bezHandle2.z} ${bezEnd.x} ${bezEnd.z} `;
-        let grade = Bezier.estimateMaxGrade(bezStart, bezHandle1, bezHandle2, bezEnd, bezierGradeResolution);
+        let grade = Bezier.estimateGrade(bezStart, bezHandle1, bezHandle2, bezEnd, bezierGradeResolution);
         let gradeClass = Utils.gradeToClass(grade);
         let length = Bezier.estimateLength(bezStart, bezHandle1, bezHandle2, bezEnd, bezierLengthResolution);
-        let curvature = Bezier.estimateMaxCurvature(bezStart, bezHandle1, bezHandle2, bezEnd, bezierCurvatureResolution);
+        let curvature = Bezier.estimateCurvature(bezStart, bezHandle1, bezHandle2, bezEnd, bezierCurvatureResolution);
         newBezier.setAttribute('d', genPath);
 
         newBezier.classList.add('rail');

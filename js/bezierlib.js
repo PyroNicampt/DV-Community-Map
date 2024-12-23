@@ -7,7 +7,7 @@ import * as Vector from './vectorlib.js';
  * @property {number} z
  */
 
-/** Estimate the maximum grade of the bezier.
+/** Estimate the grade of the bezier.
  * @param {Vector} p1 - Start
  * @param {Vector} h1 - Handle 1
  * @param {Vector} h2 - Handle 2
@@ -15,7 +15,7 @@ import * as Vector from './vectorlib.js';
  * @param {number} iterationCount - How many steps along the bezier to check
  * @returns {number} Grade as a decimal
  */
-export function estimateMaxGrade(p1, h1, h2, p2, iterationCount = 50){
+export function estimateGrade(p1, h1, h2, p2, iterationCount = 50){
     let grade = 0;
     let totalGrade = 0;
     for(let i=0; i<=iterationCount; i++){
@@ -47,7 +47,7 @@ export function estimateLength(p1, h1, h2, p2, iterationCount = 50){
     return length;
 }
 
-/** Estimate the maximum 3D curvature of the bezier.
+/** Estimate the 3D curvature of the bezier.
  * @param {Vector} p1 - Start
  * @param {Vector} h1 - Handle 1
  * @param {Vector} h2 - Handle 2
@@ -55,7 +55,7 @@ export function estimateLength(p1, h1, h2, p2, iterationCount = 50){
  * @param {number} iterationCount - How many steps along the bezier to check
  * @returns {number} Curvature, take `1/curvature` to get radius.
  */
-export function estimateMaxCurvature(p1, h1, h2, p2, iterationCount = 50){
+export function estimateCurvature(p1, h1, h2, p2, iterationCount = 50){
     let curvature = 0;
     let t = 0;
     let vel = {};
