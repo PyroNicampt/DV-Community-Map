@@ -62,11 +62,11 @@ export function estimateCurvature(p1, h1, h2, p2, iterationCount = 50){
     for(let i=0; i<iterationCount; i++){
         t = i/iterationCount;
         vel = evaluateVelocity(p1, h1, h2, p2, t);
-        curvature = Math.max(curvature,
+        curvature +=
             Vector.length(Vector.cross(vel, evaluateAcceleration(p1, h1, h2, p2, t)))
-            /Math.pow(Vector.length(vel),3));
+            /Math.pow(Vector.length(vel),3);
     }
-    return curvature;
+    return curvature/iterationCount;
 }
 
 /** Evaluate the bezier at `t`, getting position.
