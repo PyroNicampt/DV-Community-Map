@@ -20,14 +20,16 @@ const signSize = {
     min: 0.05,
     max: 2.4
 }
+
+const scaleCullBaseDistance = 500;
 const scaleCullThresholds = [
-    {scale:1, distance:500},
-    {scale:1.25, distance:200},
-    {scale:1.5, distance:130},
-    {scale:2.5, distance:80},
-    {scale:5, distance:40},
-    {scale:20, distance:20},
-    {scale:60, distance:10},
+    {scale:1},
+    {scale:2},
+    {scale:3},
+    {scale:6},
+    {scale:12},
+    {scale:24},
+    {scale:60},
 ];
 
 // CODE
@@ -272,39 +274,24 @@ function sortTracks(){
     }
 }
 
-/** Hide extraneous signage, reducing clutter. */
+/** Assign signage to cull at certain zoom levels, reducing clutter and lag. */
 function cleanMarkers(){
     let roughDist = 0;
     for(let i=0; i<markers.length; i++){
-        markers[i].crowdingScore = 0;
-        markers[i].nearestDist = 100000;
+        markers[i].nearestDistance = Infinity;
         for(let j=0; j<markers.length; j++){
             if(i != j && markers[i].type == markers[j].type){
                 roughDist = Vector.roughDistance(markers[i].position, markers[j].position);
-                markers[i].crowdingScore += 1/roughDist;
-                if(roughDist < markers[i].nearestDist){
-                    markers[i].nearestDist = roughDist;
-                    markers[i].nearest = markers[j];
+                if(markers[i].nearestDistance > roughDist){
+                    markers[i].nearestDistance = roughDist;
+                    markers[i].nearestMarker = markers[j];
                 }
             }
         }
-        //let randomZoomThreshold = Utils.randomRange(1, 5);
-        //if(randomZoomThreshold < 4) markers[i].skip = true;
-        /*
-        for(let j=0; j<markers.length; j++){
-            if(i != j && !markers[j].skip && markers[i].type == markers[j].type){
-                
-                if(Vector.isWithinAARange(markers[i].position, markers[j].position, 120)){
-                    if(markers[i].type == 'grade'){
-                        if(Math.abs(markers[j].value) > Math.abs(markers[i].value)) markers[i].skip = true;
-                        else markers[j].skip = true;
-                    }else if(markers[i].type == 'speed'){
-                        if(markers[j].value > markers[i].value) markers[j].skip = true;
-                        else markers[i].skip = true;
-                    }
-                }
-            }
-        }*/
+        markers[i].cullLevel = 3;
+        for(let cullIndex=0; cullIndex<scaleCullThresholds.length; cullIndex++){
+
+        }
     }
 }
 
@@ -345,12 +332,6 @@ function drawMarkers(){
             speedSigns.appendChild(marker);
         }
 
-        for(let i=scaleCullThresholds.length-1; i>= 0; i--){
-            if(markerData.nearestDist < scaleCullThresholds[i].distance || i==0){
-                title.innerHTML += `\n${markerData.nearestDist}`;
-                marker.classList.add(`cullThreshold_${i}`);
-                break;
-            }
-        }
+        if(markerData.cullLevel) marker.classList.add(`cullThreshold_${markerData.cullLevel}`);
     }
 }
