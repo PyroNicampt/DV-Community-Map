@@ -1,0 +1,557 @@
+[
+{
+    "name":"Coal Mine East",
+    "type":"station",
+    "shorthand":"CME",
+    "color":"#958177",
+    "position":{"x":15622.98,"y":204.2502,"z":11220.5},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":15585.12,"y":204.27,"z":11133.39}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "position":{"x":15614.13,"y":204.3634,"z":11534.42}
+        },
+        {
+            "type":"coal",
+            "position":{"x":15620.33,"y":204.3185,"z":11487.84}
+        },
+        {
+            "type":"water",
+            "position":{"x":15617.12,"y":204.2361,"z":11512.04}
+        }
+    ]
+},
+{
+    "name":"Coal Mine South",
+    "type":"station",
+    "shorthand":"CMS",
+    "color":"#6f6a58",
+    "position":{"x":8531.313,"y":156.2595,"z":3448.419},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":8476.648,"y":156.4141,"z":3486.76}
+        },
+        {
+            "type":"coal",
+            "position":{"x":8438.752,"y":156.3951,"z":3323.048}
+        },
+        {
+            "type":"water",
+            "position":{"x":8435.357,"y":156.3949,"z":3301.834}
+        }
+    ]
+},
+{
+    "name":"Coal Power Plant",
+    "nickname":"Coal Plant",
+    "type":"station",
+    "shorthand":"CP",
+    "color":"#824e4a",
+    "position":{"x":2064.521,"y":145.1,"z":9031.848},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":2097.167,"y":145.1,"z":8988.771}
+        },
+        {
+            "type":"coal",
+            "position":{"x":2185.407,"y":145.0454,"z":8997.146}
+        },
+        {
+            "type":"water",
+            "position":{"x":2189.829,"y":145.0454,"z":8982.769}
+        }
+    ]
+},
+{
+    "name":"City South",
+    "type":"station",
+    "shorthand":"CS",
+    "color":"#dfd7dc",
+    "position":{"x":9985.819,"y":134.6823,"z":1388.548},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":9948.99,"y":134.81,"z":1337.133}
+        },
+        {
+            "type":"office",
+            "museum":true,
+            "position":{"x":10182.35,"y":134.8,"z":1454.342}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":10258.16,"y":134.7814,"z":1473.187}
+        },
+        {
+            "type":"coal",
+            "position":{"x":10255.4,"y":134.7365,"z":1456.683}
+        },
+        {
+            "type":"water",
+            "position":{"x":10249.08,"y":134.7365,"z":1468.002}
+        },
+        {
+            "name":"Olaf's Garage",
+            "type":"garage",
+            "position":{"x":10448.56,"y":134.9,"z":1331.074}
+        }
+    ]
+},
+{
+    "name":"City West",
+    "type":"station",
+    "shorthand":"CW",
+    "color":"#f1cdbb",
+    "position": {"x":1956,"y":122,"z":5692},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":2026.22,"y":122.35,"z":5672.83}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":1845.1,"y":122.37,"z":5618.65}
+        },
+        {
+            "type":"water",
+            "position":{"x":1920.39,"y":122.26,"z":5698.77}
+        },
+        {
+            "type":"shop",
+            "position":{"x":1911.48,"y":122.26,"z":5788.65}
+        }
+    ]
+},
+{
+    "name":"Food Factory and Town",
+    "nickname":"Food Factory",
+    "type":"station",
+    "shorthand":"FF",
+    "color":"#b2d1ff",
+    "position":{"x":9435.343,"y":119.1784,"z":13504.95},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":9469.828,"y":119.24,"z":13615.42}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":9333.896,"y":119.3254,"z":13356.79}
+        },
+        {
+            "type":"water",
+            "position":{"x":9501.878,"y":119.1784,"z":13480.18}
+        },
+        {
+            "type":"shop",
+            "position":{"x":9528.669,"y":119.3432,"z":13419.99}
+        }
+    ]
+},
+{
+    "name":"Farm",
+    "type":"station",
+    "shorthand":"FM",
+    "color":"#ffda62",
+    "position":{"x":6027.609,"y":123.8593,"z":6704.711},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":5991.435,"y":123.8702,"z":6746.355}
+        },
+        {
+            "type":"water",
+            "position":{"x":6040.514,"y":123.8479,"z":6645.868}
+        }
+    ]
+},
+{
+    "name":"Forest Central",
+    "type":"station",
+    "shorthand":"FRC",
+    "color":"#d3e075",
+    "position":{"x":5727.74,"y":144.9063,"z":8757.236},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":5687.203,"y":145,"z":8692.185}
+        },
+        {
+            "type":"water",
+            "position":{"x":5764.438,"y":145.0041,"z":8758.033}
+        }
+    ]
+},
+{
+    "name":"Forest South",
+    "type":"station",
+    "shorthand":"FRS",
+    "color":"#8db16c",
+    "position":{"x":5340.794,"y":175.1235,"z":3787.574},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":5365.494,"y":174.81,"z":3711.29}
+        },
+        {
+            "type":"water",
+            "position":{"x":5326.083,"y":174.8104,"z":3663.961}
+        }
+    ]
+},
+{
+    "name":"Goods Factory and Town",
+    "nickname":"Goods Factory",
+    "type":"station",
+    "shorthand":"GF",
+    "color":"#ff9db9",
+    "position":{"x":13002.78,"y":140.2193,"z":10995.55},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":12847.46,"y":140.166,"z":11046.24}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":12889.65,"y":140.2108,"z":11011.06}
+        },
+        {
+            "type":"coal",
+            "position":{"x":13116.35,"y":140.1513,"z":11054.41}
+        },
+        {
+            "type":"water",
+            "position":{"x":12865.19,"y":140.151,"z":11024.42}
+        },
+        {
+            "type":"shop",
+            "position":{"x":13035.07,"y":140.1661,"z":11158.79}
+        }
+    ]
+},
+{
+    "name":"Harbor and Town",
+    "nickname":"Harbor",
+    "type":"station",
+    "shorthand":"HB",
+    "color":"#ff9db9",
+    "position":{"x":13066.07,"y":113.082,"z":3596.37},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":13060.47,"y":113.1194,"z":3521.903}
+        },
+        {
+            "type":"office",
+            "military":true,
+            "position":{"x":12519.87,"y":113.173,"z":3236.072}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":12780.98,"y":113.2774,"z":3579.279}
+        },
+        {
+            "type":"coal",
+            "position":{"x":12714.76,"y":113.1694,"z":3594.745}
+        },
+        {
+            "type":"water",
+            "position":{"x":12724.56,"y":113.1341,"z":3592.297}
+        },
+        {
+            "type":"shop",
+            "position":{"x":13423.26,"y":113.1099,"z":3611.852}
+        }
+    ]
+},
+{
+    "name":"Iron Ore Mine East",
+    "nickname":"Iron Mine East",
+    "type":"station",
+    "shorthand":"IME",
+    "color":"#ff836f",
+    "position":{"x":15041.38,"y":248.062,"z":15341.35},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":14948.41,"y":248.13,"z":15252.69}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "position":{"x":14998.32,"y":248.1634,"z":15510.48}
+        },
+        {
+            "type":"coal",
+            "position":{"x":15016.05,"y":248.1444,"z":15524.2}
+        },
+        {
+            "type":"water",
+            "position":{"x":15009.82,"y":248.062,"z":15508.2}
+        }
+    ]
+},
+{
+    "name":"Iron Ore Mine West",
+    "nickname":"Iron Mine West",
+    "type":"station",
+    "shorthand":"IMW",
+    "color":"#dc6f54",
+    "position":{"x":2103.091,"y":133.5531,"z":13359.38},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":2018.933,"y":133.63,"z":13405.85}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "position":{"x":1991.036,"y":133.6704,"z":13526.08}
+        },
+        {
+            "type":"coal",
+            "position":{"x":1974.959,"y":133.6355,"z":13536.84}
+        },
+        {
+            "type":"water",
+            "position":{"x":1960.344,"y":133.5774,"z":13547.23}
+        }
+    ]
+},
+{
+    "name":"Military Base",
+    "type":"station",
+    "shorthand":"MB",
+    "color":"#d6ac71",
+    "position":{"x":12524,"y":215.3452,"z":14749.98},
+    "children":[
+        {
+            "type":"office",
+            "military":true,
+            "position":{"x":12756.69,"y":215.12,"z":14758.02}
+        },
+        {
+            "type":"water",
+            "position":{"x":12595.58,"y":215.326,"z":14742.38}
+        }
+    ]
+},
+{
+    "name":"Machine Factory and Town",
+    "nickname":"Machine Factory",
+    "type":"station",
+    "shorthand":"MF",
+    "color":"#ffad6d",
+    "position":{"x":2348.254,"y":159.2693,"z":10823.74},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":2343.796,"y":159.24,"z":10970.8}
+        },
+        {
+            "type":"office",
+            "military":true,
+            "position":{"x":2420.049,"y":159.247,"z":11085.56}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":2241.171,"y":159.3924,"z":10650.01}
+        },
+        {
+            "type":"coal",
+            "position":{"x":2278.284,"y":159.2718,"z":10593.18}
+        },
+        {
+            "type":"water",
+            "position":{"x":2279.527,"y":159.1894,"z":10572.62}
+        },
+        {
+            "type":"shop",
+            "position":{"x":2236.745,"y":159.266,"z":10834.23}
+        }
+    ]
+},
+{
+    "name":"Oil Refinery",
+    "type":"station",
+    "shorthand":"OR",
+    "color":"#cf6884",
+    "position":{"x":6404.917,"y":143.8076,"z":11133.96},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":6394.391,"y":143.9,"z":11305.84}
+        },
+        {
+            "type":"service",
+            "diesel":true,
+            "position":{"x":6349.094,"y":144.0815,"z":11022.12}
+        },
+        {
+            "type":"water",
+            "position":{"x":6529.659,"y":143.8954,"z":11435.35}
+        }
+    ]
+},
+{
+    "name":"Oil Well Central",
+    "type":"station",
+    "shorthand":"OWC",
+    "color":"#7b6f6e",
+    "position":{"x":4866.821,"y":122.9323,"z":6291.179},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":4952.812,"y":123,"z":6265.058}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "position":{"x":4711.075,"y":123.0374,"z":6325.512}
+        },
+        {
+            "type":"water",
+            "position":{"x":4715.32,"y":122.9323,"z":6292.19}
+        }
+    ]
+},
+{
+    "name":"Oil Well North",
+    "type":"station",
+    "shorthand":"OWN",
+    "color":"#8b715e",
+    "position":{"x":11570.04,"y":122.3343,"z":11554.65},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":11553.71,"y":122.33,"z":11520.82}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "position":{"x":11543.18,"y":122.2724,"z":11623.9}
+        }
+    ]
+},
+{
+    "name":"Steel Mill",
+    "type":"station",
+    "shorthand":"SM",
+    "color":"#ac9da2",
+    "position": {"x":7821,"y":131,"z":7277},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":7925.76,"y":131.82,"z":7339.06}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "diesel":true,
+            "charger":true,
+            "position":{"x":8041.42,"y":131.89,"z":7138.14}
+        },
+        {
+            "type":"coal",
+            "position":{"x":7971.02,"y":131.80,"z":7372.04}
+        },
+        {
+            "type":"water",
+            "position":{"x":7981.461,"y":131.77,"z":7392.4}
+        }
+    ]
+},
+{
+    "name":"Sawmill",
+    "type":"station",
+    "shorthand":"SW",
+    "color":"#ffce98",
+    "position":{"x":1364.217,"y":147.2043,"z":2194.633},
+    "children":[
+        {
+            "type":"office",
+            "position":{"x":1359.665,"y":147.15,"z":2286.169}
+        },
+        {
+            "type":"service",
+            "repair":true,
+            "position":{"x":1192.893,"y":147.1364,"z":2427.828}
+        },
+        {
+            "type":"coal",
+            "position":{"x":1216.669,"y":147.1861,"z":2333.768}
+        },
+        {
+            "type":"water",
+            "position":{"x":1209.447,"y":147.1037,"z":2362.269}
+        }
+    ]
+},
+{
+    "name":"Old Bob's Garage",
+    "type":"garage",
+    "position":{"x":1590.981,"y":137.4275,"z":12227.22}
+},
+{
+    "name":"Reginald's Garage",
+    "type":"garage",
+    "position":{"x":4387.325,"y":147.84,"z":2458.901}
+},
+{
+    "name":"Steve's Garage",
+    "type":"garage",
+    "position":{"x":14527.17,"y":163.7,"z":2365.416}
+},
+{
+    "name":"Player Home",
+    "type":"landmark",
+    "position":{"x":5708.142,"y":155.95,"z":7621.951}
+},
+{
+    "name":"Tutorial Depot",
+    "type":"landmark",
+    "position":{"x":8450.125,"y":130.2,"z":7954.47}
+},
+{
+    "name":"Fortress",
+    "type":"landmark",
+    "position":{"x":12320.08,"y":317.9821,"z":8433.577}
+},
+{
+    "name":"Radio Tower",
+    "type":"landmark",
+    "position":{"x":9785.563,"y":792.7521,"z":3859.431}
+},
+{
+    "name":"Radar Dome",
+    "type":"landmark",
+    "position":{"x":7161.123,"y":498.84,"z":9598.941}
+}
+]
