@@ -105,6 +105,10 @@ a:visited{
     transform-origin: 0% 0%;
     >*{
         position:absolute;
+        pointer-events: none;
+        >*{
+            pointer-events: visiblePainted;
+        }
     }
 }
 
