@@ -8,7 +8,7 @@ let settingEntries = [
         id: 'toggle_signage',
         state: true,
         func: state =>{
-            document.getElementById('map_markers').style.display = state ? 'unset' : 'none';
+            document.getElementById('mapMarkers').style.display = state ? 'unset' : 'none';
         },
         children: [
             {

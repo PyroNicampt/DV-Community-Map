@@ -44,6 +44,7 @@ const scaleCullThresholds = [
 // CODE
 const map = document.getElementById('map');
 const map_container = document.getElementById('mapContainer');
+const map_navigator = document.getElementById('mapNavigator');
 const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 const styleRoot = document.querySelector(':root');
 const svgns = map.getAttribute('xmlns');
@@ -52,9 +53,10 @@ const map_rails = document.createElementNS(svgns, 'g');
 map_rails.setAttribute('id', 'map_rails');
 map.appendChild(map_rails);
 
-const map_markers = document.createElementNS(svgns, 'g');
-map_markers.setAttribute('id', 'map_markers');
-map.appendChild(map_markers);
+//const map_markers = document.createElementNS(svgns, 'g');
+//map_markers.setAttribute('id', 'map_markers');
+//map.appendChild(map_markers);
+const map_markers = document.getElementById('mapMarkers');
 
 let mapData = [];
 let trackNameCounting = {};
@@ -80,7 +82,6 @@ async function loadTrackData(file){
 function mapScrollSetup(){
     let mapNav = {x:currentMapNav.x, y:currentMapNav.y, scale:currentMapNav.scale};
     let prevMouse = {x:mapNav.x, y:mapNav.y, scale:mapNav.scale};
-    let scrollDat = {ticking:false};
     const mouseDownHandler = e => {
         map_container.style.cursor = 'grabbing';
         prevMouse.x = e.clientX;
@@ -93,8 +94,6 @@ function mapScrollSetup(){
         mapNav.x += prevMouse.x-e.clientX;
         mapNav.y += prevMouse.y-e.clientY;
 
-        updateMapview(mapNav);
-
         prevMouse.x = e.clientX;
         prevMouse.y = e.clientY;
     };
@@ -104,38 +103,42 @@ function mapScrollSetup(){
         document.removeEventListener('mouseup', mouseUpHandler);
     };
     const zoomHandler = e => {
-        if(!scrollDat.ticking){
-            scrollDat.ticking = true;
-            let rect = map_container.getBoundingClientRect();
-            let cursorLocal = {
-                x: -e.clientX - rect.left,
-                y: -e.clientY - rect.top
-            };
-            let scaleMult = 1;
-            if(e.deltaY < 0){
-                scaleMult = zoomFactor;
-            }else if(e.deltaY > 0){
-                scaleMult = 1/zoomFactor;
-            }
-            mapNav.x = cursorLocal.x - scaleMult * (cursorLocal.x-mapNav.x);
-            mapNav.y = cursorLocal.y - scaleMult * (cursorLocal.y-mapNav.y);
-            mapNav.scale *= scaleMult;
-            updateMapview(mapNav);
-
-            setTimeout(() => {
-                scrollDat.ticking = false;
-            }, 20);
+        let rect = map_container.getBoundingClientRect();
+        let cursorLocal = {
+            x: -e.clientX - rect.left,
+            y: -e.clientY - rect.top
+        };
+        let scaleMult = 1;
+        if(e.deltaY < 0){
+            scaleMult = zoomFactor;
+        }else if(e.deltaY > 0){
+            scaleMult = 1/zoomFactor;
         }
+        mapNav.x = cursorLocal.x - scaleMult * (cursorLocal.x-mapNav.x);
+        mapNav.y = cursorLocal.y - scaleMult * (cursorLocal.y-mapNav.y);
+        mapNav.scale *= scaleMult;
     };
+
+    let prevMapNav = {};
+    const navUpdate = () => {
+        if(prevMapNav.x != currentMapNav.x || prevMapNav.y != currentMapNav.y || prevMapNav.scale != currentMapNav.scale){
+            updateMapview(mapNav);
+            prevMapNav.x = currentMapNav.x;
+            prevMapNav.y = currentMapNav.y;
+            prevMapNav.scale = currentMapNav.scale;
+        }
+        requestAnimationFrame(navUpdate);
+    }
 
     map_container.addEventListener('mousedown', mouseDownHandler);
     map_container.addEventListener('wheel', zoomHandler);
+    navUpdate();
 }
 
 /** Readjust map view to focus on position */
 function updateMapview(navData = {x:0, y:0, scale:1}){
     currentMapNav = navData;
-    map.style.transform = `translate(${-navData.x}px, ${-navData.y}px) scale(${navData.scale})`;
+    map_navigator.style.transform = `translate(${-navData.x}px, ${-navData.y}px) scale(${navData.scale})`;
     if(navData.scale !== previousMapScale){
         zoomLevelDisplay.innerHTML = `Zoom: ${Math.round(navData.scale*100)/100}x`;
         let dirtyScale = previousMapScale < 0;
@@ -179,6 +182,7 @@ function establishDimensions(){
     let width = maxX-minX;
     let height = maxY-minY;
     map.setAttribute('viewBox', `${minX-padding} ${minY-padding} ${width+2*padding} ${height+2*padding}`);
+    map_markers.setAttribute('viewBox', map.getAttribute('viewBox'));
     updateMapview({
         x: map.clientWidth/2-map_container.clientWidth/2,
         y: map.clientHeight/2-map_container.clientHeight/2,

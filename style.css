@@ -100,10 +100,12 @@ a:visited{
     text-align: right;
 }
 
-#map{
+#mapNavigator{
     transition: transform 100ms ease-out;
     transform-origin: 0% 0%;
-    position: relative;
+    >*{
+        position:absolute;
+    }
 }
 
 #mapContainer{
