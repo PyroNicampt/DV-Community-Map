@@ -34,14 +34,11 @@ export function rgba2hex(r,g,b,a=1.0){
 }
 
 export function gradeToClass(grade){
-    let result = '';
     for(let j=0; j<gradeIncrements.length; j++){
         if(grade > gradeIncrements[j]){
-            result = `grade_${gradeIncrements.length-(j+1)}`;
-            break;
+            return gradeIncrements.length-(j+1);
         }
     }
-    if(result) return result;
 }
 
 export function radiusToSpeed(radius){

@@ -9,7 +9,7 @@ const bezierGradeResolution = 80;
 const bezierLengthResolution = 80;
 const bezierCurvatureResolution = 80;
 const padding = 500;
-const zoomFactor = 1.2;
+const zoomFactor = 1.1;
 const trackWidth = {
     base: 110,
     min: 3,
@@ -18,10 +18,19 @@ const trackWidth = {
 const signSize = {
     base: 4,
     min: 0.05,
-    max: 2.4
+    max: 1.8
 }
 
 const scaleCullBaseDistance = 500;
+
+// Lower values make shorter track sections show their marker further out.
+const scaleCullBaseSectionLength = 22;
+const scaleCullBaseSectionLengthSpeedboard = 100;
+
+// How long a track section can go without changing before another marker is placed. Increases readability
+const maxSectionLength = 700;
+
+// Zoom levels at which different markers get swapped in/out.
 const scaleCullThresholds = [
     {scale:1},
     {scale:2},
@@ -48,6 +57,7 @@ map_markers.setAttribute('id', 'map_markers');
 map.appendChild(map_markers);
 
 let mapData = [];
+let trackNameCounting = {};
 let poiData = [];
 let tracks = [];
 let markers = [];
@@ -196,13 +206,17 @@ function fillSvg(){
         }
     }
     sortTracks();
-    cleanMarkers();
     drawMarkers();
 }
 
 /** Insert individual rail paths, as well as creating signage data for each path*/
 function drawTracks(bezierData){
     const trackCol = Utils.rgba2hex(Math.random(),Math.random(),Math.random(),1.0);
+    if(trackNameCounting[bezierData.name] == null){
+        trackNameCounting[bezierData.name] = 0;
+    }else{
+        trackNameCounting[bezierData.name]++;
+    }
     for(let i=0; i+1<bezierData.points.length; i++){
         const bezStart = bezierData.points[i][0];
         const bezHandle1 = bezierData.points[i][2];
@@ -212,55 +226,116 @@ function drawTracks(bezierData){
         let genPath = 'M ';
         genPath += `${bezStart.x} ${bezStart.z} `;
         genPath += `C ${bezHandle1.x} ${bezHandle1.z} ${bezHandle2.x} ${bezHandle2.z} ${bezEnd.x} ${bezEnd.z} `;
-        let grade = Bezier.estimateGrade(bezStart, bezHandle1, bezHandle2, bezEnd, bezierGradeResolution);
-        let gradeClass = Utils.gradeToClass(grade);
-        let length = Bezier.estimateLength(bezStart, bezHandle1, bezHandle2, bezEnd, bezierLengthResolution);
-        let curvature = Bezier.estimateCurvature(bezStart, bezHandle1, bezHandle2, bezEnd, bezierCurvatureResolution);
+        bezierData.points[i].grade = Bezier.estimateGrade(bezStart, bezHandle1, bezHandle2, bezEnd, bezierGradeResolution);
+        bezierData.points[i].gradeClass = Utils.gradeToClass(bezierData.points[i].grade);
+        bezierData.points[i].bezLength = Bezier.estimateLength(bezStart, bezHandle1, bezHandle2, bezEnd, bezierLengthResolution);
+        bezierData.points[i].curvature = Bezier.estimateCurvature(bezStart, bezHandle1, bezHandle2, bezEnd, bezierCurvatureResolution);
+        bezierData.points[i].postedSpeed = Utils.radiusToSpeed(1/bezierData.points[i].curvature);
         newBezier.setAttribute('d', genPath);
 
         newBezier.classList.add('rail');
-        newBezier.classList.add(gradeClass ?? 'grade_flat');
+        newBezier.classList.add(bezierData.points[i].gradeClass != null ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat');
 
-        //newBezier.setAttribute('stroke', Utils.rgba2hex(grade*50*0,(bezStart.y-113)/(252-113),length*0.01*0,1.0));
-        //newBezier.setAttribute('stroke', Utils.rgba2hex((1/curvature) * 100,0,0,1.0));
+        //newBezier.setAttribute('stroke', Utils.rgba2hex(bezierData.points[i].grade*50*0,(bezStart.y-113)/(252-113),bezierData.points[i].bezLength*0.01*0,1.0));
+        //newBezier.setAttribute('stroke', Utils.rgba2hex((1/bezierData.points[i].curvature) * 100,0,0,1.0));
         //newBezier.setAttribute('stroke', trackCol);
-        //newBezier.setAttribute('data-grade', grade);
-        //newBezier.setAttribute('data-length', length);
-        //newBezier.setAttribute('data-maxradius', 1/curvature);
+        //newBezier.setAttribute('data-grade', bezierData.points[i].grade);
+        //newBezier.setAttribute('data-length', bezierData.points[i].bezLength);
+        //newBezier.setAttribute('data-maxradius', 1/bezierData.points[i].curvature);
         tracks.push([(bezStart.y+bezEnd.y)*0.5, newBezier]);
 
         // Curve tooltip
         let title = document.createElementNS(svgns, 'title');
         title.innerHTML = [
-            `"${bezierData.name}"`,
-            `Max Grade: ${Math.round(grade*1000)/10}%`,
-            `Min Radius: ${Math.round(1/curvature)} meters`,
-            `Top Speed: ${Utils.radiusToSpeed(1/curvature)} km/h`,
-            `Length: ${Math.round(length*10)/10} meters`,
+            `"${bezierData.name}"${trackNameCounting[bezierData.name] > 0 ? ' #'+trackNameCounting[bezierData.name] : ''} Sec${i}`,
+            `Max Grade: ${Math.round(bezierData.points[i].grade*1000)/10}%`,
+            `Min Radius: ${Math.round(1/bezierData.points[i].curvature)} meters`,
+            `Top Speed: ${Utils.radiusToSpeed(1/bezierData.points[i].curvature)} km/h`,
+            `Length: ${Math.round(bezierData.points[i].bezLength*10)/10} meters`,
             `Altitude: ${Math.round((bezStart.y+bezEnd.y)*0.5)} meters`,
             ].join('\n');
         newBezier.appendChild(title);
-        
-        // Add Signage
-        if(grade > 0.001){
-            markers.push({
-                type: 'grade',
-                value: grade,
-                class: gradeClass,
-                position: Bezier.evaluatePoint(bezStart, bezHandle1, bezHandle2, bezEnd, 0.5),
-                tangent: grade > 0
-                    ?
-                    Bezier.evaluateVelocity(bezStart, bezHandle1, bezHandle2, bezEnd, 0.5)
-                    :
-                    Bezier.evaluateVelocity(bezEnd, bezHandle2, bezHandle1,bezStart, 0.5)
-            });
+    }
+
+    // Add Signage
+    let trackZoneData = {};
+    for(let i=0; i+1<bezierData.points.length; i++){
+        for(let zI=0; zI < ((i == bezierData.points.length-2) ? 2 : 1); zI++){
+            let resetTzdGrade = () => {
+                trackZoneData.gradeClass = bezierData.points[i].gradeClass;
+                trackZoneData.gradeDirection = Math.sign(bezierData.points[i].grade);
+                trackZoneData.gradeCount = 0;
+                trackZoneData.gradeSectionLength = bezierData.points[i].bezLength;
+            };
+            let resetTzdSpeed = () => {
+                trackZoneData.prevSpeed = trackZoneData.speed;
+                trackZoneData.speed = bezierData.points[i].postedSpeed;
+                trackZoneData.speedCount = 0;
+                trackZoneData.speedSectionLength = bezierData.points[i].bezLength;
+            }
+            if(i <= 0){
+                resetTzdGrade();
+                resetTzdSpeed();
+            }else{
+                //Grade Signs
+                if(trackZoneData.gradeClass != bezierData.points[i].gradeClass || trackZoneData.gradeDirection != Math.sign(bezierData.points[i].grade) || trackZoneData.gradeSectionLength > maxSectionLength || zI > 0){
+                    if(trackZoneData.gradeClass != null){
+                        let offset = Math.floor((trackZoneData.gradeCount+1)/2)+1;
+                        let center = trackZoneData.gradeCount % 2 ? 1 : 0.5;
+                        let b1 = bezierData.points[(i+zI)-offset][0];
+                        let b2 = bezierData.points[(i+zI)-offset][2];
+                        let b3 = bezierData.points[(i+zI)+1-offset][1];
+                        let b4 = bezierData.points[(i+zI)+1-offset][0];
+                        markers.push({
+                            type: 'grade',
+                            value: bezierData.points[(i+zI)-offset].grade,
+                            class: 'grade_'+trackZoneData.gradeClass,
+                            position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
+                            sectionLength: trackZoneData.gradeSectionLength,
+                            cullLevel: Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLength),
+                            tangent: bezierData.points[(i+zI)].grade > 0
+                                ? Bezier.evaluateVelocity(b1, b2, b3, b4, center)
+                                : Bezier.evaluateVelocity(b4, b3, b2, b1, center)
+                        });
+                    }
+                    resetTzdGrade();
+                }else{
+                    trackZoneData.gradeCount++;
+                    trackZoneData.gradeSectionLength += bezierData.points[i].bezLength;
+                }
+                //Speed Signs
+                if(trackZoneData.speed != bezierData.points[i].postedSpeed || trackZoneData.speedSectionLength > maxSectionLength || zI > 0){
+                    let offset = Math.floor((trackZoneData.speedCount+1)/2)+1;
+                    let center = trackZoneData.speedCount % 2 ? 0.75 : 0.25;
+                    let b1 = bezierData.points[(i+zI)-offset][0];
+                    let b2 = bezierData.points[(i+zI)-offset][2];
+                    let b3 = bezierData.points[(i+zI)+1-offset][1];
+                    let b4 = bezierData.points[(i+zI)+1-offset][0];
+                    let cullLevel = Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLengthSpeedboard);
+                    let speedDelta = Math.max(0,
+                        (bezierData.points[i].postedSpeed != null && bezierData.points[i].postedSpeed < 100) ? bezierData.points[i].postedSpeed-trackZoneData.speed : 0,
+                        (trackZoneData.prevSpeed != null && trackZoneData.prevSpeed < 100) ? trackZoneData.prevSpeed-trackZoneData.speed : 0
+                    );
+                    if(speedDelta >= 10 && trackZoneData.speed <= 30){
+                        cullLevel = 0;
+                    }else if(speedDelta >= 20){
+                        cullLevel = 1;
+                    }
+                    markers.push({
+                        type: 'speed',
+                        value: trackZoneData.speed,
+                        position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
+                        sectionLength: trackZoneData.speedSectionLength,
+                        cullLevel: cullLevel,
+                        tangent: Bezier.evaluateVelocity(b1, b2, b3, b4, center)
+                    });
+                    resetTzdSpeed();
+                }else{
+                    trackZoneData.speedCount++;
+                    trackZoneData.speedSectionLength += bezierData.points[i].bezLength;
+                }
+            }
         }
-        markers.push({
-            type: 'speed',
-            value: Utils.radiusToSpeed(1/curvature),
-            position: Bezier.evaluatePoint(bezStart, bezHandle1, bezHandle2, bezEnd, 0.5),
-            tangent: Bezier.evaluateVelocity(bezStart, bezHandle1, bezHandle2, bezEnd, 0.5)
-        });
     }
 }
 
@@ -271,27 +346,6 @@ function sortTracks(){
     });
     for(const track of tracks){
         map_rails.appendChild(track[1]);
-    }
-}
-
-/** Assign signage to cull at certain zoom levels, reducing clutter and lag. */
-function cleanMarkers(){
-    let roughDist = 0;
-    for(let i=0; i<markers.length; i++){
-        markers[i].nearestDistance = Infinity;
-        for(let j=0; j<markers.length; j++){
-            if(i != j && markers[i].type == markers[j].type){
-                roughDist = Vector.roughDistance(markers[i].position, markers[j].position);
-                if(markers[i].nearestDistance > roughDist){
-                    markers[i].nearestDistance = roughDist;
-                    markers[i].nearestMarker = markers[j];
-                }
-            }
-        }
-        markers[i].cullLevel = 3;
-        for(let cullIndex=0; cullIndex<scaleCullThresholds.length; cullIndex++){
-
-        }
     }
 }
 
@@ -319,19 +373,21 @@ function drawMarkers(){
             const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
             const rot = Math.atan2(markerData.tangent.x/tanLen, -markerData.tangent.z/tanLen) * (180/Math.PI);
             marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
-            title.innerHTML = `${Math.round(markerData.value*1000)/10}%`;
+            title.innerHTML = `${Math.round(markerData.value*1000)/10}% Grade\nSection Length: ${markerData.sectionLength.toFixed(1)} meters`;
             gradeSigns.appendChild(marker);
         // Speed Signs
         }else if(markerData.type == 'speed'){
             markerImg.setAttribute('href', `#speedSign_${Math.round(markerData.value/10)}`);
             markerImg.classList.add('sign', 'speedSign');
-            title.innerHTML = `${Math.round(markerData.value)} km/h`;
+            title.innerHTML = `${Math.round(markerData.value)} km/h\nSection Length: ${markerData.sectionLength.toFixed(1)} meters`;
             /*let offset = Vector.normalize({x:markerData.tangent.z, y:0, z:-markerData.tangent.x});
             marker.setAttribute('transform', `translate(${markerData.position.x + offset.x*100} ${markerData.position.z + offset.z*50})`);*/
             marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
             speedSigns.appendChild(marker);
         }
 
-        if(markerData.cullLevel) marker.classList.add(`cullThreshold_${markerData.cullLevel}`);
+        if(markerData.cullLevel){
+            marker.classList.add(`cullThreshold_${Math.min(scaleCullThresholds.length-1, markerData.cullLevel)}`);
+        }
     }
 }
