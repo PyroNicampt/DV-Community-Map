@@ -1,6 +1,7 @@
 'use strict';
 
 import * as Utils from './js/utillib.js';
+import * as Config from './config.js';
 
 let settingEntries = [
     {
@@ -119,7 +120,7 @@ function populateKey(){
         let gradeIcon = document.createElement('svg');
         gradeIcon.classList.add('inlineSvg');
         gradeIcon.setAttribute('viewBox', '-50 -50 100 100');
-        gradeIcon.innerHTML = `<use class="gradeSign grade_${gradeIndex}" href="#gradeArrow" transform="rotate(90)"/>`;
+        gradeIcon.innerHTML = `<use class="gradeSign" fill="${Config.gradeColors['grade_'+gradeIndex]}" href="#gradeArrow" transform="rotate(90)"/>`;
         addKeyEntry(gradeIcon, ` ${gradeValue} Grade`);
     }
     let speedSignIcon = document.createElement('svg');

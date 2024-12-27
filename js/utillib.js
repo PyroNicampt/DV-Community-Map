@@ -39,6 +39,7 @@ export function gradeToClass(grade){
             return gradeIncrements.length-(j+1);
         }
     }
+    return 'flat';
 }
 
 export function radiusToSpeed(radius){

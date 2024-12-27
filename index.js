@@ -3,6 +3,7 @@
 import * as Vector from './js/vectorlib.js';
 import * as Bezier from './js/bezierlib.js';
 import * as Utils from './js/utillib.js';
+import * as Config from './config.js';
 
 // CONFIG
 const bezierGradeResolution = 80;
@@ -210,6 +211,7 @@ function fillSvg(){
         }
     }
     sortTracks();
+    setTrackColorMode();
     drawMarkers();
 }
 
@@ -254,8 +256,9 @@ function drawTracks(bezierData){
         bezierData.points[i].postedSpeed = Utils.radiusToSpeed(1/bezierData.points[i].curvature);
         newBezier.setAttribute('d', genPath);
 
-        newBezier.classList.add('rail');
-        newBezier.classList.add(bezierData.points[i].gradeClass != null ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat');
+        bezierData.points[i].element.classList.add('rail');
+        //bezierData.points[i].element.setAttribute('stroke', Config.gradeColors[bezierData.points[i].gradeClass ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat']);
+        //bezierData.points[i].element.classList.add(bezierData.points[i].gradeClass != null ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat');
 
         //newBezier.setAttribute('stroke', Utils.rgba2hex(bezierData.points[i].grade*50*0,(bezStart.y-113)/(252-113),bezierData.points[i].bezLength*0.01*0,1.0));
         //newBezier.setAttribute('stroke', Utils.rgba2hex((1/bezierData.points[i].curvature) * 100,0,0,1.0));
@@ -300,7 +303,7 @@ function drawTracks(bezierData){
             }else{
                 //Grade Signs
                 if(trackZoneData.gradeClass != bezierData.points[i].gradeClass || trackZoneData.gradeDirection != Math.sign(bezierData.points[i].grade) || trackZoneData.gradeSectionLength > maxSectionLength || zI > 0){
-                    if(trackZoneData.gradeClass != null){
+                    if(trackZoneData.gradeClass != 'flat'){
                         let offset = Math.floor((trackZoneData.gradeCount+1)/2)+1;
                         let center = trackZoneData.gradeCount % 2 ? 1 : 0.5;
                         let b1 = bezierData.points[(i+zI)-offset].position;
@@ -310,7 +313,7 @@ function drawTracks(bezierData){
                         markers.push({
                             type: 'grade',
                             value: bezierData.points[(i+zI)-offset].grade,
-                            class: 'grade_'+trackZoneData.gradeClass,
+                            gradeClass: trackZoneData.gradeClass,
                             position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
                             sectionLength: trackZoneData.gradeSectionLength,
                             cullLevel: Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLength),
@@ -370,6 +373,26 @@ function sortTracks(){
     }
 }
 
+function setTrackColorMode(mode){
+    let modeFunction = null;
+    switch(mode){
+        
+        default:
+            modeFunction = section => {
+                if(!section.element) return;
+                section.element.setAttribute('stroke', Config.gradeColors['grade_'+section.gradeClass]);
+            };
+            break;
+    }
+    if(modeFunction !== null){
+        for(let curve of mapData){
+            for(let section of curve.points){
+                modeFunction(section);
+            }
+        }
+    }
+}
+
 /** Create the signage */
 function drawMarkers(){
     const gradeSigns = document.createElementNS(svgns, 'g');
@@ -390,7 +413,7 @@ function drawMarkers(){
         if(markerData.type == 'grade'){
             markerImg.setAttribute('href', '#gradeArrow');
             markerImg.classList.add('sign', 'gradeSign');
-            if(markerData.class) markerImg.classList.add(markerData.class);
+            markerImg.setAttribute('fill', Config.gradeColors['grade_'+markerData.gradeClass])
             const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
             const rot = Math.atan2(markerData.tangent.x/tanLen, -markerData.tangent.z/tanLen) * (180/Math.PI);
             marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
