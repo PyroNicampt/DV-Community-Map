@@ -171,12 +171,12 @@ function establishDimensions(){
     let maxAlt = -Infinity;
     for(const obj of mapData){
         for(const point of obj.points){
-            minX = Math.min(minX, point[0].x, point[1].x, point[2].x);
-            minY = Math.min(minY, point[0].z, point[1].z, point[2].z);
-            minAlt = Math.min(minAlt, point[0].y, point[1].y, point[2].y);
-            maxX = Math.max(maxX, point[0].x, point[1].x, point[2].x);
-            maxY = Math.max(maxY, point[0].z, point[1].z, point[2].z);
-            maxAlt = Math.max(maxAlt, point[0].y, point[1].y, point[2].y);
+            minX = Math.min(minX, point.position.x, point.h1.x, point.h2.x);
+            minY = Math.min(minY, point.position.z, point.h1.z, point.h2.z);
+            minAlt = Math.min(minAlt, point.position.y, point.h1.y, point.h2.y);
+            maxX = Math.max(maxX, point.position.x, point.h1.x, point.h2.x);
+            maxY = Math.max(maxY, point.position.z, point.h1.z, point.h2.z);
+            maxAlt = Math.max(maxAlt, point.position.y, point.h1.y, point.h2.y);
         }
     }
     let width = maxX-minX;
@@ -193,9 +193,9 @@ function establishDimensions(){
     // Flip the z coordinate so the map doesn't display upside-down
     for(const obj of mapData){
         for(const point of obj.points){
-            point[0].z = minY+maxY-point[0].z;
-            point[1].z = minY+maxY-point[1].z;
-            point[2].z = minY+maxY-point[2].z;
+            point.position.z = minY+maxY-point.position.z;
+            point.h1.z = minY+maxY-point.h1.z;
+            point.h2.z = minY+maxY-point.h2.z;
         }
     }
 }
@@ -239,11 +239,11 @@ function drawTracks(bezierData){
         bezierData.isPoint = true;
     }
     for(let i=0; i+1<bezierData.points.length; i++){
-        const bezStart = bezierData.points[i][0];
-        const bezHandle1 = bezierData.points[i][2];
-        const bezHandle2 = bezierData.points[i+1][1];
-        const bezEnd = bezierData.points[i+1][0];
         let newBezier = document.createElementNS(svgns, 'path');
+        const bezStart = bezierData.points[i].position;
+        const bezHandle1 = bezierData.points[i].h2;
+        const bezHandle2 = bezierData.points[i+1].h1;
+        const bezEnd = bezierData.points[i+1].position;
         let genPath = 'M ';
         genPath += `${bezStart.x} ${bezStart.z} `;
         genPath += `C ${bezHandle1.x} ${bezHandle1.z} ${bezHandle2.x} ${bezHandle2.z} ${bezEnd.x} ${bezEnd.z} `;
@@ -303,10 +303,10 @@ function drawTracks(bezierData){
                     if(trackZoneData.gradeClass != null){
                         let offset = Math.floor((trackZoneData.gradeCount+1)/2)+1;
                         let center = trackZoneData.gradeCount % 2 ? 1 : 0.5;
-                        let b1 = bezierData.points[(i+zI)-offset][0];
-                        let b2 = bezierData.points[(i+zI)-offset][2];
-                        let b3 = bezierData.points[(i+zI)+1-offset][1];
-                        let b4 = bezierData.points[(i+zI)+1-offset][0];
+                        let b1 = bezierData.points[(i+zI)-offset].position;
+                        let b2 = bezierData.points[(i+zI)-offset].h2;
+                        let b3 = bezierData.points[(i+zI)+1-offset].h1;
+                        let b4 = bezierData.points[(i+zI)+1-offset].position;
                         markers.push({
                             type: 'grade',
                             value: bezierData.points[(i+zI)-offset].grade,
@@ -328,10 +328,10 @@ function drawTracks(bezierData){
                 if(trackZoneData.speed != bezierData.points[i].postedSpeed || trackZoneData.speedSectionLength > maxSectionLength || zI > 0){
                     let offset = Math.floor((trackZoneData.speedCount+1)/2)+1;
                     let center = trackZoneData.speedCount % 2 ? 0.75 : 0.25;
-                    let b1 = bezierData.points[(i+zI)-offset][0];
-                    let b2 = bezierData.points[(i+zI)-offset][2];
-                    let b3 = bezierData.points[(i+zI)+1-offset][1];
-                    let b4 = bezierData.points[(i+zI)+1-offset][0];
+                    let b1 = bezierData.points[(i+zI)-offset].position;
+                    let b2 = bezierData.points[(i+zI)-offset].h2;
+                    let b3 = bezierData.points[(i+zI)+1-offset].h1;
+                    let b4 = bezierData.points[(i+zI)+1-offset].position;
                     let cullLevel = Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLengthSpeedboard);
                     let speedDelta = Math.max(0,
                         (bezierData.points[i].postedSpeed != null && bezierData.points[i].postedSpeed < 100) ? bezierData.points[i].postedSpeed-trackZoneData.speed : 0,
