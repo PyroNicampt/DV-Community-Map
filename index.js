@@ -221,6 +221,23 @@ function drawTracks(bezierData){
     }else{
         trackNameCounting[bezierData.name]++;
     }
+    let yardData = /\[(#)\]|\[(Y)\]_\[(.*?)\]_\[((.*?)-(.*?)-(.*?))\]/.exec(bezierData.name);
+    if(yardData){
+        if(yardData[1]){ // track is [#], thus in yard limits, but not a specific designated yard.
+            bezierData.isYard = true;
+        }else if(yardData[2]){ // track is [Y], and is a specific yard.
+            bezierData.isYard = true;
+            bezierData.yardStation = yardData[3]; // Which station the track belongs to
+            bezierData.yardDesignation = yardData[4]; // Full yard designation, used on signs
+            bezierData.yardName = yardData[5]; // A yard, B yard, C yard, etc.
+            bezierData.yardSidingNumber = yardData[6]; // Which siding within the yard
+            bezierData.yardUsage = yardData[7]; // Outbound? Parking? Inbound? Loading? That's this.
+        }
+    }else if(/Turntable Track/.test(bezierData.name)){
+        bezierData.isTurntable = true;
+    }else if(/\[track (diverging|through)\]/.test(bezierData.name)){
+        bezierData.isPoint = true;
+    }
     for(let i=0; i+1<bezierData.points.length; i++){
         const bezStart = bezierData.points[i][0];
         const bezHandle1 = bezierData.points[i][2];
