@@ -21,9 +21,12 @@ export function estimateGrade(p1, h1, h2, p2, iterationCount = 50){
     for(let i=0; i<=iterationCount; i++){
         let tan = evaluateVelocity(p1, h1, h2, p2, i/iterationCount);
         let newGrade = Math.abs(tan.y)/Math.sqrt(tan.x*tan.x + tan.z*tan.z);
-        grade = Math.max(grade, newGrade);
-        totalGrade += newGrade;
+        if(!Number.isNaN(newGrade)){
+            grade = Math.max(grade, newGrade);
+            totalGrade += newGrade;
+        }
     }
+    if(!grade) return 0;
     return grade;
 }
 
@@ -59,14 +62,20 @@ export function estimateCurvature(p1, h1, h2, p2, iterationCount = 50){
     let curvature = 0;
     let t = 0;
     let vel = {};
+    let totalCount = 0;
     for(let i=0; i<iterationCount; i++){
         t = i/iterationCount;
         vel = evaluateVelocity(p1, h1, h2, p2, t);
-        curvature +=
+        let newCurvature = 
             Vector.length(Vector.cross(vel, evaluateAcceleration(p1, h1, h2, p2, t)))
             /Math.pow(Vector.length(vel),3);
+        if(!Number.isNaN(newCurvature)){
+            curvature += newCurvature;
+            totalCount++;
+        }
     }
-    return curvature/iterationCount;
+    if(!curvature) return 0.00000001;
+    return curvature/totalCount;
 }
 
 /** Evaluate the bezier at `t`, getting position.
