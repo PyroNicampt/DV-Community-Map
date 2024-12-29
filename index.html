@@ -247,21 +247,5 @@
         <br>
         This tool is a fan work, Derail Valley owned by Altfuture
     </div>
-    <div id="mobileAlert" style="display:none;position:fixed;width:100vw;height:100vh;color:#fff;font-size:50px;align-items:center;justify-content:center;">
-        <div style="display:flex;align-items:center;justify-content:center;width:calc(100% - 150px);height:calc(100% - 150px);background:#d00b;border:#e00d solid 5px;border-radius: 30px;">
-            <div style="width:80%;height:60%;justify-content:center;text-align:center;">
-                <p>Touch navigation will be added in the future.</p>
-                <p>Right now, features may not work well or at all with touch screen.</p>
-                <p>Tap to continue.</p>
-            </div>
-        </div>
-        <script>
-            {
-                let alertscreen = document.getElementById('mobileAlert');
-                if(!window.matchMedia('(pointer:fine)')) alertscreen.style.display = 'flex';
-                alertscreen.addEventListener('pointerdown', () => {alertscreen.remove()});
-            }
-        </script>
-    </div>
   </body>
 </html>
