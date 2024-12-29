@@ -3,6 +3,7 @@
 import * as Vector from './js/vectorlib.js';
 import * as Bezier from './js/bezierlib.js';
 import * as Utils from './js/utillib.js';
+import * as Config from './config.js';
 
 // CONFIG
 const bezierGradeResolution = 80;
@@ -57,6 +58,14 @@ map.appendChild(map_rails);
 //map_markers.setAttribute('id', 'map_markers');
 //map.appendChild(map_markers);
 const map_markers = document.getElementById('mapMarkers');
+const poiLayers = {
+    container: document.createElementNS(svgns, 'g'),
+
+    stations: document.createElementNS(svgns, 'g'),
+    service: document.createElementNS(svgns, 'g'),
+    features: document.createElementNS(svgns, 'g'),
+    landmarks: document.createElementNS(svgns, 'g')
+};
 
 let mapData = [];
 let trackNameCounting = {};
@@ -67,8 +76,17 @@ let markers = [];
 let currentMapNav = {};
 let previousMapScale = -1;
 
+let MapMatrix = {};
+
 document.addEventListener('DOMContentLoaded', async () => {
+    let dynamicStyles = [];
+    for(let i=0; i<scaleCullThresholds.length; i++){
+        dynamicStyles.push(`.maxZoomCull_${i}{display:var(--maxZoomCull_state_${i});}`);
+        dynamicStyles.push(`.minZoomCull_${i}{display:var(--minZoomCull_state_${i});}`);
+    }
+    document.getElementById('zoomStyle').innerHTML = dynamicStyles.join('\n');
     await loadTrackData('trackdata_dv.json');
+    await loadPoiData('poi_dv.json');
     mapScrollSetup();
 });
 
@@ -76,6 +94,21 @@ async function loadTrackData(file){
     mapData = await (await fetch(new Request(file))).json();
     establishDimensions();
     fillSvg();
+}
+
+async function loadPoiData(file){
+    poiData = await (await fetch(new Request(file))).json();
+
+    for(let layerIdx in poiLayers){
+        poiLayers[layerIdx].setAttribute('id', 'poi_'+layerIdx);
+        if(layerIdx == 'container') continue;
+        poiLayers.container.appendChild(poiLayers[layerIdx]);
+    }
+    map_markers.appendChild(poiLayers.container);
+
+    for(let poi of poiData){
+        addPoi(poi);
+    }
 }
 
 /** Handling for the map scrolling and zooming */
@@ -149,10 +182,11 @@ function updateMapview(navData = {x:0, y:0, scale:1}){
             }
         }
         map_rails.setAttribute('stroke-width', Utils.clamp(trackWidth.base/navData.scale, trackWidth.min, trackWidth.max));
-        styleRoot.style.setProperty('--signScale', Utils.clamp(signSize.base/navData.scale, signSize.min, signSize.max));
+        styleRoot.style.setProperty('--markerScale', 1/navData.scale);
         if(dirtyScale){
             for(let i=0; i<scaleCullThresholds.length; i++){
-                styleRoot.style.setProperty(`--cullThreshold_state_${i}`, navData.scale >= scaleCullThresholds[i].scale ? 'initial' : 'none')
+                styleRoot.style.setProperty(`--minZoomCull_state_${i}`, navData.scale >= scaleCullThresholds[i].scale ? 'initial' : 'none');
+                styleRoot.style.setProperty(`--maxZoomCull_state_${i}`, navData.scale <= scaleCullThresholds[i].scale ? 'initial' : 'none');
             }
         }
         previousMapScale = navData.scale;
@@ -171,16 +205,27 @@ function establishDimensions(){
     let maxAlt = -Infinity;
     for(const obj of mapData){
         for(const point of obj.points){
-            minX = Math.min(minX, point[0].x, point[1].x, point[2].x);
-            minY = Math.min(minY, point[0].z, point[1].z, point[2].z);
-            minAlt = Math.min(minAlt, point[0].y, point[1].y, point[2].y);
-            maxX = Math.max(maxX, point[0].x, point[1].x, point[2].x);
-            maxY = Math.max(maxY, point[0].z, point[1].z, point[2].z);
-            maxAlt = Math.max(maxAlt, point[0].y, point[1].y, point[2].y);
+            minX = Math.min(minX, point.position.x, point.h1.x, point.h2.x);
+            minY = Math.min(minY, point.position.z, point.h1.z, point.h2.z);
+            minAlt = Math.min(minAlt, point.position.y, point.h1.y, point.h2.y);
+            maxX = Math.max(maxX, point.position.x, point.h1.x, point.h2.x);
+            maxY = Math.max(maxY, point.position.z, point.h1.z, point.h2.z);
+            maxAlt = Math.max(maxAlt, point.position.y, point.h1.y, point.h2.y);
         }
     }
     let width = maxX-minX;
     let height = maxY-minY;
+    MapMatrix = {
+        x1: minX,
+        x2: maxX,
+        y1: minY,
+        y2: maxY,
+        width: width,
+        height: height,
+        fixY: yIn => {
+            return minY+maxY-yIn;
+        }
+    }
     map.setAttribute('viewBox', `${minX-padding} ${minY-padding} ${width+2*padding} ${height+2*padding}`);
     map_markers.setAttribute('viewBox', map.getAttribute('viewBox'));
     updateMapview({
@@ -193,9 +238,9 @@ function establishDimensions(){
     // Flip the z coordinate so the map doesn't display upside-down
     for(const obj of mapData){
         for(const point of obj.points){
-            point[0].z = minY+maxY-point[0].z;
-            point[1].z = minY+maxY-point[1].z;
-            point[2].z = minY+maxY-point[2].z;
+            point.position.z = minY+maxY-point.position.z;
+            point.h1.z = minY+maxY-point.h1.z;
+            point.h2.z = minY+maxY-point.h2.z;
         }
     }
 }
@@ -210,6 +255,7 @@ function fillSvg(){
         }
     }
     sortTracks();
+    setTrackColorMode('Grade');
     drawMarkers();
 }
 
@@ -221,12 +267,29 @@ function drawTracks(bezierData){
     }else{
         trackNameCounting[bezierData.name]++;
     }
+    let yardData = /\[(#)\]|\[(Y)\]_\[(.*?)\]_\[((.*?)-(.*?)-(.*?))\]/.exec(bezierData.name);
+    if(yardData){
+        if(yardData[1]){ // track is [#], thus in yard limits, but not a specific designated yard.
+            bezierData.isYard = true;
+        }else if(yardData[2]){ // track is [Y], and is a specific yard.
+            bezierData.isYard = true;
+            bezierData.yardStation = yardData[3]; // Which station the track belongs to
+            bezierData.yardDesignation = yardData[4]; // Full yard designation, used on signs
+            bezierData.yardName = yardData[5]; // A yard, B yard, C yard, etc.
+            bezierData.yardSidingNumber = yardData[6]; // Which siding within the yard
+            bezierData.yardUsage = yardData[7]; // Outbound? Parking? Inbound? Loading? That's this.
+        }
+    }else if(/Turntable Track/.test(bezierData.name)){
+        bezierData.isTurntable = true;
+    }else if(/\[track (diverging|through)\]/.test(bezierData.name)){
+        bezierData.isPoint = true;
+    }
     for(let i=0; i+1<bezierData.points.length; i++){
-        const bezStart = bezierData.points[i][0];
-        const bezHandle1 = bezierData.points[i][2];
-        const bezHandle2 = bezierData.points[i+1][1];
-        const bezEnd = bezierData.points[i+1][0];
-        let newBezier = document.createElementNS(svgns, 'path');
+        const bezStart = bezierData.points[i].position;
+        const bezHandle1 = bezierData.points[i].h2;
+        const bezHandle2 = bezierData.points[i+1].h1;
+        const bezEnd = bezierData.points[i+1].position;
+        bezierData.points[i].element = document.createElementNS(svgns, 'path');
         let genPath = 'M ';
         genPath += `${bezStart.x} ${bezStart.z} `;
         genPath += `C ${bezHandle1.x} ${bezHandle1.z} ${bezHandle2.x} ${bezHandle2.z} ${bezEnd.x} ${bezEnd.z} `;
@@ -235,18 +298,20 @@ function drawTracks(bezierData){
         bezierData.points[i].bezLength = Bezier.estimateLength(bezStart, bezHandle1, bezHandle2, bezEnd, bezierLengthResolution);
         bezierData.points[i].curvature = Bezier.estimateCurvature(bezStart, bezHandle1, bezHandle2, bezEnd, bezierCurvatureResolution);
         bezierData.points[i].postedSpeed = Utils.radiusToSpeed(1/bezierData.points[i].curvature);
-        newBezier.setAttribute('d', genPath);
+        if(bezierData.isYard || bezierData.isTurntable) bezierData.points[i].postedSpeed = Math.min(bezierData.points[i].postedSpeed, 50);
+        bezierData.points[i].element.setAttribute('d', genPath);
 
-        newBezier.classList.add('rail');
-        newBezier.classList.add(bezierData.points[i].gradeClass != null ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat');
+        bezierData.points[i].element.classList.add('rail');
+        //bezierData.points[i].element.setAttribute('stroke', Config.gradeColors[bezierData.points[i].gradeClass ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat']);
+        //bezierData.points[i].element.classList.add(bezierData.points[i].gradeClass != null ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat');
 
-        //newBezier.setAttribute('stroke', Utils.rgba2hex(bezierData.points[i].grade*50*0,(bezStart.y-113)/(252-113),bezierData.points[i].bezLength*0.01*0,1.0));
-        //newBezier.setAttribute('stroke', Utils.rgba2hex((1/bezierData.points[i].curvature) * 100,0,0,1.0));
-        //newBezier.setAttribute('stroke', trackCol);
-        //newBezier.setAttribute('data-grade', bezierData.points[i].grade);
-        //newBezier.setAttribute('data-length', bezierData.points[i].bezLength);
-        //newBezier.setAttribute('data-maxradius', 1/bezierData.points[i].curvature);
-        tracks.push([(bezStart.y+bezEnd.y)*0.5, newBezier]);
+        //bezierData.points[i].element.setAttribute('stroke', Utils.rgba2hex(bezierData.points[i].grade*50*0,(bezStart.y-113)/(252-113),bezierData.points[i].bezLength*0.01*0,1.0));
+        //bezierData.points[i].element.setAttribute('stroke', Utils.rgba2hex((1/bezierData.points[i].curvature) * 100,0,0,1.0));
+        //bezierData.points[i].element.setAttribute('stroke', trackCol);
+        //bezierData.points[i].element.setAttribute('data-grade', bezierData.points[i].grade);
+        //bezierData.points[i].element.setAttribute('data-length', bezierData.points[i].bezLength);
+        //bezierData.points[i].element.setAttribute('data-maxradius', 1/bezierData.points[i].curvature);
+        tracks.push([(bezStart.y+bezEnd.y)*0.5, bezierData.points[i].element]);
 
         // Curve tooltip
         let title = document.createElementNS(svgns, 'title');
@@ -258,7 +323,7 @@ function drawTracks(bezierData){
             `Length: ${Math.round(bezierData.points[i].bezLength*10)/10} meters`,
             `Altitude: ${Math.round((bezStart.y+bezEnd.y)*0.5)} meters`,
             ].join('\n');
-        newBezier.appendChild(title);
+        bezierData.points[i].element.appendChild(title);
     }
 
     // Add Signage
@@ -283,17 +348,17 @@ function drawTracks(bezierData){
             }else{
                 //Grade Signs
                 if(trackZoneData.gradeClass != bezierData.points[i].gradeClass || trackZoneData.gradeDirection != Math.sign(bezierData.points[i].grade) || trackZoneData.gradeSectionLength > maxSectionLength || zI > 0){
-                    if(trackZoneData.gradeClass != null){
+                    if(trackZoneData.gradeClass != 'flat'){
                         let offset = Math.floor((trackZoneData.gradeCount+1)/2)+1;
                         let center = trackZoneData.gradeCount % 2 ? 1 : 0.5;
-                        let b1 = bezierData.points[(i+zI)-offset][0];
-                        let b2 = bezierData.points[(i+zI)-offset][2];
-                        let b3 = bezierData.points[(i+zI)+1-offset][1];
-                        let b4 = bezierData.points[(i+zI)+1-offset][0];
+                        let b1 = bezierData.points[(i+zI)-offset].position;
+                        let b2 = bezierData.points[(i+zI)-offset].h2;
+                        let b3 = bezierData.points[(i+zI)+1-offset].h1;
+                        let b4 = bezierData.points[(i+zI)+1-offset].position;
                         markers.push({
                             type: 'grade',
                             value: bezierData.points[(i+zI)-offset].grade,
-                            class: 'grade_'+trackZoneData.gradeClass,
+                            gradeClass: trackZoneData.gradeClass,
                             position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
                             sectionLength: trackZoneData.gradeSectionLength,
                             cullLevel: Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLength),
@@ -311,10 +376,10 @@ function drawTracks(bezierData){
                 if(trackZoneData.speed != bezierData.points[i].postedSpeed || trackZoneData.speedSectionLength > maxSectionLength || zI > 0){
                     let offset = Math.floor((trackZoneData.speedCount+1)/2)+1;
                     let center = trackZoneData.speedCount % 2 ? 0.75 : 0.25;
-                    let b1 = bezierData.points[(i+zI)-offset][0];
-                    let b2 = bezierData.points[(i+zI)-offset][2];
-                    let b3 = bezierData.points[(i+zI)+1-offset][1];
-                    let b4 = bezierData.points[(i+zI)+1-offset][0];
+                    let b1 = bezierData.points[(i+zI)-offset].position;
+                    let b2 = bezierData.points[(i+zI)-offset].h2;
+                    let b3 = bezierData.points[(i+zI)+1-offset].h1;
+                    let b4 = bezierData.points[(i+zI)+1-offset].position;
                     let cullLevel = Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLengthSpeedboard);
                     let speedDelta = Math.max(0,
                         (bezierData.points[i].postedSpeed != null && bezierData.points[i].postedSpeed < 100) ? bezierData.points[i].postedSpeed-trackZoneData.speed : 0,
@@ -330,7 +395,7 @@ function drawTracks(bezierData){
                         value: trackZoneData.speed,
                         position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
                         sectionLength: trackZoneData.speedSectionLength,
-                        cullLevel: cullLevel,
+                        cullLevel: cullLevel == 1 ? 2 : cullLevel,
                         tangent: Bezier.evaluateVelocity(b1, b2, b3, b4, center)
                     });
                     resetTzdSpeed();
@@ -353,45 +418,194 @@ function sortTracks(){
     }
 }
 
+function setTrackColorMode(mode){
+    let modeFunction = null;
+    switch(mode){
+        case 'Track Type':
+            modeFunction = (section, curve) => {
+                let finalColor = '#aaa';
+                if(curve.isYard && curve.yardDesignation) finalColor = '#4bf';
+                else if(curve.isYard) finalColor = '#4fb';
+                else if(curve.isPoint) finalColor = '#fb4';
+                else if(curve.isTurntable) finalColor = '#b4f';
+
+                section.element.setAttribute('stroke', finalColor);
+            }
+            break;
+        case 'Grade':
+            modeFunction = section => {
+                section.element.setAttribute('stroke', Config.gradeColors['grade_'+section.gradeClass]);
+            };
+            break;
+        default:
+            modeFunction = section => {
+                section.element.setAttribute('stroke', '#fff');
+            }
+            break;
+    }
+    if(modeFunction !== null){
+        for(let curve of mapData){
+            for(let section of curve.points){
+                if(!section.element) continue;
+                modeFunction(section, curve);
+            }
+        }
+    }
+}
+
 /** Create the signage */
 function drawMarkers(){
+    const signage_container = document.createElementNS(svgns, 'g');
     const gradeSigns = document.createElementNS(svgns, 'g');
-    gradeSigns.setAttribute('id', 'grade_signs');
-    map_markers.appendChild(gradeSigns);
     const speedSigns = document.createElementNS(svgns, 'g');
-    speedSigns.setAttribute('id', 'speed_signs');
-    map_markers.appendChild(speedSigns);
+
+    signage_container.setAttribute('id', 'signage_container');
+    gradeSigns.setAttribute('id', 'signage_grade');
+    speedSigns.setAttribute('id', 'signage_speed');
+
+    map_markers.appendChild(signage_container);
+    signage_container.appendChild(gradeSigns);
+    signage_container.appendChild(speedSigns);
+
     for(const markerData of markers){
         //if(markerData.skip) continue;
-        let marker = document.createElementNS(svgns, 'g');
+        let markerElement = document.createElementNS(svgns, 'g');
         let markerImg = document.createElementNS(svgns, 'use');
-        let title = document.createElementNS(svgns, 'title');
-        marker.appendChild(markerImg);
-        marker.appendChild(title);
-        marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
+        let markerTooltip = document.createElementNS(svgns, 'title');
+        markerElement.appendChild(markerImg);
+        markerElement.appendChild(markerTooltip);
+        markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
+        markerImg.classList.add('fixedScale');
         // Grade signs
         if(markerData.type == 'grade'){
             markerImg.setAttribute('href', '#gradeArrow');
-            markerImg.classList.add('sign', 'gradeSign');
-            if(markerData.class) markerImg.classList.add(markerData.class);
+            markerImg.setAttribute('fill', Config.gradeColors['grade_'+markerData.gradeClass]);
             const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
             const rot = Math.atan2(markerData.tangent.x/tanLen, -markerData.tangent.z/tanLen) * (180/Math.PI);
-            marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
-            title.innerHTML = `${Math.round(markerData.value*1000)/10}% Grade\nSection Length: ${markerData.sectionLength.toFixed(1)} meters`;
-            gradeSigns.appendChild(marker);
+            markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
+            markerTooltip.innerHTML = `${Math.round(markerData.value*1000)/10}% Grade\nSection Length: ${markerData.sectionLength.toFixed(1)} meters`;
+            gradeSigns.appendChild(markerElement);
         // Speed Signs
         }else if(markerData.type == 'speed'){
             markerImg.setAttribute('href', `#speedSign_${Math.round(markerData.value/10)}`);
-            markerImg.classList.add('sign', 'speedSign');
-            title.innerHTML = `${Math.round(markerData.value)} km/h\nSection Length: ${markerData.sectionLength.toFixed(1)} meters`;
-            /*let offset = Vector.normalize({x:markerData.tangent.z, y:0, z:-markerData.tangent.x});
-            marker.setAttribute('transform', `translate(${markerData.position.x + offset.x*100} ${markerData.position.z + offset.z*50})`);*/
-            marker.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
-            speedSigns.appendChild(marker);
+            markerTooltip.innerHTML = `${Math.round(markerData.value)} km/h\nSection Length: ${markerData.sectionLength.toFixed(1)} meters`;
+            markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
+            speedSigns.appendChild(markerElement);
         }
 
         if(markerData.cullLevel){
-            marker.classList.add(`cullThreshold_${Math.min(scaleCullThresholds.length-1, markerData.cullLevel)}`);
+            markerElement.classList.add(`minZoomCull_${Math.min(scaleCullThresholds.length-1, markerData.cullLevel)}`);
+        }
+    }
+}
+
+function addPoi(poi, level = 0){
+    let poiElement = document.createElementNS(svgns, 'g');
+    let poiDisplay = document.createElementNS(svgns, 'g');
+    let poiIcon = document.createElementNS(svgns, poi.type == 'station' ? 'text' : 'use');
+    let poiTooltip = document.createElementNS(svgns, 'title');
+    poiElement.appendChild(poiDisplay);
+    poiDisplay.appendChild(poiIcon);
+    poiElement.appendChild(poiTooltip);
+    poiElement.setAttribute('transform', `translate(${poi.position.x} ${MapMatrix.fixY(poi.position.z)})`);
+    poiElement.classList.add('poi');
+    poiDisplay.classList.add('fixedScale');
+    if(level > 0) poiElement.classList.add('minZoomCull_2');
+    switch(poi.type){
+        case 'station':
+            poiDisplay.classList.remove('fixedScale');
+            poiElement.setAttribute('fill', poi.color ?? '#fff');
+            poiTooltip.innerHTML = poi.name;
+            poiIcon.innerHTML = poi.shorthand;
+            poiIcon.setAttribute('style', `font-size:400px; stroke:${poi.stroke ?? '#000'}; stroke-width:40px; paint-order:stroke; text-anchor:middle;`);
+            poiLayers.stations.prepend(poiElement);
+            break;
+        case 'office':
+            poiIcon.setAttribute('href', '#mrk_office');
+            if(poi.military){
+                poiDisplay.setAttribute('fill', '#978e47');
+                poiTooltip.innerHTML = 'Military Office';
+            }else if(poi.museum){
+                poiDisplay.setAttribute('fill', '#b44');
+                poiTooltip.innerHTML = 'Museum Office';
+            }else{
+                poiDisplay.setAttribute('fill', '#c4693e');
+                poiTooltip.innerHTML = 'Station Office';
+            }
+            poiLayers.service.prepend(poiElement);
+            break;
+        case 'coal':
+            poiIcon.setAttribute('href', '#mrk_coal');
+            poiDisplay.setAttribute('fill', '#202020');
+            poiTooltip.innerHTML = 'Coal Tower';
+            poiLayers.service.prepend(poiElement);
+            break;
+        case 'water':
+            poiIcon.setAttribute('href', '#mrk_water');
+            poiDisplay.setAttribute('fill', '#3fa5ff');
+            poiTooltip.innerHTML = 'Water Tower';
+            poiLayers.service.prepend(poiElement);
+            break;
+        case 'garage':
+            poiIcon.setAttribute('href', '#mrk_garage');
+            poiDisplay.setAttribute('fill', '#8b5dd7');
+            poiTooltip.innerHTML = poi.name ?? 'Unknown Garage';
+            poiLayers.service.prepend(poiElement);
+            poiElement.classList.add('minZoomCull_1');
+            break;
+        case 'landmark':
+            poiIcon.setAttribute('href', '#mrk_landmark');
+            poiDisplay.setAttribute('fill', '#af5757');
+            poiTooltip.innerHTML = poi.name ?? 'Unknown Landmark';
+            poiLayers.landmarks.prepend(poiElement);
+            poiElement.classList.add('minZoomCull_1');
+            break;
+        case 'shop':
+            poiIcon.setAttribute('href', '#mrk_shop');
+            poiDisplay.setAttribute('fill', '#4f54e9');
+            poiTooltip.innerHTML = 'Shop';
+            poiLayers.service.prepend(poiElement);
+            poiElement.classList.add('minZoomCull_1');
+            break;
+        case 'service':
+            let serviceTypes = [];
+            if(poi.repair) serviceTypes.push('Repair');
+            if(poi.diesel) serviceTypes.push('Diesel');
+            if(poi.charger) serviceTypes.push('Charger');
+
+            if(serviceTypes.length == 0){
+                poiIcon.setAttribute('href', '#mrk_service');
+                poiDisplay.setAttribute('fill', '#239a96');
+                poiTooltip.innerHTML = 'Unknown Service';
+            }else{
+                poiIcon.setAttribute('href', '#mrk_service_'+serviceTypes[0].toLowerCase());
+                poiDisplay.setAttribute('fill', '#239a96');
+                let bumpOffset = -200*(serviceTypes.length-1);
+                poiIcon.setAttribute('transform', `translate(${bumpOffset} 0)`);
+                poiTooltip.innerHTML = serviceTypes[0];
+                for(let i=1; i<serviceTypes.length; i++){
+                    let subIcon = document.createElementNS(svgns, 'use');
+                    subIcon.setAttribute('href', '#mrk_service_'+serviceTypes[i].toLowerCase());
+                    subIcon.setAttribute('transform', `translate(${i*400+bumpOffset} 0)`);
+                    poiDisplay.appendChild(subIcon);
+                    poiTooltip.innerHTML += (i == serviceTypes.length-1 ? (serviceTypes.length == 2 ? ' & ' : ', & ') : ', ')+serviceTypes[i];
+                }
+                poiTooltip.innerHTML += ' Service';
+
+                if(serviceTypes.length > 1){
+                    let bgrect = document.createElementNS(svgns, 'rect');
+                    bgrect.setAttribute('width', 400*(serviceTypes.length-1));
+                    bgrect.setAttribute('height', 400);
+                    bgrect.setAttribute('transform', `translate(${-200*(serviceTypes.length-1)} -200)`);
+                    poiDisplay.prepend(bgrect);
+                }
+            }
+            poiLayers.service.prepend(poiElement);
+            break;
+    }
+    if(poi.children){
+        for(let child of poi.children){
+            addPoi(child, level+1);
         }
     }
 }
