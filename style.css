@@ -84,6 +84,13 @@ a:visited{
     max-height: 310px;
 }
 
+#settingsPanel{
+    user-select: none;
+    input, label{
+        cursor: pointer;
+    }
+}
+
 #footer{
     position: fixed;
     width: fit-content;
