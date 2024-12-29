@@ -557,7 +557,7 @@ function addPoi(poi, level = 0){
             poiIcon.setAttribute('href', '#mrk_landmark');
             poiDisplay.setAttribute('fill', '#af5757');
             poiTooltip.innerHTML = poi.name ?? 'Unknown Landmark';
-            poiLayers.service.prepend(poiElement);
+            poiLayers.landmarks.prepend(poiElement);
             poiElement.classList.add('minZoomCull_1');
             break;
         case 'shop':

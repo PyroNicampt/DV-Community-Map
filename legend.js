@@ -31,6 +31,32 @@ let settingEntries = [
         ],
     },
     {
+        label: 'Points of Interest',
+        id: 'toggle_poi',
+        state: true,
+        func: state => {
+            document.getElementById('poi_container').style.display = state ? 'unset' : 'none';
+        },
+        children: [
+            {
+                label: 'Services',
+                id: 'toggle_services',
+                state: true,
+                func: state =>{
+                    document.getElementById('poi_service').style.display = state ? 'unset' : 'none';
+                },
+            },
+            {
+                label: 'Landmarks',
+                id: 'toggle_landmarks',
+                state: true,
+                func: state =>{
+                    document.getElementById('poi_landmarks').style.display = state ? 'unset' : 'none';
+                },
+            },
+        ]
+    },
+    {
         label: 'Track Color',
         id: 'radio_trackColor',
         options: [
