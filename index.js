@@ -255,6 +255,7 @@ function drawTracks(bezierData){
         bezierData.points[i].curvature = Bezier.estimateCurvature(bezStart, bezHandle1, bezHandle2, bezEnd, bezierCurvatureResolution);
         bezierData.points[i].postedSpeed = Utils.radiusToSpeed(1/bezierData.points[i].curvature);
         newBezier.setAttribute('d', genPath);
+        if(bezierData.isYard || bezierData.isTurntable) bezierData.points[i].postedSpeed = Math.min(bezierData.points[i].postedSpeed, 50);
 
         bezierData.points[i].element.classList.add('rail');
         //bezierData.points[i].element.setAttribute('stroke', Config.gradeColors[bezierData.points[i].gradeClass ? 'grade_'+bezierData.points[i].gradeClass : 'grade_flat']);
