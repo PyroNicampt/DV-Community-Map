@@ -9,6 +9,8 @@
     --cullThreshold_state_4: none;
     --cullThreshold_state_5: none;
     --cullThreshold_state_6: none;
+
+    --absScale: 1;
 }
 
 html, body, #map, #mapContainer, h1, h2, h3, h4, h5{
@@ -77,6 +79,9 @@ a:visited{
 
 #legendKey{
     font-size: 15px;
+    display: flex;
+    flex-flow: column wrap;
+    max-height: 350px;
 }
 
 #footer{
@@ -115,4 +120,8 @@ a:visited{
     width: 1em;
     height: 1em;
     vertical-align: -0.1em;
+}
+
+.poi{
+    font-variation-settings: "wght" 700;
 }

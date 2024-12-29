@@ -9,7 +9,7 @@ let settingEntries = [
         id: 'toggle_signage',
         state: true,
         func: state =>{
-            document.getElementById('mapMarkers').style.display = state ? 'unset' : 'none';
+            document.getElementById('signage_container').style.display = state ? 'unset' : 'none';
         },
         children: [
             {
@@ -17,7 +17,7 @@ let settingEntries = [
                 id: 'toggle_speedSigns',
                 state: true,
                 func: state =>{
-                    document.getElementById('speed_signs').style.display = state ? 'unset' : 'none';
+                    document.getElementById('signage_speed').style.display = state ? 'unset' : 'none';
                 },
             },
             {
@@ -25,7 +25,7 @@ let settingEntries = [
                 id: 'toggle_gradeSigns',
                 state: true,
                 func: state =>{
-                    document.getElementById('grade_signs').style.display = state ? 'unset' : 'none';
+                    document.getElementById('signage_grade').style.display = state ? 'unset' : 'none';
                 },
             }
         ],
@@ -117,27 +117,34 @@ function populateKey(){
         }else if(i >= 0){
             gradeValue += ` - ${getGradeValue(i+1)}%`;
         }
-        let gradeIcon = document.createElement('svg');
-        gradeIcon.classList.add('inlineSvg');
-        gradeIcon.setAttribute('viewBox', '-50 -50 100 100');
-        gradeIcon.innerHTML = `<use class="gradeSign" fill="${Config.gradeColors['grade_'+gradeIndex]}" href="#gradeArrow" transform="rotate(90)"/>`;
-        addKeyEntry(gradeIcon, ` ${gradeValue} Grade`);
+        addKeyEntry(`<use fill="${Config.gradeColors['grade_'+gradeIndex]}" href="#gradeArrow" transform="rotate(90)"/>`, ` ${gradeValue} Grade`);
     }
-    let speedSignIcon = document.createElement('svg');
-    speedSignIcon.classList.add('inlineSvg');
-    speedSignIcon.setAttribute('viewBox', '-50 -50 100 100');
-    speedSignIcon.innerHTML = `<use class="speedSign" href="#speedSign_5"/>`;
-    addKeyEntry(speedSignIcon, ' Speed Limit');
+    addKeyEntry('<use href="#speedSign_5"/>', ' Speed Limit');
+    addKeyEntry('<use href="#mrk_office" fill="#c4693e" transform="scale(0.75)"/>', ' Station Office');
+    addKeyEntry('<use href="#mrk_shop" fill="#4f54e9" transform="scale(0.75)"/>', ' Shop');
+    addKeyEntry('<use href="#mrk_coal" fill="#202020" transform="scale(0.75)"/>', ' Coal Tower');
+    addKeyEntry('<use href="#mrk_water" fill="#3fa5ff" transform="scale(0.75)"/>', ' Water Tower');
+    addKeyEntry('<use href="#mrk_landmark" fill="#af5757" transform="scale(0.75)"/>', ' Landmark');
+    addKeyEntry('<use href="#mrk_garage" fill="#8b5dd7" transform="scale(0.75)"/>', ' Garage');
+    addKeyEntry('<use href="#mrk_service_repair" fill="#239a96" transform="scale(0.75)"/>', ' Repair Service');
+    addKeyEntry('<use href="#mrk_service_diesel" fill="#239a96" transform="scale(0.75)"/>', ' Diesel Refuel');
+    addKeyEntry('<use href="#mrk_service_charger" fill="#239a96" transform="scale(0.75)"/>', ' Electric Charger');
 }
 
 /**
  * Add an entry to the map key.
- * @param {Element} keyImage 
- * @param {string} keyLabel 
+ * @param {string} keyImageHTML
+ * @param {string} keyLabel
  */
-function addKeyEntry(keyImage, keyLabel){
+function addKeyEntry(keyImageHTML, keyLabel){
     let keyDiv = document.createElement('div');
-    if(keyImage) keyDiv.appendChild(keyImage);
+    if(keyImageHTML){
+        let keyImage = document.createElement('svg');
+        keyImage.innerHTML = keyImageHTML;
+        keyImage.classList.add('inlineSvg');
+        keyImage.setAttribute('viewBox', '-150 -150 300 300');
+        keyDiv.appendChild(keyImage);
+    }
     keyDiv.innerHTML += keyLabel;
     legendKey.appendChild(keyDiv);
 }
