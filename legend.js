@@ -75,12 +75,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         addSettingEntry(thisSetting, settingsPanel);
     }
     const legend = document.getElementById('legend');
+    const legendContents = document.getElementById('legendContents');
     const legendButton = document.getElementById('legendButton');
     const legendArrow = legendButton.children[0];
     let legendState = true;
     let legendButtonEvent = e => {
-        legendArrow.style.transform = `rotate(${legendState ? 180 : 0}deg) translateY(${legendState ? -3 : 3}px)`;
-        legend.style.transform = `translateX(${legendState ? 0 : legendButton.clientWidth-legend.clientWidth}px)`;
+        legendArrow.style.transform = `rotate(${legendState ? 180 : 0}deg) translateY(${legendState ? -0 : 0}px)`;
+        legend.style.transform = `translateX(${legendState ? 0 : -legendContents.clientWidth}px)`;
         legendState = !legendState;
     };
     legendButton.addEventListener('click', legendButtonEvent);
@@ -90,8 +91,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function addSettingEntry(thisSetting, parent, indent=0){
     thisSetting.divContainer = document.createElement('div');
-    thisSetting.divContainer.innerHTML = '&nbsp;'.repeat(indent);
     thisSetting.inputElement = document.createElement('input');
+    thisSetting.inputElement.style.margin = `0 0.5em 0 ${indent}em`;
     thisSetting.labelElement = document.createElement('label');
     parent.appendChild(thisSetting.divContainer);
     thisSetting.divContainer.appendChild(thisSetting.inputElement);
