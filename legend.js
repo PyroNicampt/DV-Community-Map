@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     legendButton.addEventListener('click', legendButtonEvent);
     legendButtonEvent();
+    if(document.body.clientWidth <= 700) legendButtonEvent();
     populateKey();
 });
 
