@@ -44,7 +44,12 @@ const scaleCullThresholds = [
 
 // CODE
 const map = document.getElementById('map');
+
 const map_container = document.getElementById('mapContainer');
+let map_container_rect = map_container.getBoundingClientRect();
+const resizeObserver = new ResizeObserver(() => {map_container_rect = map_container.getBoundingClientRect();});
+resizeObserver.observe(map_container);
+
 const map_navigator = document.getElementById('mapNavigator');
 const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 const styleRoot = document.querySelector(':root');
@@ -73,7 +78,8 @@ let poiData = [];
 let tracks = [];
 let markers = [];
 
-let currentMapNav = {};
+//let currentMapNav = {};
+let mapNav = {};
 let previousMapScale = -1;
 
 let MapMatrix = {};
@@ -113,83 +119,127 @@ async function loadPoiData(file){
 
 /** Handling for the map scrolling and zooming */
 function mapScrollSetup(){
-    let mapNav = {x:currentMapNav.x, y:currentMapNav.y, scale:currentMapNav.scale};
-    let prevMouse = {x:mapNav.x, y:mapNav.y, scale:mapNav.scale};
-    const mouseDownHandler = e => {
-        map_container.style.cursor = 'grabbing';
-        prevMouse.x = e.clientX;
-        prevMouse.y = e.clientY;
+    const touchCache = [];
+    let touchCount = 0;
+    let pinchDistance = null;
+    let previousScale = null;
+    const touchDownHandler = e => {
+        if(touchCache.length == 0){
+            map_container.style.cursor = 'grabbing';
+            document.addEventListener('pointermove', touchMoveHandler);
 
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-    };
-    const mouseMoveHandler = e => {
-        mapNav.x += prevMouse.x-e.clientX;
-        mapNav.y += prevMouse.y-e.clientY;
-
-        prevMouse.x = e.clientX;
-        prevMouse.y = e.clientY;
-    };
-    const mouseUpHandler = () => {
-        map_container.style.removeProperty('cursor');
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
-    };
-    const zoomHandler = e => {
-        let rect = map_container.getBoundingClientRect();
-        let cursorLocal = {
-            x: -e.clientX - rect.left,
-            y: -e.clientY - rect.top
-        };
-        let scaleMult = 1;
-        if(e.deltaY < 0){
-            scaleMult = zoomFactor;
-        }else if(e.deltaY > 0){
-            scaleMult = 1/zoomFactor;
+            document.addEventListener('pointerup', touchUpHandler);
+            document.addEventListener('pointercancel', touchUpHandler);
+            //document.addEventListener('pointerout', touchUpHandler);
+            document.addEventListener('pointerleave', touchUpHandler);
         }
-        mapNav.x = cursorLocal.x - scaleMult * (cursorLocal.x-mapNav.x);
-        mapNav.y = cursorLocal.y - scaleMult * (cursorLocal.y-mapNav.y);
-        mapNav.scale *= scaleMult;
-    };
-
-    let prevMapNav = {};
-    const navUpdate = () => {
-        if(prevMapNav.x != currentMapNav.x || prevMapNav.y != currentMapNav.y || prevMapNav.scale != currentMapNav.scale){
-            updateMapview(mapNav);
-            prevMapNav.x = currentMapNav.x;
-            prevMapNav.y = currentMapNav.y;
-            prevMapNav.scale = currentMapNav.scale;
+        touchCache[e.pointerId] = {x:e.clientX, y:e.clientY};
+        touchCount++;
+        if(touchCount == 2){
+            pinchDistance = getTouchDistance();
+            previousScale = mapNav.scale;
+        }
+    }
+    const touchMoveHandler = e => {
+        if(!touchCache[e.pointerId]) return;
+        if(touchCount == 1){
+            mapNav.x += e.clientX - touchCache[e.pointerId].x;
+            mapNav.y += e.clientY - touchCache[e.pointerId].y;
+        }else if(touchCount == 2){
+            getTouchAverage();
+            zoomAtPosition(touchCenter_x, touchCenter_y, (previousScale * getTouchDistance()/pinchDistance)/mapNav.scale);
+        }
+        touchCache[e.pointerId].x = e.clientX;
+        touchCache[e.pointerId].y = e.clientY;
+    }
+    const touchUpHandler = e => {
+        if(!touchCache[e.pointerId]) return;
+        touchCache[e.pointerId] = null;
+        touchCount--;
+    }
+    const scrollHandler = e => {
+        if(e.deltaY != 0) zoomAtPosition(e.clientX, e.clientY, e.deltaY > 0 ? 1/zoomFactor : zoomFactor);
+    }
+    const navUpdate = ts => {
+        if(ts){
+            updateMapview();
         }
         requestAnimationFrame(navUpdate);
     }
 
-    map_container.addEventListener('mousedown', mouseDownHandler);
-    map_container.addEventListener('wheel', zoomHandler);
+    let touchDist_aX = 0;
+    let touchDist_aY = 0;
+    let touchDist_counter = 0;
+    const getTouchDistance = () => {
+        touchDist_counter = 0;
+        touchDist_aX = 0;
+        touchDist_aY = 0;
+        for(let touch of touchCache){
+            if(touchDist_counter == 0){
+                touchDist_aX += touch.x;
+                touchDist_aY += touch.y;
+            }else{
+                touchDist_aX -= touch.x;
+                touchDist_aY -= touch.y;
+                break;
+            }
+            touchDist_counter++;
+        }
+        return Math.sqrt(touchDist_aX*touchDist_aX + touchDist_aY*touchDist_aY);
+    };
+
+    let touchCenter_x = 0;
+    let touchCenter_y = 0;
+    let touchCenter_count = 0;
+    const getTouchAverage = () => {
+        touchCenter_x = 0;
+        touchCenter_y = 0;
+        touchCenter_count = 0;
+        for(let touch of touchCache){
+            touchCenter_x += touch.x;
+            touchCenter_y += touch.y;
+            touchCenter_count++;
+        }
+        touchCenter_x /= touchCenter_count;
+        touchCenter_y /= touchCenter_count;
+    }
+
+    let zoomCursorLocal_x = 0;
+    let zoomCursorLocal_y = 0;
+    const zoomAtPosition = (x, y, scaleFactor) => {
+        zoomCursorLocal_x = x - map_container_rect.left;
+        zoomCursorLocal_y = y - map_container_rect.top;
+        mapNav.x = zoomCursorLocal_x - scaleFactor * (zoomCursorLocal_x-mapNav.x);
+        mapNav.y = zoomCursorLocal_y - scaleFactor * (zoomCursorLocal_y-mapNav.y);
+        mapNav.scale *= scaleFactor;
+    }
+    map_container.addEventListener('pointerdown', touchDownHandler);
+    map_container.addEventListener('wheel', scrollHandler);
     navUpdate();
 }
 
 /** Readjust map view to focus on position */
-function updateMapview(navData = {x:0, y:0, scale:1}){
-    currentMapNav = navData;
-    map_navigator.style.transform = `translate(${-navData.x}px, ${-navData.y}px) scale(${navData.scale})`;
-    if(navData.scale !== previousMapScale){
-        zoomLevelDisplay.innerHTML = `Zoom: ${Math.round(navData.scale*100)/100}x`;
+function updateMapview(){
+    if(mapNav == null) return;
+    map_navigator.style.transform = `translate(${mapNav.x}px, ${mapNav.y}px) scale(${mapNav.scale})`;
+    if(mapNav.scale !== previousMapScale){
+        zoomLevelDisplay.innerHTML = `Zoom: ${Math.round(mapNav.scale*100)/100}x`;
         let dirtyScale = previousMapScale < 0;
         for(const cullThreshold of scaleCullThresholds){
-            if(dirtyScale || (previousMapScale < cullThreshold.scale && navData.scale > cullThreshold.scale) || (previousMapScale > cullThreshold.scale && navData.scale < cullThreshold.scale)){
+            if(dirtyScale || (previousMapScale < cullThreshold.scale && mapNav.scale > cullThreshold.scale) || (previousMapScale > cullThreshold.scale && mapNav.scale < cullThreshold.scale)){
                 dirtyScale = true;
                 break;
             }
         }
-        map_rails.setAttribute('stroke-width', Utils.clamp(trackWidth.base/navData.scale, trackWidth.min, trackWidth.max));
-        styleRoot.style.setProperty('--markerScale', 1/navData.scale);
+        map_rails.setAttribute('stroke-width', Utils.clamp(trackWidth.base/mapNav.scale, trackWidth.min, trackWidth.max));
+        styleRoot.style.setProperty('--markerScale', 1/mapNav.scale);
         if(dirtyScale){
             for(let i=0; i<scaleCullThresholds.length; i++){
-                styleRoot.style.setProperty(`--minZoomCull_state_${i}`, navData.scale >= scaleCullThresholds[i].scale ? 'initial' : 'none');
-                styleRoot.style.setProperty(`--maxZoomCull_state_${i}`, navData.scale <= scaleCullThresholds[i].scale ? 'initial' : 'none');
+                styleRoot.style.setProperty(`--minZoomCull_state_${i}`, mapNav.scale >= scaleCullThresholds[i].scale ? 'initial' : 'none');
+                styleRoot.style.setProperty(`--maxZoomCull_state_${i}`, mapNav.scale <= scaleCullThresholds[i].scale ? 'initial' : 'none');
             }
         }
-        previousMapScale = navData.scale;
+        previousMapScale = mapNav.scale;
     }
 }
 
@@ -228,11 +278,14 @@ function establishDimensions(){
     }
     map.setAttribute('viewBox', `${minX-padding} ${minY-padding} ${width+2*padding} ${height+2*padding}`);
     map_markers.setAttribute('viewBox', map.getAttribute('viewBox'));
-    updateMapview({
-        x: map.clientWidth/2-map_container.clientWidth/2,
-        y: map.clientHeight/2-map_container.clientHeight/2,
-        scale: 1
-    });
+    let baseScale = Math.min(map_container.clientWidth/map.clientWidth, map_container.clientHeight/map.clientHeight);
+    let isLandscape = map_container.clientWidth > map_container.clientHeight;
+    mapNav = {
+        x: isLandscape ? -map.clientWidth/2*baseScale + map_container.clientWidth/2 : 0,
+        y: isLandscape ? 0 : -map.clientHeight/2*baseScale + map_container.clientHeight/2,
+        scale: baseScale
+    };
+    updateMapview();
     console.log(`(${minX}, ${minY}) to (${maxX}, ${maxY}). Altitude from ${minAlt} to ${maxAlt}`);
 
     // Flip the z coordinate so the map doesn't display upside-down

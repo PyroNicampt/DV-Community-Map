@@ -10,6 +10,7 @@
     <meta property="og:url" content="https://pyronicampt.github.io/DV-Community-Map/">
     <meta property="og:image" content="https://pyronicampt.github.io/DV-Community-Map/opengraph.png">
     <meta property="og:description" content="Web-based map of Derail Valley">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <script type="module" src="index.js"></script>
     <script type="module" src="legend.js"></script>
   </head>
@@ -208,20 +209,28 @@
         </svg>
         </div>
     </div>
+    <div id="stats" class="orange">
+        <div id="zoomLevelDisplay"></div>
+        Map v0.5 alpha
+        <br>
+        Updated for Game Build 99.3
+        <br>
+        This tool is a fan work, Derail Valley owned by Altfuture
+    </div>
     <div id="topleft">
         <div id="headerbar" class="panel orange">
             <div>
                 DV Community Map
             </div>
         </div>
-        <div id="legend" style="display: flex;">
-            <div id="legendContents" style="display:flex; flex-direction:column; width: 400px;">
+        <div id="legend">
+            <div id="legendContents">
                 <div class="panel">
                     Welcome to the WIP community map of <a href="https://www.derailvalley.com/" style="white-space:nowrap;">Derail Valley</a>, a resource for documenting and displaying all tracks and points of interest.
                     <hr>
                     Hover over tracks and objects for detailed information.
                 </div>
-                <div class="panel" style="width:330px">
+                <div class="panel">
                     <h3>Key</h3>
                     <hr>
                     <div id="legendKey"></div>
@@ -236,16 +245,8 @@
                     <a href="https://derailvalley.wiki.gg/wiki/Derail_Valley_Wiki">DV Wiki</a>
                 </div>
             </div>
-            <div id="legendButton" class="panel orange" style="height: fit-content;"><svg style="transform:rotate(180deg) translateY(-3px)" height="25" viewBox="0 0 32 32"><path fill="currentColor" d="M31 16 20 31l-16 0L15 16 4 1l16 0Z"/></svg></div>
+            <div id="legendButton" class="panel orange"><svg style="transform:rotate(180deg) translateY(0px)" viewBox="0 0 32 32"><path fill="currentColor" d="M31 16 20 31l-16 0L15 16 4 1l16 0Z"/></svg></div>
         </div>
-    </div>
-    <div id="footer" class="orange">
-        <div id="zoomLevelDisplay"></div>
-        Map v0.4 alpha
-        <br>
-        Updated for Game Build 99.3
-        <br>
-        This tool is a fan work, Derail Valley owned by Altfuture
     </div>
   </body>
 </html>
