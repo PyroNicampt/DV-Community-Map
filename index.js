@@ -279,9 +279,10 @@ function establishDimensions(){
     map.setAttribute('viewBox', `${minX-padding} ${minY-padding} ${width+2*padding} ${height+2*padding}`);
     map_markers.setAttribute('viewBox', map.getAttribute('viewBox'));
     let baseScale = Math.min(map_container.clientWidth/map.clientWidth, map_container.clientHeight/map.clientHeight);
+    let isLandscape = map_container.clientWidth > map_container.clientHeight;
     mapNav = {
-        x: -map.clientWidth/2+map_container.clientWidth/2 / baseScale,
-        y: -map.clientHeight/2+map_container.clientHeight/2 / baseScale,
+        x: isLandscape ? -map.clientWidth/2*baseScale + map_container.clientWidth/2 : 0,
+        y: isLandscape ? 0 : -map.clientHeight/2*baseScale + map_container.clientHeight/2,
         scale: baseScale
     };
     updateMapview();
