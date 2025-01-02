@@ -156,6 +156,9 @@ function mapScrollSetup(){
         if(!touchCache[e.pointerId]) return;
         touchCache[e.pointerId] = null;
         touchCount--;
+        if(touchCount == 0){
+            map_container.style.removeProperty('cursor');
+        }
     }
     const scrollHandler = e => {
         if(e.deltaY != 0) zoomAtPosition(e.clientX, e.clientY, e.deltaY > 0 ? 1/zoomFactor : zoomFactor);
