@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     legendButtonEvent();
     if(document.body.clientWidth <= 700) legendButtonEvent();
     populateKey();
+    setLastUpdateData();
 });
 
 function addSettingEntry(thisSetting, parent, indent=0){
@@ -128,6 +129,24 @@ function addSettingEntry(thisSetting, parent, indent=0){
             addSettingEntry(child, parent, indent+1);
         }
     }
+}
+
+let pageLoadUpdateDate = null;
+async function setLastUpdateData(){
+    let commits = await (await fetch(new Request('https://api.github.com/repos/PyroNicampt/DV-Community-Map/commits'))).json();
+    let lastUpdateElement = document.getElementById('lastUpdate');
+    let updateDate = new Date(commits[0].commit.author.date);
+    
+    lastUpdateElement.innerHTML = `<a href="https://github.com/PyroNicampt/DV-Community-Map/commits/main/" title="${updateDate.toString()}">${Utils.formattedTimeBetweenDates(new Date(), updateDate)} ago</a>`;
+    if(pageLoadUpdateDate == null){
+        pageLoadUpdateDate = updateDate;
+    }else{
+        if(updateDate.valueOf() != pageLoadUpdateDate.valueOf()){
+            lastUpdateElement.innerHTML += ' Reload page to see changes!';
+        }
+    }
+
+    setTimeout(() => {setLastUpdateData()}, Math.min(Math.max(120000, new Date().valueOf()-updateDate.valueOf()), 7200000));
 }
 
 function populateKey(){
