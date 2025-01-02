@@ -86,6 +86,10 @@ a:visited{
     }
 }
 
+#legendKey{
+    columns: 2;
+}
+
 #legend{
     transition: transform 400ms cubic-bezier(0.445, 0.050, 0.550, 0.950);
     display: flex;

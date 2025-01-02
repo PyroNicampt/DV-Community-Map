@@ -150,13 +150,17 @@ function populateKey(){
     addKeyEntry('<use href="#speedSign_5"/>', ' Speed Limit');
     addKeyEntry('<use href="#mrk_office" fill="#c4693e" transform="scale(0.75)"/>', ' Station Office');
     addKeyEntry('<use href="#mrk_shop" fill="#4f54e9" transform="scale(0.75)"/>', ' Shop');
+    addKeyEntry('<use href="#mrk_service_repair" fill="#239a96" transform="scale(0.75)"/>', ' Repair Service');
+    addKeyEntry('<use href="#mrk_service_diesel" fill="#239a96" transform="scale(0.75)"/>', ' Diesel Refuel');
+    addKeyEntry('<use href="#mrk_service_charger" fill="#239a96" transform="scale(0.75)"/>', ' Electric Charger');
     addKeyEntry('<use href="#mrk_coal" fill="#202020" transform="scale(0.75)"/>', ' Coal Tower');
     addKeyEntry('<use href="#mrk_water" fill="#3fa5ff" transform="scale(0.75)"/>', ' Water Tower');
     addKeyEntry('<use href="#mrk_landmark" fill="#af5757" transform="scale(0.75)"/>', ' Landmark');
     addKeyEntry('<use href="#mrk_garage" fill="#8b5dd7" transform="scale(0.75)"/>', ' Garage');
-    addKeyEntry('<use href="#mrk_service_repair" fill="#239a96" transform="scale(0.75)"/>', ' Repair Service');
-    addKeyEntry('<use href="#mrk_service_diesel" fill="#239a96" transform="scale(0.75)"/>', ' Diesel Refuel');
-    addKeyEntry('<use href="#mrk_service_charger" fill="#239a96" transform="scale(0.75)"/>', ' Electric Charger');
+    //Add empty entries to make entries align right in the columns.
+    for(let i=0; i<4; i++){
+        addKeyEntry();
+    }
 }
 
 /**
@@ -165,6 +169,7 @@ function populateKey(){
  * @param {string} keyLabel
  */
 function addKeyEntry(keyImageHTML, keyLabel){
+    if(!keyLabel) keyLabel = '&nbsp;';
     let keyDiv = document.createElement('div');
     if(keyImageHTML){
         let keyImage = document.createElement('svg');
