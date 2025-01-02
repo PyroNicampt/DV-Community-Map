@@ -146,7 +146,7 @@ async function setLastUpdateData(){
         }
     }
 
-    setTimeout(() => {setLastUpdateData()}, Math.min(Math.max(120000, new Date().valueOf()-updateDate.valueOf()), 7200000));
+    setTimeout(() => {setLastUpdateData()}, Math.abs(new Date().valueOf()-updateDate.valueOf()) > 900000 ? 3600000 : 120000);
 }
 
 function populateKey(){
