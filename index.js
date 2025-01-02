@@ -124,6 +124,7 @@ function mapScrollSetup(){
     let pinchDistance = null;
     let previousScale = null;
     const touchDownHandler = e => {
+        if(e.button != 0) return;
         if(touchCache.length == 0){
             map_container.style.cursor = 'grabbing';
             document.addEventListener('pointermove', touchMoveHandler);
