@@ -382,81 +382,84 @@ function drawTracks(bezierData){
     // Add Signage
     let trackZoneData = {};
     for(let i=0; i+1<bezierData.points.length; i++){
-        for(let zI=0; zI < ((i == bezierData.points.length-2) ? 2 : 1); zI++){
-            let resetTzdGrade = () => {
-                trackZoneData.gradeClass = bezierData.points[i].gradeClass;
-                trackZoneData.gradeDirection = Math.sign(bezierData.points[i].grade);
-                trackZoneData.gradeCount = 0;
-                trackZoneData.gradeSectionLength = bezierData.points[i].bezLength;
-            };
-            let resetTzdSpeed = () => {
-                trackZoneData.prevSpeed = trackZoneData.speed;
-                trackZoneData.speed = bezierData.points[i].postedSpeed;
-                trackZoneData.speedCount = 0;
-                trackZoneData.speedSectionLength = bezierData.points[i].bezLength;
+        let resetTzdGrade = () => {
+            trackZoneData.gradeClass = bezierData.points[i].gradeClass;
+            trackZoneData.gradeDirection = Math.sign(bezierData.points[i].grade);
+            trackZoneData.gradeCount = 0;
+            trackZoneData.gradeSectionLength = bezierData.points[i].bezLength;
+        };
+        let resetTzdSpeed = () => {
+            trackZoneData.prevSpeed = trackZoneData.speed;
+            trackZoneData.speed = bezierData.points[i].postedSpeed;
+            trackZoneData.speedCount = 0;
+            trackZoneData.speedSectionLength = bezierData.points[i].bezLength;
+        }
+        if(i <= 0){
+            resetTzdGrade();
+            resetTzdSpeed();
+        }
+        //Grade Signs
+        if(trackZoneData.gradeClass != bezierData.points[i].gradeClass || trackZoneData.gradeDirection != Math.sign(bezierData.points[i].grade) || trackZoneData.gradeSectionLength > maxSectionLength || i == bezierData.points.length-2){
+            if(trackZoneData.gradeClass != 'flat'){
+                let offset = Math.floor((trackZoneData.gradeCount+1)/2);
+                let center = trackZoneData.gradeCount % 2 ? 1 : 0.55;
+                let b1 = bezierData.points[(i)-offset].position;
+                let b2 = bezierData.points[(i)-offset].h2;
+                let b3 = bezierData.points[(i)+1-offset].h1;
+                let b4 = bezierData.points[(i)+1-offset].position;
+                markers.push({
+                    type: 'grade',
+                    value: bezierData.points[(i)-offset].grade,
+                    gradeClass: trackZoneData.gradeClass,
+                    position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
+                    sectionLength: trackZoneData.gradeSectionLength,
+                    cullLevel: Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLength),
+                    tangent: bezierData.points[(i)].grade > 0
+                        ? Bezier.evaluateVelocity(b1, b2, b3, b4, center)
+                        : Bezier.evaluateVelocity(b4, b3, b2, b1, center)
+                });
             }
-            if(i <= 0){
-                resetTzdGrade();
-                resetTzdSpeed();
-            }else{
-                //Grade Signs
-                if(trackZoneData.gradeClass != bezierData.points[i].gradeClass || trackZoneData.gradeDirection != Math.sign(bezierData.points[i].grade) || trackZoneData.gradeSectionLength > maxSectionLength || zI > 0){
-                    if(trackZoneData.gradeClass != 'flat'){
-                        let offset = Math.floor((trackZoneData.gradeCount+1)/2)+1;
-                        let center = trackZoneData.gradeCount % 2 ? 1 : 0.5;
-                        let b1 = bezierData.points[(i+zI)-offset].position;
-                        let b2 = bezierData.points[(i+zI)-offset].h2;
-                        let b3 = bezierData.points[(i+zI)+1-offset].h1;
-                        let b4 = bezierData.points[(i+zI)+1-offset].position;
-                        markers.push({
-                            type: 'grade',
-                            value: bezierData.points[(i+zI)-offset].grade,
-                            gradeClass: trackZoneData.gradeClass,
-                            position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
-                            sectionLength: trackZoneData.gradeSectionLength,
-                            cullLevel: Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLength),
-                            tangent: bezierData.points[(i+zI)].grade > 0
-                                ? Bezier.evaluateVelocity(b1, b2, b3, b4, center)
-                                : Bezier.evaluateVelocity(b4, b3, b2, b1, center)
-                        });
-                    }
-                    resetTzdGrade();
-                }else{
-                    trackZoneData.gradeCount++;
-                    trackZoneData.gradeSectionLength += bezierData.points[i].bezLength;
-                }
-                //Speed Signs
-                if(trackZoneData.speed != bezierData.points[i].postedSpeed || trackZoneData.speedSectionLength > maxSectionLength || zI > 0){
-                    let offset = Math.floor((trackZoneData.speedCount+1)/2)+1;
-                    let center = trackZoneData.speedCount % 2 ? 0.75 : 0.25;
-                    let b1 = bezierData.points[(i+zI)-offset].position;
-                    let b2 = bezierData.points[(i+zI)-offset].h2;
-                    let b3 = bezierData.points[(i+zI)+1-offset].h1;
-                    let b4 = bezierData.points[(i+zI)+1-offset].position;
-                    let cullLevel = Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLengthSpeedboard);
-                    let speedDelta = Math.max(0,
-                        (bezierData.points[i].postedSpeed != null && bezierData.points[i].postedSpeed < 100) ? bezierData.points[i].postedSpeed-trackZoneData.speed : 0,
-                        (trackZoneData.prevSpeed != null && trackZoneData.prevSpeed < 100) ? trackZoneData.prevSpeed-trackZoneData.speed : 0
-                    );
-                    if(speedDelta >= 10 && trackZoneData.speed <= 30){
-                        cullLevel = 0;
-                    }else if(speedDelta >= 20){
-                        cullLevel = 1;
-                    }
-                    markers.push({
-                        type: 'speed',
-                        value: trackZoneData.speed,
-                        position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
-                        sectionLength: trackZoneData.speedSectionLength,
-                        cullLevel: cullLevel == 1 ? 2 : cullLevel,
-                        tangent: Bezier.evaluateVelocity(b1, b2, b3, b4, center)
-                    });
-                    resetTzdSpeed();
-                }else{
-                    trackZoneData.speedCount++;
-                    trackZoneData.speedSectionLength += bezierData.points[i].bezLength;
-                }
+            resetTzdGrade();
+        }else{
+            trackZoneData.gradeCount++;
+            trackZoneData.gradeSectionLength += bezierData.points[i].bezLength;
+        }
+        //Speed Signs
+        if(trackZoneData.speed != bezierData.points[i].postedSpeed || trackZoneData.speedSectionLength > maxSectionLength || i == bezierData.points.length-2){
+            let offset = Math.floor((trackZoneData.speedCount+1)/2);
+            let center = trackZoneData.speedCount % 2 ? 0.85 : 0.45;
+            let b1 = bezierData.points[(i)-offset].position;
+            let b2 = bezierData.points[(i)-offset].h2;
+            let b3 = bezierData.points[(i)+1-offset].h1;
+            let b4 = bezierData.points[(i)+1-offset].position;
+            let cullLevel = Math.round(scaleCullThresholds.length-1-trackZoneData.gradeSectionLength/scaleCullBaseSectionLengthSpeedboard);
+            let speedDelta = Math.max(0,
+                (bezierData.points[i].postedSpeed != null && bezierData.points[i].postedSpeed < 100) ? bezierData.points[i].postedSpeed-trackZoneData.speed : 0,
+                (trackZoneData.prevSpeed != null && trackZoneData.prevSpeed < 100) ? trackZoneData.prevSpeed-trackZoneData.speed : 0
+            );
+            if(bezierData.points.length == 2 && trackZoneData.speed > 30){
+                cullLevel = 6;
+            }else if(speedDelta >= 10 && trackZoneData.speed <= 30){
+                cullLevel = 0;
+            }else if(speedDelta >= 20){
+                cullLevel = 1;
             }
+            if(bezierData.isYard || bezierData.isTurntable){
+                cullLevel = Math.min(cullLevel+1, scaleCullThresholds.length-1);
+            }
+            markers.push({
+                type: 'speed',
+                value: trackZoneData.speed,
+                position: Bezier.evaluatePoint(b1, b2, b3, b4, center),
+                sectionLength: trackZoneData.speedSectionLength,
+                cullLevel: cullLevel,
+                tangent: Bezier.evaluateVelocity(b1, b2, b3, b4, center),
+                debug: offset+', '+center
+            });
+            resetTzdSpeed();
+        }else{
+            trackZoneData.speedCount++;
+            trackZoneData.speedSectionLength += bezierData.points[i].bezLength;
         }
     }
 }
