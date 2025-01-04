@@ -3,6 +3,7 @@
 import * as Vector from './js/vectorlib.js';
 import * as Bezier from './js/bezierlib.js';
 import * as Utils from './js/utillib.js';
+import {Color} from './js/colorlib.js';
 import * as Config from './config.js';
 
 // CONFIG
@@ -331,7 +332,6 @@ function fillSvg(){
 
 /** Insert individual rail paths, as well as creating signage data for each path*/
 function drawTracks(bezierData){
-    const trackCol = Utils.rgba2hex(Math.random(),Math.random(),Math.random(),1.0);
     if(trackNameCounting[bezierData.name] == null){
         trackNameCounting[bezierData.name] = 0;
     }else{
@@ -354,7 +354,7 @@ function drawTracks(bezierData){
     }else if(/\[track (diverging|through)\]/.test(bezierData.name)){
         bezierData.isPoint = true;
     }
-    bezierData.randomColor = Utils.rgba2hex(Math.random(), Math.random(), Math.random(), 1);
+    bezierData.randomColor = Color.random();
     for(let i=0; i+1<bezierData.points.length; i++){
         const bezStart = bezierData.points[i].position;
         const bezHandle1 = bezierData.points[i].h2;
@@ -382,7 +382,7 @@ function drawTracks(bezierData){
         //bezierData.points[i].element.setAttribute('data-grade', bezierData.points[i].grade);
         //bezierData.points[i].element.setAttribute('data-length', bezierData.points[i].bezLength);
         //bezierData.points[i].element.setAttribute('data-maxradius', 1/bezierData.points[i].curvature);
-        bezierData.points[i].randomColor = Utils.rgba2hex(Math.random(), Math.random(), Math.random(), 1);
+        bezierData.points[i].randomColor = Color.random();
         tracks.push([(bezStart.y+bezEnd.y)*0.5, bezierData.points[i].element]);
 
         // Curve tooltip
