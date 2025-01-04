@@ -339,7 +339,7 @@ function drawTracks(bezierData){
     }else{
         trackNameCounting[bezierData.name]++;
     }
-    let yardData = /\[(#)\]|\[(Y)\]_\[(.*?)\]_\[((.*?)-(.*?)-(.*?))\]/.exec(bezierData.name);
+    let yardData = /\[(#)\]|\[(Y)\][_-]\[(.*?)\][_-]\[((.*?)[_-]*(.*?)[_-]*(.*?))\]/.exec(bezierData.name);
     if(yardData){
         if(yardData[1]){ // track is [#], thus in yard limits, but not a specific designated yard.
             bezierData.isYard = true;
