@@ -75,6 +75,21 @@ let settingEntries = [
             },
         ]
     },
+    {
+        label: 'Grade Arrow Direction',
+        id: 'dropdown_gradeArrowDirection',
+        options: [
+            'Uphill',
+            'Downhill',
+        ],
+        default: 'Uphill',
+        func: state =>{
+            let newHref = state == 'Uphill' ? '#gradeArrow' : '#gradeArrowDownhill';
+            for(let arrow of document.getElementsByClassName('gradeArrow')){
+                arrow.setAttribute('href', newHref);
+            }
+        }
+    },
 ];
 
 const legendKey = document.getElementById('legendKey');
@@ -194,7 +209,6 @@ async function setLastUpdateData(){
 }
 
 function populateKey(){
-    addKeyEntry(null, '<span style="font-size:smaller">(Grade arrows point uphill)</span>');
     const getGradeValue = gradeIndex => {return Math.round(Utils.gradeIncrements[Utils.gradeIncrements.length-gradeIndex-1]*10000)/100};
     for(let i=-1; i<Utils.gradeIncrements.length; i++){
         let gradeValue = `< ${getGradeValue(0)}`;
@@ -221,7 +235,7 @@ function populateKey(){
     addKeyEntry('<use href="#mrk_landmark" fill="#af5757" transform="scale(0.75)"/>', ' Landmark');
     addKeyEntry('<use href="#mrk_garage" fill="#8b5dd7" transform="scale(0.75)"/>', ' Garage');
     //Add empty entries to make entries align right in the columns.
-    for(let i=0; i<4; i++){
+    for(let i=0; i<3; i++){
         addKeyEntry();
     }
 }

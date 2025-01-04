@@ -621,6 +621,7 @@ function drawMarkers(){
         markerImg.classList.add('fixedScale', 'sign');
         // Grade signs
         if(markerData.type == 'grade'){
+            markerImg.classList.add('gradeArrow');
             markerImg.setAttribute('href', '#gradeArrow');
             markerImg.setAttribute('fill', Config.gradeColors['grade_'+markerData.gradeClass]);
             const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
