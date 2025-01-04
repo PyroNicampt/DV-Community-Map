@@ -90,6 +90,10 @@ a:visited{
     columns: 2;
 }
 
+#legendKeyColors{
+    overflow-wrap:break-word;
+}
+
 #legend{
     transition: transform 400ms cubic-bezier(0.445, 0.050, 0.550, 0.950);
     display: flex;
@@ -143,10 +147,19 @@ a:visited{
     background: linear-gradient(#444, #333);
 }
 
-.inlineSvg {
+.colorKey, .gradientKey{
+    border:1px #858585 solid;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 2px 1px;
+    padding: 1px 3px;
+}
+
+.inlineSvg, .colorKey>span{
     width: 1em;
     height: 1em;
     vertical-align: -0.1em;
+    display: inline-block;
 }
 
 .poi{

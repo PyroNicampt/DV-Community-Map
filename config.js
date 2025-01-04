@@ -1,4 +1,5 @@
 'use strict';
+import {Color} from './js/colorlib.js';
 
 export const gradeColors = {
     grade_flat: '#fff',
@@ -13,3 +14,18 @@ export const gradeColors = {
     grade_8: '#a3008d',
     grade_9: '#690097',
 }
+
+export const speedGradient = [
+    new Color('#370065'),
+    new Color('#79146e'),
+    new Color('#d53354'),
+    new Color('#fa8256'),
+    new Color('#fbffb2'),
+]
+
+export const altitudeGradient = [
+    new Color('#340042'),
+    new Color('#235f7b'),
+    new Color('#51c34e'),
+    new Color('#fce51e'),
+]

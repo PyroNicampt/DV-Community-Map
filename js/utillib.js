@@ -26,6 +26,12 @@ export function gradeToClass(grade){
     return 'flat';
 }
 
+export function classToGrade(className){
+    let classNum = Math.min(Math.max(Number(className), 0), gradeIncrements.length-1);
+    if(Number.isNaN(classNum)) return 0;
+    return gradeIncrements[gradeIncrements.length-1-classNum];
+}
+
 /**
  * Outputs an easy to read time interval between `date1` and `date2`
  * @param {Date} date 

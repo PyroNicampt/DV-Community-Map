@@ -288,6 +288,8 @@ function establishDimensions(){
         x2: maxX,
         y1: minY,
         y2: maxY,
+        minAlt: minAlt,
+        maxAlt: maxAlt,
         width: width,
         height: height,
         fixY: yIn => {
@@ -503,8 +505,11 @@ function sortTracks(){
     }
 }
 
-function setTrackColorMode(mode){
-    let modeFunction = null;
+export function setTrackColorMode(mode){
+    let modeFunction;
+    const keyElement = document.getElementById('legendKeyColors');
+    let gradientString = '';
+    keyElement.innerHTML = '';
     switch(mode){
         case 'Track Type':
             modeFunction = (section, curve) => {
@@ -515,30 +520,73 @@ function setTrackColorMode(mode){
                 else if(curve.isTurntable) finalColor = '#b4f';
 
                 section.element.setAttribute('stroke', finalColor);
-            }
+            };
+            keyElement.innerHTML = `
+            <span class="colorKey"><span style="background:#4bf"></span> Designated Yard</span>
+            <span class="colorKey"><span style="background:#4fb"></span> Other Yard</span>
+            <span class="colorKey"><span style="background:#fb4"></span> Point</span>
+            <span class="colorKey"><span style="background:#b4f"></span> Turntable</span>
+            <span class="colorKey"><span style="background:#aaa"></span> Other Tracks</span>`;
             break;
         case 'Grade':
             modeFunction = section => {
                 section.element.setAttribute('stroke', Config.gradeColors['grade_'+section.gradeClass]);
             };
+            for(let grade in Config.gradeColors){
+                keyElement.innerHTML += `<span class="colorKey" style="${grade.replace('grade_','') < 6 || grade == 'grade_flat' ? 'color:#000;' : ''}padding:0px 3px;background:${Config.gradeColors[grade]}">${(Utils.classToGrade(grade.replace('grade_',''))*100).toFixed(1)}%</span>`;
+            }
+            break;
+        case 'Altitude':
+            modeFunction = section => {
+                section.element.setAttribute('stroke', Color.blendGradient(Config.altitudeGradient, (section.position.y-MapMatrix.minAlt)/(MapMatrix.maxAlt-MapMatrix.minAlt)).hex);
+            }
+            gradientString = 'linear-gradient(to right';
+            for(let col of Config.altitudeGradient) gradientString += ', '+col.hex;
+            gradientString += ')';
+            
+            keyElement.innerHTML = `
+            <div style="display:flex">
+                <div>${Math.floor(MapMatrix.minAlt)}m</div>
+                <div class="gradientKey" style="flex-grow:1;background:${gradientString}"></div>
+                <div>${Math.ceil(MapMatrix.maxAlt)}m</div>
+            </div>
+            `;
+            break;
+        case 'Speed':
+            modeFunction = section => {
+                section.element.setAttribute('stroke', Color.blendGradient(Config.speedGradient, (section.postedSpeed+10)/110).hex);
+            };
+            
+            gradientString = 'linear-gradient(to right';
+            for(let col of Config.speedGradient) gradientString += ', '+col.hex;
+            gradientString += ')';
+            keyElement.innerHTML = `
+            <div style="display:flex">
+                <div>10 kmh</div>
+                <div class="gradientKey" style="flex-grow:1;background:${gradientString}"></div>
+                <div>120 kmh</div>
+            </div>
+            `;
             break;
         case 'Track Random':
             modeFunction = (section, curve) => {
-                section.element.setAttribute('stroke', curve.randomColor);
-            }
+                section.element.setAttribute('stroke', curve.randomColor.hex);
+            };
+            keyElement.innerHTML = 'Random per continuous track section';
             break;
-        case 'Section Random':
+        case 'Curve Random':
             modeFunction = section => {
-                section.element.setAttribute('stroke', section.randomColor);
-            }
+                section.element.setAttribute('stroke', section.randomColor.hex);
+            };
+            keyElement.innerHTML = 'Random per individual track bezier curve';
             break;
         default:
             modeFunction = section => {
                 section.element.setAttribute('stroke', '#fff');
-            }
+            };
             break;
     }
-    if(modeFunction !== null){
+    if(modeFunction != null){
         for(let curve of mapData){
             for(let section of curve.points){
                 if(!section.element) continue;

@@ -2,8 +2,27 @@
 
 import * as Utils from './js/utillib.js';
 import * as Config from './config.js';
+import { Color } from './js/colorlib.js';
+import { setTrackColorMode } from './index.js';
 
 let settingEntries = [
+    {
+        label: 'Color Mode',
+        id: 'dropdown_trackColor',
+        options: [
+            'None',
+            'Grade',
+            'Altitude',
+            'Speed',
+            'Track Type',
+            'Track Random',
+            'Curve Random',
+        ],
+        default: 'Grade',
+        func: state =>{
+            setTrackColorMode(state);
+        }
+    },
     {
         label: 'Signage',
         id: 'toggle_signage',
@@ -56,15 +75,6 @@ let settingEntries = [
             },
         ]
     },
-    {
-        label: 'Track Color',
-        id: 'radio_trackColor',
-        options: [
-            'None',
-            'Grade',
-        ],
-        default: 1,
-    },
 ];
 
 const legendKey = document.getElementById('legendKey');
@@ -93,21 +103,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function addSettingEntry(thisSetting, parent, indent=0){
     thisSetting.divContainer = document.createElement('div');
-    thisSetting.inputElement = document.createElement('input');
-    thisSetting.inputElement.style.margin = `0 0.5em 0 ${indent}em`;
     thisSetting.labelElement = document.createElement('label');
-    parent.appendChild(thisSetting.divContainer);
-    thisSetting.divContainer.appendChild(thisSetting.inputElement);
     thisSetting.divContainer.appendChild(thisSetting.labelElement);
-    
+
     let settingType = thisSetting.id.split('_')[0];
     switch(settingType){
         case 'toggle':
+            thisSetting.inputElement = document.createElement('input');
             thisSetting.inputElement.type = 'checkbox';
-            thisSetting.inputElement.id = thisSetting.id;
             thisSetting.inputElement.checked = thisSetting.state;
-            thisSetting.labelElement.innerHTML = thisSetting.label;
-            thisSetting.labelElement.htmlFor = thisSetting.id;
 
             if(thisSetting.func){
                 thisSetting.inputElement.addEventListener('input', e =>{
@@ -120,10 +124,50 @@ function addSettingEntry(thisSetting, parent, indent=0){
                 });
             }
             break;
+        case 'dropdown':
+            thisSetting.inputElement = document.createElement('select');
+            for(let inputEntry of thisSetting.options){
+                let optionElement = document.createElement('option');
+                if(typeof(inputEntry) == 'object'){
+                    optionElement.value = inputEntry[0];
+                    optionElement.innerHTML = inputEntry[1];
+                }else{
+                    optionElement.value = inputEntry;
+                    optionElement.innerHTML = inputEntry;
+                }
+                if(inputEntry == thisSetting.default) optionElement.selected = true;
+                thisSetting.inputElement.appendChild(optionElement);
+            }
+            if(thisSetting.func){
+                thisSetting.inputElement.addEventListener('change', e =>{
+                    thisSetting.func(e.target.value);
+                })
+            }
+            break;
+        case 'slider':
+            thisSetting.inputElement = document.createElement('input');
+            thisSetting.inputElement.type = 'range';
+            thisSetting.inputElement.min = thisSetting.min ?? 0;
+            thisSetting.inputElement.max = thisSetting.max ?? 100;
+            thisSetting.inputElement.step = thisSetting.step ?? 1;
+            if(thisSetting.func){
+                thisSetting.inputElement.addEventListener('input', e => {
+                    thisSetting.func(e.target.value);
+                });
+            }
+            break;
         default:
             thisSetting.divContainer.remove();
             return;
     }
+    parent.appendChild(thisSetting.divContainer);
+    thisSetting.labelElement.innerHTML = thisSetting.label;
+    thisSetting.labelElement.htmlFor = thisSetting.id;
+    thisSetting.inputElement.id = thisSetting.id;
+
+    thisSetting.inputElement.style.margin = `0 0.5em 0 ${indent}em`;
+    thisSetting.divContainer.prepend(thisSetting.inputElement);
+
     if(thisSetting.children){
         for(let child of thisSetting.children){
             addSettingEntry(child, parent, indent+1);
