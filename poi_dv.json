@@ -74,7 +74,7 @@
     "type":"station",
     "shorthand":"CS",
     "color":"#dfd7dc",
-    "position":{"x":9785.819,"y":134.6823,"z":1488.548},
+    "position":{"x":9785.819,"y":134.6823,"z":1588.548},
     "children":[
         {
             "type":"office",
@@ -116,7 +116,7 @@
     "type":"station",
     "shorthand":"CW",
     "color":"#f1cdbb",
-    "position": {"x":1456,"y":122,"z":5692},
+    "position": {"x":1456,"y":122,"z":5792},
     "children":[
         {
             "type":"office",
@@ -145,7 +145,7 @@
     "type":"station",
     "shorthand":"FF",
     "color":"#b2d1ff",
-    "position":{"x":9035.343,"y":119.1784,"z":13504.95},
+    "position":{"x":8835.343,"y":119.1784,"z":13504.95},
     "children":[
         {
             "type":"office",
@@ -173,7 +173,7 @@
     "type":"station",
     "shorthand":"FM",
     "color":"#ffda62",
-    "position":{"x":6027.609,"y":123.8593,"z":7074.711},
+    "position":{"x":6027.609,"y":123.8593,"z":7124.711},
     "children":[
         {
             "type":"office",
@@ -207,7 +207,7 @@
     "type":"station",
     "shorthand":"FRS",
     "color":"#8db16c",
-    "position":{"x":5890.794,"y":175.1235,"z":3787.574},
+    "position":{"x":5790.794,"y":175.1235,"z":3687.574},
     "children":[
         {
             "type":"office",
@@ -323,7 +323,7 @@
     "type":"station",
     "shorthand":"IMW",
     "color":"#dc6f54",
-    "position":{"x":2163.091,"y":133.5531,"z":13759.38},
+    "position":{"x":2583.091,"y":133.5531,"z":13559.38},
     "children":[
         {
             "type":"office",
@@ -368,7 +368,7 @@
     "type":"station",
     "shorthand":"MF",
     "color":"#ffad6d",
-    "position":{"x":2848.254,"y":159.2693,"z":10523.74},
+    "position":{"x":2900.254,"y":159.2693,"z":10523.74},
     "children":[
         {
             "type":"office",
@@ -405,7 +405,7 @@
     "type":"station",
     "shorthand":"OR",
     "color":"#cf6884",
-    "position":{"x":6934.917,"y":143.8076,"z":11133.96},
+    "position":{"x":6900.917,"y":143.8076,"z":11033.96},
     "children":[
         {
             "type":"office",
@@ -427,7 +427,7 @@
     "type":"station",
     "shorthand":"OWC",
     "color":"#7b6f6e",
-    "position":{"x":4466.821,"y":122.9323,"z":6651.179},
+    "position":{"x":4866.821,"y":122.9323,"z":5851.179},
     "children":[
         {
             "type":"office",
@@ -469,7 +469,7 @@
     "type":"station",
     "shorthand":"SM",
     "color":"#ac9da2",
-    "position": {"x":8321,"y":131,"z":6707},
+    "position": {"x":8021,"y":131,"z":6707},
     "children":[
         {
             "type":"office",

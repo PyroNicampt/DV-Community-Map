@@ -658,11 +658,17 @@ function addPoi(poi, level = 0){
     if(level > 0) poiElement.classList.add('minZoomCull_2');
     switch(poi.type){
         case 'station':
+            poiDisplay.classList.add('maxZoomCull_4');
             poiDisplay.classList.remove('fixedScale');
             poiElement.setAttribute('fill', poi.color ?? '#fff');
             poiTooltip.innerHTML = poi.name;
             poiIcon.innerHTML = poi.shorthand;
-            poiIcon.setAttribute('style', `font-size:400px; stroke:${poi.stroke ?? '#000'}; stroke-width:40px; paint-order:stroke; text-anchor:middle;`);
+            poiIcon.setAttribute('style', `font-size:400px; pointer-events:none; stroke:${poi.stroke ?? '#000'}; stroke-width:40px; paint-order:stroke; text-anchor:middle;`);
+            let stationName = document.createElementNS(svgns, 'text');
+            stationName.innerHTML = poi.nickname ?? poi.name;
+            stationName.setAttribute('style', `transform: translate(0px, 120px); font-size:100px; pointer-events:visible; stroke:${poi.stroke ?? '#000'}; stroke-width:20px; paint-order:stroke; text-anchor:middle;`)
+            stationName.classList.add('minZoomCull_1');
+            poiDisplay.appendChild(stationName);
             poiLayers.stations.prepend(poiElement);
             break;
         case 'office':
