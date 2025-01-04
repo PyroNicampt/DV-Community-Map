@@ -29,3 +29,14 @@ export const altitudeGradient = [
     new Color('#51c34e'),
     new Color('#fce51e'),
 ]
+
+export const sidingUsageMeanings = {
+    I:'Inbound',
+    O:'Outbound',
+    L:'Loading',
+    P:'Locomotive Parking',
+    S:'Car Storage',
+    LP:'Passenger Transfer',
+    SP:'Passenger Car Storage',
+    D:'Service & Repair',
+}

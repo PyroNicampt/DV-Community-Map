@@ -78,6 +78,7 @@ let mapData = [];
 let trackNameCounting = {};
 let poiData = [];
 let tracks = [];
+let yardMarkers = {};
 let markers = [];
 
 //let currentMapNav = {};
@@ -321,22 +322,24 @@ function fillSvg(){
         switch(obj.type){
             case 'bezier':
                 drawTracks(obj);
+                createTrackSignage(obj);
                 break;
         }
     }
+    createYardSignage();
     sortTracks();
     setTrackColorMode('Grade');
-    drawMarkers();
+    drawSignage();
 }
 
-/** Insert individual rail paths, as well as creating signage data for each path*/
+/** Insert individual rail paths into the SVG */
 function drawTracks(bezierData){
     if(trackNameCounting[bezierData.name] == null){
         trackNameCounting[bezierData.name] = 0;
     }else{
         trackNameCounting[bezierData.name]++;
     }
-    let yardData = /\[(#)\]|\[(Y)\][_-]\[(.*?)\][_-]\[((.*?)[_-]*(.*?)[_-]*(.*?))\]/.exec(bezierData.name);
+    let yardData = /\[(#)\]|\[(Y)\][_-]\[(.*?)\][_-]\[((.*?)[_-](.*?)[_-](.*?)|.*)\]/.exec(bezierData.name);
     if(yardData){
         if(yardData[1]){ // track is [#], thus in yard limits, but not a specific designated yard.
             bezierData.isYard = true;
@@ -396,8 +399,10 @@ function drawTracks(bezierData){
             ].join('\n');
         bezierData.points[i].element.appendChild(title);
     }
+}
 
-    // Add Signage
+/** Create signage associated with the track section */
+function createTrackSignage(bezierData){
     let trackZoneData = {};
     let finalSegment = false;
     for(let i=0; i<bezierData.points.length; i++){
@@ -412,7 +417,7 @@ function drawTracks(bezierData){
             trackZoneData.gradeCount = 0;
             trackZoneData.gradeSectionLength = 0;
         };
-        let resetTzdSpeed = (eb) => {
+        let resetTzdSpeed = () => {
             trackZoneData.prevSpeed = trackZoneData.speed;
             trackZoneData.speed = bezierData.points[i].postedSpeed;
             trackZoneData.speedCount = 0;
@@ -489,6 +494,53 @@ function drawTracks(bezierData){
         }
         trackZoneData.speedCount++;
         trackZoneData.speedSectionLength += bezierData.points[curSeg].bezLength;
+    }
+
+    // Yard Signage
+    if(bezierData.yardDesignation && bezierData.yardDesignation != '--'){
+        if(!yardMarkers[bezierData.yardStation]) yardMarkers[bezierData.yardStation] = {};
+        let centerIndex = Math.floor((bezierData.points.length-1)/2);
+        let yardSignPos = bezierData.points[centerIndex].position;
+        if(bezierData.points.length % 2 == 0){
+            yardSignPos = Bezier.evaluatePoint(
+                bezierData.points[centerIndex].position,
+                bezierData.points[centerIndex].h2,
+                bezierData.points[centerIndex+1].h1,
+                bezierData.points[centerIndex].position,
+                0.5);
+        }
+        if(bezierData.yardName){
+            if(!yardMarkers[bezierData.yardStation][bezierData.yardName]) yardMarkers[bezierData.yardStation][bezierData.yardName] = {accCenter:{x:0,y:0,z:0}, accCount:0};
+            yardMarkers[bezierData.yardStation][bezierData.yardName].accCenter.x += yardSignPos.x;
+            yardMarkers[bezierData.yardStation][bezierData.yardName].accCenter.y += yardSignPos.y;
+            yardMarkers[bezierData.yardStation][bezierData.yardName].accCenter.z += yardSignPos.z;
+            yardMarkers[bezierData.yardStation][bezierData.yardName].accCount++;
+        }
+        markers.push({
+            type: 'yardSiding',
+            name: bezierData.yardDesignation,
+            station: bezierData.yardStation,
+            yard: bezierData.yardName,
+            siding: bezierData.yardSidingNumber,
+            usage: bezierData.yardUsage,
+            position: yardSignPos
+        });
+    }
+}
+
+function createYardSignage(){
+    for(let station in yardMarkers){
+        for(let yard in yardMarkers[station]){
+            markers.push({
+                type: 'yard',
+                value: yard,
+                position: {
+                    x: yardMarkers[station][yard].accCenter.x/yardMarkers[station][yard].accCount,
+                    y: yardMarkers[station][yard].accCenter.y/yardMarkers[station][yard].accCount,
+                    z: yardMarkers[station][yard].accCenter.z/yardMarkers[station][yard].accCount,
+                }
+            });
+        }
     }
 }
 
@@ -594,21 +646,23 @@ export function setTrackColorMode(mode){
 }
 
 /** Create the signage */
-function drawMarkers(){
+function drawSignage(){
     const signage_container = document.createElementNS(svgns, 'g');
     const gradeSigns = document.createElementNS(svgns, 'g');
     const speedSigns = document.createElementNS(svgns, 'g');
+    const yardSigns = document.createElementNS(svgns, 'g');
 
     signage_container.setAttribute('id', 'signage_container');
     gradeSigns.setAttribute('id', 'signage_grade');
     speedSigns.setAttribute('id', 'signage_speed');
+    yardSigns.setAttribute('id', 'signage_yard');
 
     map_markers.appendChild(signage_container);
     signage_container.appendChild(gradeSigns);
     signage_container.appendChild(speedSigns);
+    signage_container.appendChild(yardSigns);
 
     for(const markerData of markers){
-        //if(markerData.skip) continue;
         let markerElement = document.createElementNS(svgns, 'g');
         let markerImg = document.createElementNS(svgns, 'use');
         let markerTooltip = document.createElementNS(svgns, 'title');
@@ -616,22 +670,89 @@ function drawMarkers(){
         markerElement.appendChild(markerTooltip);
         markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
         markerImg.classList.add('fixedScale', 'sign');
-        // Grade signs
-        if(markerData.type == 'grade'){
-            markerImg.classList.add('gradeArrow');
-            markerImg.setAttribute('href', '#gradeArrow');
-            markerImg.setAttribute('fill', Config.gradeColors['grade_'+markerData.gradeClass]);
-            const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
-            const rot = Math.atan2(markerData.tangent.x/tanLen, -markerData.tangent.z/tanLen) * (180/Math.PI);
-            markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
-            markerTooltip.innerHTML = `${Math.round(markerData.value*1000)/10}% Grade\nSection Length: ${markerData.sectionLength.toFixed(1)} meters\nCovers ${markerData.sectionCount} sections`;
-            gradeSigns.appendChild(markerElement);
-        // Speed Signs
-        }else if(markerData.type == 'speed'){
-            markerImg.setAttribute('href', `#speedSign_${Math.round(markerData.value/10)}`);
-            markerTooltip.innerHTML = `${Math.round(markerData.value)} km/h\nSection Length: ${markerData.sectionLength.toFixed(1)} meters\nCovers ${markerData.sectionCount} sections`;
-            markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
-            speedSigns.appendChild(markerElement);
+        switch(markerData.type){
+            case 'grade':
+                markerImg.classList.add('gradeArrow');
+                markerImg.setAttribute('href', '#gradeArrow');
+                markerImg.setAttribute('fill', Config.gradeColors['grade_'+markerData.gradeClass]);
+                const tanLen = Math.sqrt(markerData.tangent.x*markerData.tangent.x + markerData.tangent.z*markerData.tangent.z) * Math.sign(markerData.tangent.y);
+                const rot = Math.atan2(markerData.tangent.x/tanLen, -markerData.tangent.z/tanLen) * (180/Math.PI);
+                markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z}) rotate(${rot})`);
+                markerTooltip.innerHTML = `${Math.round(markerData.value*1000)/10}% Grade\nSection Length: ${markerData.sectionLength.toFixed(1)} meters\nCovers ${markerData.sectionCount} sections`;
+                gradeSigns.appendChild(markerElement);
+                break;
+            case 'speed':
+                markerImg.setAttribute('href', `#speedSign_${Math.round(markerData.value/10)}`);
+                markerTooltip.innerHTML = `${Math.round(markerData.value)} km/h\nSection Length: ${markerData.sectionLength.toFixed(1)} meters\nCovers ${markerData.sectionCount} sections`;
+                markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
+                speedSigns.appendChild(markerElement);
+                break;
+            case 'yardSiding':
+                markerImg.remove();
+                let yardSidingSign = document.createElementNS(svgns,'g');
+                yardSidingSign.classList.add('fixedScale', 'sign', 'yardSignage', 'minZoomCull_5');
+                markerElement.appendChild(yardSidingSign);
+
+                let yardSidingBoard = document.createElementNS(svgns, 'rect');
+                let sidingBoardHeight = 230;
+                let sidingBoardWidth = (markerData.name.length+1) * 121;
+                yardSidingBoard.setAttribute('width', sidingBoardWidth);
+                yardSidingBoard.setAttribute('height', sidingBoardHeight);
+                yardSidingBoard.setAttribute('fill', '#fff');
+                yardSidingBoard.setAttribute('stroke', '#000');
+                yardSidingBoard.setAttribute('stroke-width', 30);
+                yardSidingBoard.setAttribute('rx', 45);
+                yardSidingBoard.setAttribute('transform', `translate(-${sidingBoardWidth/2}, -${sidingBoardHeight/2})`);
+                yardSidingBoard.appendChild(markerTooltip);
+                yardSidingSign.appendChild(yardSidingBoard);
+
+                let yardSidingText = document.createElementNS(svgns, 'text');
+                yardSidingText.innerHTML = markerData.name;
+                yardSidingText.setAttribute('transform', 'translate(0, 70)');
+                yardSidingText.setAttribute('pointer-events', 'none');
+                yardSidingSign.appendChild(yardSidingText);
+                if(markerData.yard && markerData.siding && markerData.usage){
+                    if(!Config.sidingUsageMeanings[markerData.usage]) console.log(markerData.station+' '+markerData.name);
+                    markerTooltip.innerHTML = `${markerData.yard}-${markerData.siding}, ${Config.sidingUsageMeanings[markerData.usage]}`;
+                }else{
+                    markerTooltip.innerHTML = markerData.name;
+                }
+
+                yardSigns.appendChild(markerElement);
+                break;
+            case 'yard':
+                markerImg.remove();
+                let yardSign = document.createElementNS(svgns,'g');
+                yardSign.classList.add('fixedScale', 'sign', 'yardSignage', 'maxZoomCull_5', 'minZoomCull_2');
+                markerElement.appendChild(yardSign);
+
+                let signText = markerData.value+' Yard';
+
+                let yardBoard = document.createElementNS(svgns, 'rect');
+                let boardHeight = 230;
+                let boardWidth = (signText.length+1) * 121;
+                yardBoard.setAttribute('width', boardWidth);
+                yardBoard.setAttribute('height', boardHeight);
+                yardBoard.setAttribute('fill', '#fff');
+                yardBoard.setAttribute('stroke', '#000');
+                yardBoard.setAttribute('stroke-width', 30);
+                yardBoard.setAttribute('rx', 45);
+                yardBoard.setAttribute('transform', `translate(-${boardWidth/2}, -${boardHeight/2})`);
+                yardBoard.appendChild(markerTooltip);
+                yardSign.appendChild(yardBoard);
+
+                let yardText = document.createElementNS(svgns, 'text');
+                yardText.innerHTML = signText;
+                yardText.setAttribute('transform', 'translate(0, 70)');
+                yardText.setAttribute('pointer-events', 'none');
+                yardSign.appendChild(yardText);
+                markerTooltip.innerHTML = signText;
+
+                yardSigns.appendChild(markerElement);
+                break;
+            default:
+                markerElement.remove();
+                continue;
         }
 
         if(markerData.debug != null) markerTooltip.innerHTML += '\n'+markerData.debug;

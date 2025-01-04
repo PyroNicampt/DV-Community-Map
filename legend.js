@@ -46,6 +46,14 @@ let settingEntries = [
                 func: state =>{
                     document.getElementById('signage_grade').style.display = state ? 'unset' : 'none';
                 },
+            },
+            {
+                label: 'Yard Signage',
+                id: 'toggle_yardSigns',
+                state: true,
+                func: state =>{
+                    document.getElementById('signage_yard').style.display = state ? 'unset' : 'none';
+                },
             }
         ],
     },
