@@ -53,6 +53,7 @@ resizeObserver.observe(map_container);
 
 const map_navigator = document.getElementById('mapNavigator');
 const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
+const zoomStyle = document.getElementById('zoomStyle');
 const styleRoot = document.querySelector(':root');
 const svgns = map.getAttribute('xmlns');
 
@@ -86,12 +87,6 @@ let previousMapScale = -1;
 let MapMatrix = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    let dynamicStyles = [];
-    for(let i=0; i<scaleCullThresholds.length; i++){
-        dynamicStyles.push(`.maxZoomCull_${i}{display:var(--maxZoomCull_state_${i});}`);
-        dynamicStyles.push(`.minZoomCull_${i}{display:var(--minZoomCull_state_${i});}`);
-    }
-    document.getElementById('zoomStyle').innerHTML = dynamicStyles.join('\n');
     await loadTrackData('trackdata_dv.json');
     await loadPoiData('poi_dv.json');
     mapScrollSetup();
@@ -252,10 +247,12 @@ function updateMapview(){
         map_rails.setAttribute('stroke-width', Utils.clamp(trackWidth.base/mapNav.scale, trackWidth.min, trackWidth.max));
         styleRoot.style.setProperty('--markerScale', 1/mapNav.scale);
         if(dirtyScale){
+            let dynamicStyles = [];
             for(let i=0; i<scaleCullThresholds.length; i++){
-                styleRoot.style.setProperty(`--minZoomCull_state_${i}`, mapNav.scale >= scaleCullThresholds[i].scale ? 'initial' : 'none');
-                styleRoot.style.setProperty(`--maxZoomCull_state_${i}`, mapNav.scale <= scaleCullThresholds[i].scale ? 'initial' : 'none');
+                if(mapNav.scale >= scaleCullThresholds[i].scale) dynamicStyles.push(`.maxZoomCull_${i}{display:none;}`);
+                if(mapNav.scale <= scaleCullThresholds[i].scale) dynamicStyles.push(`.minZoomCull_${i}{display:none;}`);
             }
+            zoomStyle.innerHTML = dynamicStyles.join('\n');
         }
         previousMapScale = mapNav.scale;
     }

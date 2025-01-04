@@ -1,15 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Protest+Strike&display=swap');
 
 :root{
-    --signScale: 1;
-    --cullThreshold_state_0: none;
-    --cullThreshold_state_1: none;
-    --cullThreshold_state_2: none;
-    --cullThreshold_state_3: none;
-    --cullThreshold_state_4: none;
-    --cullThreshold_state_5: none;
-    --cullThreshold_state_6: none;
-
     --absScale: 1;
     --legendButtonSize: 50px;
 }
