@@ -56,6 +56,7 @@ const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 const zoomStyle = document.getElementById('zoomStyle');
 const styleRoot = document.querySelector(':root');
 const svgns = map.getAttribute('xmlns');
+const redrawTriggerElement = document.getElementById('redrawTrigger');
 
 const map_rails = document.createElementNS(svgns, 'g');
 map_rails.setAttribute('id', 'map_rails');
@@ -256,7 +257,12 @@ function updateMapview(){
             zoomStyle.innerHTML = dynamicStyles.join('\n');
         }
         previousMapScale = mapNav.scale;
+        forceRedraw();
     }
+}
+
+function forceRedraw(){
+    redrawTriggerElement.style.backgroundColor = Color.random().hex;
 }
 
 /** Get the bounding box of all the tracks, and set the map bounds accordingly. Also flips the Y axis.

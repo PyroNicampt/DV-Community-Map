@@ -99,6 +99,15 @@ a:visited{
     pointer-events: all;
 }
 
+#redrawTrigger{
+    transition: background-color 800ms;
+    display: inline-block;
+    width: 1px;
+    height: 5px;
+    background-color: #000;
+    opacity: 0.01;
+}
+
 #settingsPanel{
     user-select: none;
     input, label{
