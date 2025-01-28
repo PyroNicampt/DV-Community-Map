@@ -11,7 +11,8 @@ const bezierGradeResolution = 80;
 const bezierLengthResolution = 80;
 const bezierCurvatureResolution = 80;
 const padding = 500;
-const zoomFactor = 1.5;
+const scrollZoomFactor = 1.25;
+const buttonZoomFactor = 1.5;
 const trackWidth = {
     base: 110,
     min: 3,
@@ -91,7 +92,7 @@ let MapMatrix = {};
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTrackData('trackdata_dv.json');
     await loadPoiData('poi_dv.json');
-    mapScrollSetup();
+    mapNavigationSetup();
 });
 
 async function loadTrackData(file){
@@ -129,7 +130,7 @@ async function loadPoiData(file){
 }
 
 /** Handling for the map scrolling and zooming */
-function mapScrollSetup(){
+function mapNavigationSetup(){
     const touchCache = [];
     let touchCount = 0;
     let pinchDistance = null;
@@ -160,7 +161,6 @@ function mapScrollSetup(){
         }else if(touchCount == 2){
             getTouchAverage();
             zoomAtPosition(touchCenter_x, touchCenter_y, (previousScale * getTouchDistance()/pinchDistance)/mapNav.scale);
-			
         }
         touchCache[e.pointerId].x = e.clientX;
         touchCache[e.pointerId].y = e.clientY;
@@ -174,7 +174,19 @@ function mapScrollSetup(){
         }
     }
     const scrollHandler = e => {
-        if(e.deltaY != 0) zoomAtPosition(e.clientX, e.clientY, e.deltaY > 0 ? 1/zoomFactor : zoomFactor);
+        if(e.deltaY != 0) zoomAtPosition(e.clientX, e.clientY, e.deltaY > 0 ? 1/scrollZoomFactor : scrollZoomFactor);
+    }
+    const navButtonInput = navType => {
+        const centerX = map_container.offsetWidth / 2;
+        const centerY = map_container.offsetHeight / 2;
+        switch(navType){
+            case 'zoomIn':
+                zoomAtPosition(centerX, centerY, buttonZoomFactor);
+                break;
+            case 'zoomOut':
+                zoomAtPosition(centerX, centerY, 1/buttonZoomFactor);
+                break;
+        }
     }
     const navUpdate = ts => {
         if(ts){
@@ -230,27 +242,13 @@ function mapScrollSetup(){
         mapNav.scale *= scaleFactor;
     }
 	
-	window.zoomAtPosition = zoomAtPosition;
-	
     map_container.addEventListener('pointerdown', touchDownHandler);
     map_container.addEventListener('wheel', scrollHandler);
+
+    document.getElementById('navZoomIn').addEventListener('click', e => {navButtonInput('zoomIn');});
+    document.getElementById('navZoomOut').addEventListener('click', e => {navButtonInput('zoomOut');});
     navUpdate();
 }
-
-document.getElementById('zoom-in').addEventListener('click', () => {
-    const centerX = map_container.offsetWidth / 2;
-    const centerY = map_container.offsetHeight / 2;
-    zoomAtPosition(centerX, centerY, zoomFactor); // Use zoomFactor from config.js
-    updateMapview();
-});
-
-document.getElementById('zoom-out').addEventListener('click', () => {
-    const centerX = map_container.offsetWidth / 2;
-    const centerY = map_container.offsetHeight / 2;
-    zoomAtPosition(centerX, centerY, 1 / zoomFactor); // Use zoomFactor from config.js
-    updateMapview();
-});
-
 
 /** Readjust map view to focus on position */
 function updateMapview(){
@@ -279,8 +277,6 @@ function updateMapview(){
         forceRedraw();
     }
 }
-
-
 
 function forceRedraw(){
     redrawTriggerElement.style.backgroundColor = Color.random().hex;

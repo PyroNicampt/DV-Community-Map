@@ -66,8 +66,6 @@ a:visited{
 }
 
 #legendButton{
-    cursor: pointer;
-    user-select: none;
     padding: 8px;
     height: var(--legendButtonSize);
     width: var(--legendButtonSize);
@@ -116,6 +114,7 @@ a:visited{
 }
 
 #stats{
+    pointer-events: none;
     position: fixed;
     width: fit-content;
     right: 10px;
@@ -166,27 +165,21 @@ a:visited{
     font-variation-settings: "wght" 700;
 }
 
-#zoom-buttons {
-    position: absolute;
-    bottom: 80px; /* Position 10px from the bottom */
-    right: 10px;  /* Position 10px from the right */
-    z-index: 1000; /* Ensure it's above the map */
+button{
+    cursor: pointer;
+    user-select: none;
+}
+
+#navigationControls {
+    margin-left: auto;
+    width: fit-content;
     display: flex;
     flex-direction: column;
     gap: 5px;
-}
-
-#zoom-buttons button {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    border-radius: 5px;
-    padding: 10px 35px;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#zoom-buttons button:hover {
-    background-color: #f0f0f0;
+    >*{
+        font-size: 24px;
+        font-weight: bold;
+        width: var(--legendButtonSize);
+        height: var(--legendButtonSize);
+    }
 }
