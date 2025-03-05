@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityModManagerNet;
 using DV.LocoRestoration;
+using DV;
 
 namespace CommunityMapTool {
     [EnableReloading]
@@ -26,6 +27,8 @@ namespace CommunityMapTool {
             }
         }
         static void OnGUI(UnityModManager.ModEntry modEntry) {
+            if(PlayerManager.PlayerTransform != null) GUILayout.Label($"Player Position: {PlayerManager.PlayerTransform.AbsolutePosition()}");
+            GUILayout.Label($"WorldMover offset: {WorldMover.currentMove}");
             if(GUILayout.Button("Dump All Tracks")) DumpAllTracks();
             if(GUILayout.Button("Dump Demonstrator Spawnpoints")) DemonstratorDump();
             if(GUILayout.Button("Copy Position To Clipboard")) ClipboardPlayerPosition();
@@ -38,7 +41,7 @@ namespace CommunityMapTool {
         }
         static void DumpAllTracks() {
             List<string> records = new List<string>();
-            foreach(RailTrack railTrack in UnityEngine.Object.FindObjectsOfType<RailTrack>()) {
+            foreach(RailTrack railTrack in WorldData.RailTracks) {
                 StringBuilder sb = new StringBuilder();
                 string[] baseCurveData = new[] {
                     "type", "bezier",
@@ -54,13 +57,37 @@ namespace CommunityMapTool {
                 for(int i = 0; i < railTrack.curve.pointCount; i++) {
                     BezierPoint point = railTrack.curve[i];
                     sb.Append("\n\t\t{");
-                    sb.Append($"\"position\":{{\"x\":{point.position.x},\"y\":{point.position.y},\"z\":{point.position.z}}}, ");
-                    sb.Append($"\"h1\":{{\"x\":{point.globalHandle1.x},\"y\":{point.globalHandle1.y},\"z\":{point.globalHandle1.z}}}, ");
-                    sb.Append($"\"h2\":{{\"x\":{point.globalHandle2.x},\"y\":{point.globalHandle2.y},\"z\":{point.globalHandle2.z}}}, ");
+                    sb.Append($"\"position\":{{\"x\":{point.position.x - WorldMover.currentMove.x},\"y\":{point.position.y - WorldMover.currentMove.y},\"z\":{point.position.z - WorldMover.currentMove.z}}}, ");
+                    sb.Append($"\"h1\":{{\"x\":{point.globalHandle1.x - WorldMover.currentMove.x},\"y\":{point.globalHandle1.y - WorldMover.currentMove.y},\"z\":{point.globalHandle1.z - WorldMover.currentMove.z}}}, ");
+                    sb.Append($"\"h2\":{{\"x\":{point.globalHandle2.x - WorldMover.currentMove.x},\"y\":{point.globalHandle2.y - WorldMover.currentMove.y},\"z\":{point.globalHandle2.z - WorldMover.currentMove.z}}}, ");
                     sb.Append($"\"type\":\"{point.handleStyle}\"");
                     sb.Append(i + 1 < railTrack.curve.pointCount ? "}," : "}");
                 }
                 sb.Append("\n\t]\n}");
+                records.Add(sb.ToString());
+            }
+            foreach(Junction junction in WorldData.Junctions) {
+                StringBuilder sb = new StringBuilder();
+
+                string[] baseJunctionData = new[] {
+                    "type", "\"junction\"",
+                    "name", $"\"{junction.junctionData.junctionIdLong}\"",
+                    "position", $"{{\"x\":{junction.junctionData.position.x},\"y\":{junction.junctionData.position.y},\"z\":{junction.junctionData.position.z}}}",
+                    "excludeFromJunctionMap", junction.junctionData.excludeFromJunctionMap ? "true" : "false",
+                    "isValid", junction.junctionData.isValid ? "true" : "false",
+                    "linkedJunctions", $"[{string.Join(", ", junction.junctionData.linkedJunctions)}]",
+                    "index", junction.junctionData.junctionIndex.ToString(),
+                    "id", junction.junctionData.junctionId.ToString()
+                };
+                sb.Append("\n{");
+                for(int i = 0; i < baseJunctionData.Length; i++) {
+                    if(i % 2 == 0) sb.Append($"\n\t\"{baseJunctionData[i]}\":");
+                    else {
+                        sb.Append($"{baseJunctionData[i]}");
+                        if(i < baseJunctionData.Length - 1) sb.Append(",");
+                    }
+                }
+                sb.Append("\n}");
                 records.Add(sb.ToString());
             }
             File.WriteAllText(trackOutputPath, "[" + string.Join(",", records.ToArray()) + "\n]");

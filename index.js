@@ -293,14 +293,15 @@ function establishDimensions(){
     let maxY = -Infinity;
     let maxAlt = -Infinity;
     for(const obj of mapData){
-        for(const point of obj.points){
-            minX = Math.min(minX, point.position.x, point.h1.x, point.h2.x);
-            minY = Math.min(minY, point.position.z, point.h1.z, point.h2.z);
-            minAlt = Math.min(minAlt, point.position.y, point.h1.y, point.h2.y);
-            maxX = Math.max(maxX, point.position.x, point.h1.x, point.h2.x);
-            maxY = Math.max(maxY, point.position.z, point.h1.z, point.h2.z);
-            maxAlt = Math.max(maxAlt, point.position.y, point.h1.y, point.h2.y);
-        }
+        if(obj.type == 'bezier')
+            for(const point of obj.points){
+                minX = Math.min(minX, point.position.x, point.h1.x, point.h2.x);
+                minY = Math.min(minY, point.position.z, point.h1.z, point.h2.z);
+                minAlt = Math.min(minAlt, point.position.y, point.h1.y, point.h2.y);
+                maxX = Math.max(maxX, point.position.x, point.h1.x, point.h2.x);
+                maxY = Math.max(maxY, point.position.z, point.h1.z, point.h2.z);
+                maxAlt = Math.max(maxAlt, point.position.y, point.h1.y, point.h2.y);
+            }
     }
     let width = maxX-minX;
     let height = maxY-minY;
@@ -331,11 +332,14 @@ function establishDimensions(){
 
     // Flip the z coordinate so the map doesn't display upside-down
     for(const obj of mapData){
-        for(const point of obj.points){
-            point.position.z = minY+maxY-point.position.z;
-            point.h1.z = minY+maxY-point.h1.z;
-            point.h2.z = minY+maxY-point.h2.z;
-        }
+        if(obj.points)
+            for(const point of obj.points){
+                point.position.z = minY+maxY-point.position.z;
+                point.h1.z = minY+maxY-point.h1.z;
+                point.h2.z = minY+maxY-point.h2.z;
+            }
+        if(obj.position)
+            obj.position.z = minY+maxY-obj.position.z;
     }
 }
 
@@ -346,6 +350,9 @@ function fillSvg(){
             case 'bezier':
                 drawTracks(obj);
                 createTrackSignage(obj);
+                break;
+            case 'junction':
+                addJunction(obj);
                 break;
         }
     }
@@ -567,6 +574,14 @@ function createYardSignage(){
     }
 }
 
+function addJunction(junctionData){
+    if(junctionData.name.startsWith('S-') || junctionData.excludeFromJunctionMap)
+        junctionData.cullLevel = 4;
+    else if(junctionData.name.startsWith('W-'))
+        junctionData.cullLevel = 1;
+    markers.push(junctionData);
+}
+
 /** Sort the tracks and put them into the svg */
 function sortTracks(){
     tracks.sort((a,b) => {
@@ -660,10 +675,11 @@ export function setTrackColorMode(mode){
     }
     if(modeFunction != null){
         for(let curve of mapData){
-            for(let section of curve.points){
-                if(!section.element) continue;
-                modeFunction(section, curve);
-            }
+            if(curve.type == 'bezier')
+                for(let section of curve.points){
+                    if(!section.element) continue;
+                    modeFunction(section, curve);
+                }
         }
     }
 }
@@ -674,16 +690,21 @@ function drawSignage(){
     const gradeSigns = document.createElementNS(svgns, 'g');
     const speedSigns = document.createElementNS(svgns, 'g');
     const yardSigns = document.createElementNS(svgns, 'g');
+    const junctionSigns = document.createElementNS(svgns, 'g');
 
     signage_container.setAttribute('id', 'signage_container');
     gradeSigns.setAttribute('id', 'signage_grade');
     speedSigns.setAttribute('id', 'signage_speed');
     yardSigns.setAttribute('id', 'signage_yard');
+    junctionSigns.setAttribute('id', 'signage_junction');
 
     map_markers.appendChild(signage_container);
     signage_container.appendChild(gradeSigns);
     signage_container.appendChild(speedSigns);
     signage_container.appendChild(yardSigns);
+    signage_container.appendChild(junctionSigns);
+
+    junctionSigns.style.display = 'none';
 
     for(const markerData of markers){
         let markerElement = document.createElementNS(svgns, 'g');
@@ -772,6 +793,13 @@ function drawSignage(){
                 markerTooltip.innerHTML = signText;
 
                 yardSigns.appendChild(markerElement);
+                break;
+            case 'junction':
+                markerImg.setAttribute('href', `#junctionSign`);
+                markerImg.setAttribute('fill', '#de2121');
+                markerTooltip.innerHTML = `"${markerData.name}" - #${markerData.index}\n${markerData.excludeFromJunctionMap ? 'Inv' : 'V'}isible On Map\nLinked Junctions:\n- ${markerData.linkedJunctions.join('\n- ')}`;
+                markerElement.setAttribute('transform', `translate(${markerData.position.x} ${markerData.position.z})`);
+                junctionSigns.appendChild(markerElement);
                 break;
             default:
                 markerElement.remove();

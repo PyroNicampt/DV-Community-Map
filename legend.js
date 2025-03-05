@@ -54,6 +54,14 @@ let settingEntries = [
                 func: state =>{
                     document.getElementById('signage_yard').style.display = state ? 'unset' : 'none';
                 },
+            },
+            {
+                label: 'Junctions',
+                id: 'toggle_junctions',
+                state: false,
+                func: state =>{
+                    document.getElementById('signage_junction').style.display = state ? 'unset' : 'none';
+                },
             }
         ],
     },
