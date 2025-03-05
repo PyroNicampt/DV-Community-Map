@@ -241,6 +241,7 @@ function populateKey(){
         addKeyEntry(`<use fill="${Config.gradeColors['grade_'+gradeIndex]}" href="#gradeArrow" transform="rotate(90)"/>`, ` ${gradeValue} Grade`);
     }
     addKeyEntry('<use href="#speedSign_5"/>', ' Speed Limit');
+    addKeyEntry('<use href="#junctionSign" fill="#de2121" transform="scale(0.75)"/>', ' Junction/Switch');
     addKeyEntry('<use href="#mrk_office" fill="#c4693e" transform="scale(0.75)"/>', ' Station Office');
     addKeyEntry('<use href="#mrk_shop" fill="#4f54e9" transform="scale(0.75)"/>', ' Shop');
     addKeyEntry('<use href="#mrk_service_repair" fill="#239a96" transform="scale(0.75)"/>', ' Repair Service');
@@ -251,7 +252,7 @@ function populateKey(){
     addKeyEntry('<use href="#mrk_landmark" fill="#af5757" transform="scale(0.75)"/>', ' Landmark');
     addKeyEntry('<use href="#mrk_garage" fill="#8b5dd7" transform="scale(0.75)"/>', ' Garage');
     //Add empty entries to make entries align right in the columns.
-    for(let i=0; i<3; i++){
+    for(let i=0; i<2; i++){
         addKeyEntry();
     }
 }
