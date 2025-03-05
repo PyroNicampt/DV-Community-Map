@@ -425,7 +425,7 @@ function drawTracks(bezierData){
             `Min Radius: ${Math.round(1/bezierData.points[i].curvature)} meters`,
             `Top Speed: ${Utils.radiusToSpeed(1/bezierData.points[i].curvature)} km/h`,
             `Length: ${Math.round(bezierData.points[i].bezLength*10)/10} meters`,
-            `Altitude: ${Math.round((bezStart.y+bezEnd.y)*0.5)} meters`,
+            `Altitude (ASL): ${Math.round((bezStart.y+bezEnd.y)*0.5)-110} meters`,
             ].join('\n');
         bezierData.points[i].element.appendChild(title);
     }
