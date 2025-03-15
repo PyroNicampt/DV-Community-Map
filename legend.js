@@ -3,7 +3,7 @@
 import * as Utils from './js/utillib.js';
 import * as Config from './config.js';
 import { Color } from './js/colorlib.js';
-import { setTrackColorMode } from './index.js';
+import * as MapData from './js/mapdata.js';
 
 let settingEntries = [
     {
@@ -18,9 +18,9 @@ let settingEntries = [
             'Track Random',
             'Curve Random',
         ],
-        default: 'Grade',
+        state: 'Grade',
         func: state =>{
-            setTrackColorMode(state);
+            MapData.setTrackColorMode(state);
         }
     },
     {
@@ -28,15 +28,17 @@ let settingEntries = [
         id: 'toggle_signage',
         state: true,
         func: state =>{
-            document.getElementById('signage_container').style.display = state ? 'unset' : 'none';
+            MapData.layers.signage = state;
+            MapData.view.dirty = true;
         },
         children: [
             {
-                label: 'Speed Signs',
+                label: 'Speed Signage',
                 id: 'toggle_speedSigns',
                 state: true,
                 func: state =>{
-                    document.getElementById('signage_speed').style.display = state ? 'unset' : 'none';
+                    MapData.layers.speedSigns = state;
+                    MapData.view.dirty = true;
                 },
             },
             {
@@ -44,7 +46,8 @@ let settingEntries = [
                 id: 'toggle_gradeSigns',
                 state: true,
                 func: state =>{
-                    document.getElementById('signage_grade').style.display = state ? 'unset' : 'none';
+                    MapData.layers.gradeArrows = state;
+                    MapData.view.dirty = true;
                 },
             },
             {
@@ -52,15 +55,17 @@ let settingEntries = [
                 id: 'toggle_yardSigns',
                 state: true,
                 func: state =>{
-                    document.getElementById('signage_yard').style.display = state ? 'unset' : 'none';
+                    MapData.layers.yardSigns = state;
+                    MapData.view.dirty = true;
                 },
             },
             {
                 label: 'Junctions',
                 id: 'toggle_junctions',
-                state: false,
+                state: true,
                 func: state =>{
-                    document.getElementById('signage_junction').style.display = state ? 'unset' : 'none';
+                    MapData.layers.junctions = state;
+                    MapData.view.dirty = true;
                 },
             }
         ],
@@ -70,15 +75,26 @@ let settingEntries = [
         id: 'toggle_poi',
         state: true,
         func: state => {
-            document.getElementById('poi_container').style.display = state ? 'unset' : 'none';
+            MapData.layers.poi = state;
+            MapData.view.dirty = true;
         },
         children: [
+            {
+                label: 'Stations',
+                id: 'toggle_stations',
+                state: true,
+                func: state =>{
+                    MapData.layers.stations = state;
+                    MapData.view.dirty = true;
+                }
+            },
             {
                 label: 'Services',
                 id: 'toggle_services',
                 state: true,
                 func: state =>{
-                    document.getElementById('poi_service').style.display = state ? 'unset' : 'none';
+                    MapData.layers.services = state;
+                    MapData.view.dirty = true;
                 },
             },
             {
@@ -86,7 +102,8 @@ let settingEntries = [
                 id: 'toggle_landmarks',
                 state: true,
                 func: state =>{
-                    document.getElementById('poi_landmarks').style.display = state ? 'unset' : 'none';
+                    MapData.layers.landmarks = state;
+                    MapData.view.dirty = true;
                 },
             },
         ]
@@ -98,19 +115,44 @@ let settingEntries = [
             'Uphill',
             'Downhill',
         ],
-        default: 'Uphill',
+        state: 'Uphill',
         func: state =>{
-            let newHref = state == 'Uphill' ? '#gradeArrow' : '#gradeArrowDownhill';
-            for(let arrow of document.getElementsByClassName('gradeArrow')){
-                arrow.setAttribute('href', newHref);
-            }
+            MapData.layers.gradeDirection = state == 'Downhill' ? 'Down' : '';
+            MapData.view.dirty = true;
         }
     },
+    {
+        label: 'Terrain',
+        id: 'dropdown_terrain',
+        options: [
+            'None',
+            'Simple',
+            'DVRT',
+        ],
+        state: 'None',
+        func: state =>{
+            let mapTerrain = document.getElementById('mapTerrain');
+            if(state == 'None'){
+                MapData.layers.terrain = false;
+                MapData.view.dirty = true;
+            }else{
+                mapTerrain.onload = () => {
+                    MapData.layers.terrain = true;
+                    MapData.view.dirty = true;
+                }
+                if(state == 'Simple'){
+                    document.getElementById('mapTerrain').src = 'terrains/simple.jpg';
+                }else if(state == 'DVRT'){
+                    document.getElementById('mapTerrain').src = 'terrains/dvrt.jpg';
+                }
+            }
+        }
+    }
 ];
 
 const legendKey = document.getElementById('legendKey');
 
-document.addEventListener('DOMContentLoaded', async () => {
+export function initialize(){
     const settingsPanel = document.getElementById('settingsPanel');
     for(let thisSetting of settingEntries){
         addSettingEntry(thisSetting, settingsPanel);
@@ -130,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(document.body.clientWidth <= 700) legendButtonEvent();
     populateKey();
     setLastUpdateData();
-});
+};
 
 function addSettingEntry(thisSetting, parent, indent=0){
     thisSetting.divContainer = document.createElement('div');
@@ -166,7 +208,7 @@ function addSettingEntry(thisSetting, parent, indent=0){
                     optionElement.value = inputEntry;
                     optionElement.innerHTML = inputEntry;
                 }
-                if(inputEntry == thisSetting.default) optionElement.selected = true;
+                if(inputEntry == thisSetting.state) optionElement.selected = true;
                 thisSetting.inputElement.appendChild(optionElement);
             }
             if(thisSetting.func){
@@ -199,6 +241,10 @@ function addSettingEntry(thisSetting, parent, indent=0){
     thisSetting.inputElement.style.margin = `0 0.5em 0 ${indent}em`;
     thisSetting.divContainer.prepend(thisSetting.inputElement);
 
+    if(thisSetting.func){
+        thisSetting.func(thisSetting.state);
+    }
+
     if(thisSetting.children){
         for(let child of thisSetting.children){
             addSettingEntry(child, parent, indent+1);
@@ -208,11 +254,16 @@ function addSettingEntry(thisSetting, parent, indent=0){
 
 let pageLoadUpdateDate = null;
 async function setLastUpdateData(){
+    if(!window.location.host.includes('github')) return;
     let commits = await (await fetch(new Request('https://api.github.com/repos/PyroNicampt/DV-Community-Map/commits'))).json();
     let lastUpdateElement = document.getElementById('lastUpdate');
+    if(!commits){
+        lastUpdateElement.innerHTML = '<a href="https://github.com/PyroNicampt/DV-Community-Map/commits/main/" title="Could not fetch commit history">Fetch Error</a>';
+        return;
+    };
     let updateDate = new Date(commits[0].commit.author.date);
-    
-    lastUpdateElement.innerHTML = `<a href="https://github.com/PyroNicampt/DV-Community-Map/commits/main/" title="${updateDate.toString()}">${Utils.formattedTimeBetweenDates(new Date(), updateDate)} ago</a>`;
+    lastUpdateElement.innerHTML = `<a href="https://github.com/PyroNicampt/DV-Community-Map/commits/main/" title="${updateDate.toString()}">${Utils.formattedTimeBetweenDates(new Date(), updateDate)} ${new Date() >= updateDate ? 'ago' : 'from now'}</a>`;
+    document.getElementById('changelog').innerHTML = commits[0].commit.message.replace('\n','<br>');
     if(pageLoadUpdateDate == null){
         pageLoadUpdateDate = updateDate;
     }else{
@@ -221,38 +272,24 @@ async function setLastUpdateData(){
         }
     }
 
-    setTimeout(() => {setLastUpdateData()}, 900000);
+    setTimeout(() => {setLastUpdateData()}, 600000);
 }
 
 function populateKey(){
-    const getGradeValue = gradeIndex => {return Math.round(Utils.gradeIncrements[Utils.gradeIncrements.length-gradeIndex-1]*10000)/100};
-    for(let i=-1; i<Utils.gradeIncrements.length; i++){
-        let gradeValue = `< ${getGradeValue(0)}`;
-        let gradeIndex = 'flat';
-        if(i>=0){
-            gradeValue = `${getGradeValue(i)}`;
-            gradeIndex = i;
-        }
-        if(i == Utils.gradeIncrements.length-1){
-            gradeValue = '> '+gradeValue+'%';
-        }else if(i >= 0){
-            gradeValue += ` - ${getGradeValue(i+1)}%`;
-        }
-        addKeyEntry(`<use fill="${Config.gradeColors['grade_'+gradeIndex]}" href="#gradeArrow" transform="rotate(90)"/>`, ` ${gradeValue} Grade`);
-    }
-    addKeyEntry('<use href="#speedSign_5"/>', ' Speed Limit');
-    addKeyEntry('<use href="#junctionSign" fill="#de2121" transform="scale(0.75)"/>', ' Junction/Switch');
-    addKeyEntry('<use href="#mrk_office" fill="#c4693e" transform="scale(0.75)"/>', ' Station Office');
-    addKeyEntry('<use href="#mrk_shop" fill="#4f54e9" transform="scale(0.75)"/>', ' Shop');
-    addKeyEntry('<use href="#mrk_service_repair" fill="#239a96" transform="scale(0.75)"/>', ' Repair Service');
-    addKeyEntry('<use href="#mrk_service_diesel" fill="#239a96" transform="scale(0.75)"/>', ' Diesel Refuel');
-    addKeyEntry('<use href="#mrk_service_charger" fill="#239a96" transform="scale(0.75)"/>', ' Electric Charger');
-    addKeyEntry('<use href="#mrk_coal" fill="#202020" transform="scale(0.75)"/>', ' Coal Tower');
-    addKeyEntry('<use href="#mrk_water" fill="#3fa5ff" transform="scale(0.75)"/>', ' Water Tower');
-    addKeyEntry('<use href="#mrk_landmark" fill="#af5757" transform="scale(0.75)"/>', ' Landmark');
-    addKeyEntry('<use href="#mrk_garage" fill="#8b5dd7" transform="scale(0.75)"/>', ' Garage');
+    addKeyEntry('gradeArrow', 'Grade Indication')
+    addKeyEntry('speed_5', 'Speed Limit');
+    addKeyEntry('junction', 'Junction/Switch');
+    addKeyEntry('office', 'Station Office');
+    addKeyEntry('shop', 'Shop');
+    addKeyEntry('service_repair', 'Repair Service');
+    addKeyEntry('service_diesel', 'Diesel Refuel');
+    addKeyEntry('service_charger', 'Electric Charger');
+    addKeyEntry('coal', 'Coal Tower');
+    addKeyEntry('water', 'Water Tower');
+    addKeyEntry('landmark', 'Landmark');
+    addKeyEntry('garage', 'Garage');
     //Add empty entries to make entries align right in the columns.
-    for(let i=0; i<2; i++){
+    for(let i=0; i<3; i++){
         addKeyEntry();
     }
 }
@@ -262,15 +299,17 @@ function populateKey(){
  * @param {string} keyImageHTML
  * @param {string} keyLabel
  */
-function addKeyEntry(keyImageHTML, keyLabel){
+function addKeyEntry(keySprite, keyLabel){
     if(!keyLabel) keyLabel = '&nbsp;';
     let keyDiv = document.createElement('div');
-    if(keyImageHTML){
-        let keyImage = document.createElement('svg');
-        keyImage.innerHTML = keyImageHTML;
+    if(keySprite && Config.spriteBounds[keySprite]){
+        let keyImage = document.createElement('span');
+        let spriteBounds = Config.spriteBounds[keySprite];
         keyImage.classList.add('inlineSvg');
-        keyImage.setAttribute('viewBox', '-150 -150 300 300');
+        keyImage.style.background = `url('mapSprites.svg') -${spriteBounds.x/spriteBounds.width}em -${spriteBounds.y/spriteBounds.height}em`;
+        keyImage.style.backgroundSize = '1000%';
         keyDiv.appendChild(keyImage);
+        keyLabel = ' '+keyLabel;
     }
     keyDiv.innerHTML += keyLabel;
     legendKey.appendChild(keyDiv);

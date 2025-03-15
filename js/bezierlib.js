@@ -1,5 +1,6 @@
 'use strict';
 import * as Vector from './vectorlib.js';
+import * as Utils from './utillib.js';
 /** A 3D vector
  * @typedef {Object} Vector
  * @property {number} x
@@ -138,4 +139,53 @@ export function evaluateAcceleration(p1, h1, h2, p2, t){
         result[axis] = p1[axis]*p1v + h1[axis]*h1v + h2[axis]*h2v + p2[axis]*p2v;
     }
     return result;
+}
+
+/** Get the min and max bounds of a bezier.
+ * @param {Vector} p1 
+ * @param {Vector} h1 
+ * @param {Vector} h2 
+ * @param {Vector} p2 
+ */
+export function getBounds(p1, h1, h2, p2){
+    // TODO: replace this with a not brute-forced version.
+    let pos;
+    let min = {x:Infinity, y:Infinity, z:Infinity};
+    let max = {x:-Infinity, y:-Infinity, z:-Infinity};
+    for(let i=0; i<=40; i++){
+        pos = evaluatePoint(p1, h1, h2, p2, i/40);
+        min.x = Math.min(pos.x, min.x);
+        max.x = Math.max(pos.x, max.x);
+        min.y = Math.min(pos.y, min.y);
+        max.y = Math.max(pos.y, max.y);
+        min.z = Math.min(pos.z, min.z);
+        max.z = Math.max(pos.z, max.z);
+    }
+    return {min:min, max:max};
+}
+
+/** Get the closest point on the curve to `testPoint` in 2D space, as well as the distance.
+ * (This means using the (x,z) coordinates of the bezier as (x,y))
+ * @param {Vector} p1 
+ * @param {Vector} h1 
+ * @param {Vector} h2 
+ * @param {Vector} p2 
+ * @param {*} testPoint 
+ */
+export function getNearestPoint2D(p1, h1, h2, p2, testPoint, iterationCount = 200){
+    // TODO: replace this with a more accurate version
+    let minDistance = Infinity;
+    let bezEval;
+    let evalDist;
+    let closestPoint = {x:0, y:0};
+    for(let i=0; i<=iterationCount; i++){
+        bezEval = evaluatePoint(p1, h1, h2, p2, i/iterationCount);
+        evalDist = Math.pow(testPoint.x-bezEval.x, 2) + Math.pow(testPoint.y-bezEval.z, 2);
+        if(evalDist < minDistance){
+            minDistance = evalDist;
+            closestPoint.x = bezEval.x;
+            closestPoint.y = bezEval.y;
+        }
+    }
+    return {point:closestPoint, distance:Math.sqrt(minDistance)};
 }
