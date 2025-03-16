@@ -166,6 +166,7 @@ function mapNavigationSetup(){
 
 function tooltipSetup(){
     const tooltip = document.getElementById('tooltip');
+    const cursorCoordDisplay = document.getElementById('cursorCoordDisplay');
     let tooltipX = 0;
     let tooltipY = 0;
     let tooltipDirty = false;
@@ -204,6 +205,7 @@ function tooltipSetup(){
             }
             tooltipDirty = false;
         }
+        cursorCoordDisplay.innerHTML = `X: ${MapData.view.unconvertX(tooltipX).toFixed(2)} / Z: ${MapData.view.unconvertY(tooltipY).toFixed(2)}`;
         requestAnimationFrame(tooltipUpdate);
     }
     tooltipUpdate();
