@@ -106,6 +106,21 @@ let settingEntries = [
                     MapData.view.dirty = true;
                 },
             },
+            {
+                label: 'Demonstrator Spawns',
+                id: 'dropdown_demonstrators',
+                options: [
+                    'None',
+                    'Hint',
+                    'Exact',
+                ],
+                state: 'None',
+                func: state =>{
+                    MapData.layers.demonstratorExact = state == 'Exact';
+                    MapData.layers.demonstratorHint = state == 'Hint';
+                    MapData.view.dirty = true;
+                },
+            }
         ]
     },
     {
@@ -288,6 +303,7 @@ function populateKey(){
     addKeyEntry('water', 'Water Tower');
     addKeyEntry('landmark', 'Landmark');
     addKeyEntry('garage', 'Garage');
+    addKeyEntry('demonstrator', 'Demonstrator Spawn');
     //Add empty entries to make entries align right in the columns.
     for(let i=0; i<3; i++){
         addKeyEntry();

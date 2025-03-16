@@ -99,8 +99,8 @@ namespace CommunityMapTool {
                 sb.Append("\n{");
                 string[] jsonKVP = new[] {
                     "name", $"\"{spawnPoint.name}\"",
-                    "position", $"{{\"x\":{spawnPoint.transform.position.x},\"y\":{spawnPoint.transform.position.y},\"z\":{spawnPoint.transform.position.z}}}",
-                    "isUsed", spawnPoint.pointUsed ? "true" : "false"
+                    "type", $"\"demonstratorSpawn\"",
+                    "position", $"{{\"x\":{spawnPoint.transform.position.x - WorldMover.currentMove.x},\"y\":{spawnPoint.transform.position.y - WorldMover.currentMove.y},\"z\":{spawnPoint.transform.position.z - WorldMover.currentMove.z}}}"
                 };
                 for(int i = 0; i < jsonKVP.Length; i++) {
                     if(i % 2 == 0) sb.Append($"\n\t\"{jsonKVP[i]}\":");

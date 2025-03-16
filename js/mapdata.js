@@ -104,6 +104,9 @@ export function sortMarkers(){
         if(b.type == 'junction') return -1;
         if(a.type == 'service') return 1;
         if(b.type == 'service') return -1;
+
+        if(a.type == 'demonstratorSpawnHint') return -1;
+        if(b.type == 'demonstratorSpawnHint') return 1;
         return 0;
     });
 }
@@ -256,16 +259,26 @@ export function addPoi(poiData, level = 0){
             else if(poiData.military) newPoi.tooltip = '<h1>Military Office</h1>';
             else newPoi.tooltip = '<h1>Office</h1>';
             break;
+        case 'demonstratorSpawn':
+            newPoi.name = newPoi.name.replace('spawn anchor ', '');
+            newPoi.tooltip = `<h2>Demonstrator Spawnpoint</h2>${newPoi.name ?? ''}`;
+            break;
+        case 'demonstratorSpawnHint':
+            newPoi.tooltip = `<h2>Demonstrator Spawn Hint</h2>${newPoi.name ?? ''}`;
+            newPoi.radius = poiData.radius;
+            break;
         default:
             newPoi.tooltip = `<h1>${newPoi.name}</h1>${poiData.description ? '<hr>'+poiData.description : ''}`;
             newPoi.minZoom = 0.07;
             break;
     }
 
-    markers.push(newPoi);
+    if(poiData.type != 'dummy')
+        markers.push(newPoi);
+
     if(poiData.children){
         for(let child of poiData.children){
-            addPoi(child, level+1);
+            addPoi(child, level+(poiData.type == 'dummy' ? 0 : 1));
         }
     }
 }

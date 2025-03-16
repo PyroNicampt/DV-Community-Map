@@ -418,6 +418,25 @@ function redrawMap(){
                 mapctx.fillStyle = '#000';
                 mapctx.fillText(marker.name, markerX - 0.5*tempMeasure.width, markerY + 0.5*tempMeasure.height);
                 break;
+            case 'demonstratorSpawn':
+                if(!(MapData.layers.demonstratorExact && MapData.layers.poi)) break;
+                marker.visible = true;
+                curSprite = Config.spriteBounds.demonstrator;
+                spriteSize = 25;
+                break;
+            case 'demonstratorSpawnHint':
+                if(!(MapData.layers.demonstratorHint && MapData.layers.poi)) break;
+                marker.visible = true;
+                if(!marker.tooltipHitzone) marker.tooltipHitzone = {};
+                marker.tooltipHitzone.radius = marker.radius * MapData.view.scale;
+                mapctx.beginPath();
+                mapctx.moveTo(markerX, markerY);
+                mapctx.arc(markerX, markerY, marker.radius*MapData.view.scale, 0, Math.PI*2);
+                mapctx.fillStyle = '#894b35';
+                mapctx.globalAlpha = 0.65;
+                mapctx.fill();
+                mapctx.globalAlpha = 1.0;
+                break;
             default:
                 if(!MapData.layers.poi) break;
                 marker.visible = true;

@@ -667,5 +667,434 @@
     "name":"Radar Dome",
     "type":"landmark",
     "position":{"x":7161.123,"y":498.84,"z":9598.941}
+},
+{
+    "name":"demonstrators",
+    "type":"dummy",
+    "children":[
+        {
+            "name":"City West",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":1980,"y":0,"z":5644}
+        },
+        {
+            "name":"CW to OWC",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":3373,"y":0,"z":5597}
+        },
+        {
+            "name":"Sawmill",
+            "type":"demonstratorSpawnHint",
+            "radius":350,
+            "position":{"x":1250,"y":0,"z":2370}
+        },
+        {
+            "name":"Forestry South",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":5358,"y":0,"z":3613}
+        },
+        {
+            "name":"Oil Well Central",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":4846,"y":0,"z":6372}
+        },
+        {
+            "name":"Farm",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":6094,"y":0,"z":6760}
+        },
+        {
+            "name":"Coal Plant",
+            "type":"demonstratorSpawnHint",
+            "radius":400,
+            "position":{"x":2117,"y":0,"z":9136}
+        },
+        {
+            "name":"Machine Factory",
+            "type":"demonstratorSpawnHint",
+            "radius":150,
+            "position":{"x":2300,"y":0,"z":10694}
+        },
+        {
+            "name":"Iron Mine West",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":2066,"y":0,"z":13300}
+        },
+        {
+            "name":"Oil Refinery",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":6490,"y":0,"z":11449}
+        },
+        {
+            "name":"Forestry Central",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":5808,"y":0,"z":9006}
+        },
+        {
+            "name":"Forestry Central",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":5808,"y":0,"z":9006}
+        },
+        {
+            "name":"Steel Mill",
+            "type":"demonstratorSpawnHint",
+            "radius":200,
+            "position":{"x":7886,"y":0,"z":7114}
+        },
+        {
+            "name":"Coal Mine South",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":8364,"y":0,"z":3308}
+        },
+        {
+            "name":"City South",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":10200,"y":0,"z":1280}
+        },
+        {
+            "name":"Harbor West",
+            "type":"demonstratorSpawnHint",
+            "radius":200,
+            "position":{"x":12864,"y":0,"z":3491}
+        },
+        {
+            "name":"Harbor East",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":13509,"y":0,"z":3507}
+        },
+        {
+            "name":"Coal Mine East",
+            "type":"demonstratorSpawnHint",
+            "radius":200,
+            "position":{"x":15605,"y":0,"z":11202}
+        },
+        {
+            "name":"Goods Factory",
+            "type":"demonstratorSpawnHint",
+            "radius":150,
+            "position":{"x":13134,"y":0,"z":11106}
+        },
+        {
+            "name":"Goods Factory Outskirts",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":12509,"y":0,"z":10566}
+        },
+        {
+            "name":"Oil Well North",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":11341,"y":0,"z":11487}
+        },
+        {
+            "name":"Food Factory",
+            "type":"demonstratorSpawnHint",
+            "radius":300,
+            "position":{"x":9424,"y":0,"z":13342}
+        },
+        {
+            "name":"Iron Mine East",
+            "type":"demonstratorSpawnHint",
+            "radius":200,
+            "position":{"x":15070,"y":0,"z":15423}
+        },
+        {
+            "name":"spawn anchor CP Workshop 50m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":2216.55,"y":145.119,"z":9034.95}
+        },
+        {
+            "name":"spawn anchor CME Field 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":15632.13,"y":204.28,"z":11162.54}
+        },
+        {
+            "name":"spawn anchor CP Workshop 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":1852.979,"y":145.119,"z":9329.24}
+        },
+        {
+            "name":"spawn anchor CP Bush 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2160.51,"y":145.119,"z":9042.45}
+        },
+        {
+            "name":"spawn anchor CMS Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":8514.341,"y":156.3079,"z":3552.408}
+        },
+        {
+            "name":"spawn anchor SM Depot 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":8038.72,"y":131.86,"z":7127.34}
+        },
+        {
+            "name":"spawn anchor GF Workshop 30m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":13087.57,"y":140.093,"z":11039.52}
+        },
+        {
+            "name":"spawn anchor IME Bush 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":15170.11,"y":248.2943,"z":15437.31}
+        },
+        {
+            "name":"spawn anchor HB Plateau 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":12923.64,"y":113.08,"z":3639.59}
+        },
+        {
+            "name":"spawn anchor HB Yard 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13518.51,"y":112.97,"z":3495.79}
+        },
+        {
+            "name":"spawn anchor IMW Warehouse 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2113.4,"y":133.69,"z":13433.45}
+        },
+        {
+            "name":"spawn anchor GF Field 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13176.75,"y":140.093,"z":11059.94}
+        },
+        {
+            "name":"spawn anchor CP Lot 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2253.34,"y":145.119,"z":8853.61}
+        },
+        {
+            "name":"spawn anchor FRS Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":5325.05,"y":174.74,"z":3785.03}
+        },
+        {
+            "name":"spawn anchor SM SteelMill 30m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":7925.49,"y":131.86,"z":7188.08}
+        },
+        {
+            "name":"spawn anchor HB Bush 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13427.02,"y":112.97,"z":3622.94}
+        },
+        {
+            "name":"spawn anchor FF Station 13m",
+            "type":"demonstratorSpawn",
+            "position":{"x":9521.979,"y":119.2,"z":13465.91}
+        },
+        {
+            "name":"spawn anchor GF Lake 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":12582.31,"y":110.51,"z":10648.67}
+        },
+        {
+            "name":"spawn anchor CW Plateau 13m",
+            "type":"demonstratorSpawn",
+            "position":{"x":1862.01,"y":122.323,"z":5450.5}
+        },
+        {
+            "name":"spawn anchor HB Roundhouse 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":12788.12,"y":113.08,"z":3601.81}
+        },
+        {
+            "name":"spawn anchor OWC Field 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":4929.6,"y":122.96,"z":6324.2}
+        },
+        {
+            "name":"spawn anchor CP Workshop 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":1856.359,"y":145.119,"z":9288.9}
+        },
+        {
+            "name":"spawn anchor SM SteelMill 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":7924.46,"y":131.86,"z":7112.42}
+        },
+        {
+            "name":"spawn anchor SW Workshop 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":1309.609,"y":147.27,"z":2193.77}
+        },
+        {
+            "name":"spawn anchor GF Field 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13021.11,"y":140.093,"z":11083.36}
+        },
+        {
+            "name":"spawn anchor HB Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13380.01,"y":112.97,"z":3542.92}
+        },
+        {
+            "name":"spawn anchor FF Warehouse 9m",
+            "type":"demonstratorSpawn",
+            "position":{"x":9400.66,"y":120.8,"z":13476.36}
+        },
+        {
+            "name":"spawn anchor GF Workshop 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13066.43,"y":140.093,"z":11023.47}
+        },
+        {
+            "name":"spawn anchor MF Roundhouse 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2212.609,"y":159.193,"z":10615.77}
+        },
+        {
+            "name":"spawn anchor OWN Depot 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":11535.71,"y":122.24,"z":11628.09}
+        },
+        {
+            "name":"spawn anchor CW Bush 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":1827.585,"y":122.213,"z":5668.852}
+        },
+        {
+            "name":"spawn anchor CS Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":10017.58,"y":134.73,"z":1378.58}
+        },
+        {
+            "name":"spawn anchor OR Depot 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":6552.149,"y":143.92,"z":11473.41}
+        },
+        {
+            "name":"spawn anchor Ditch 20m",
+            "type":"demonstratorSpawn",
+            "position":{"x":3320.215,"y":112.935,"z":5688.702}
+        },
+        {
+            "name":"spawn anchor CW Bush 22m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":1924.729,"y":122.213,"z":5567.21}
+        },
+        {
+            "name":"spawn anchor SM Bush 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":7917.89,"y":131.73,"z":7247.16}
+        },
+        {
+            "name":"spawn anchor FM Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":6007.85,"y":123.89,"z":6639.3}
+        },
+        {
+            "name":"spawn anchor IMW Bush 13m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2193.83,"y":133.69,"z":13333.51}
+        },
+        {
+            "name":"spawn anchor OR Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":6568.97,"y":143.92,"z":11452.62}
+        },
+        {
+            "name":"spawn anchor FF Warehouse 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":9369.199,"y":120.78,"z":13418.32}
+        },
+        {
+            "name":"spawn anchor FF Depot 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":9327.21,"y":119.2,"z":13358.35}
+        },
+        {
+            "name":"spawn anchor CMS Warehouse 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":8498.551,"y":156.3079,"z":3233.249}
+        },
+        {
+            "name":"spawn anchor FF Turntable 13m",
+            "type":"demonstratorSpawn",
+            "position":{"x":9381.989,"y":119.2,"z":13330.21}
+        },
+        {
+            "name":"spawn anchor CS Museum 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":10274.72,"y":134.73,"z":1443.29}
+        },
+        {
+            "name":"spawn anchor IMW Bush 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2185.58,"y":133.69,"z":13195.64}
+        },
+        {
+            "name":"spawn anchor CP Bush 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2004.42,"y":145.119,"z":8912.18}
+        },
+        {
+            "name":"spawn anchor HB Workshop 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":13279.06,"y":112.97,"z":3437.66}
+        },
+        {
+            "name":"spawn anchor SM Wreckpile 9m",
+            "type":"demonstratorSpawn",
+            "position":{"x":7848.25,"y":131.73,"z":7213.14}
+        },
+        {
+            "name":"spawn anchor HB Field 50m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":13764.49,"y":112.97,"z":3556.25}
+        },
+        {
+            "name":"spawn anchor OR Field 50m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":6394.12,"y":143.92,"z":11365.58}
+        },
+        {
+            "name":"spawn anchor OR Industry 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":6452.59,"y":143.92,"z":11230.71}
+        },
+        {
+            "name":"spawn anchor SM Wreckpile 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":7863.1,"y":131.73,"z":7208.11}
+        },
+        {
+            "name":"spawn anchor MF Roundhouse 30m 2",
+            "type":"demonstratorSpawn",
+            "position":{"x":2278.24,"y":159.193,"z":10676.87}
+        },
+        {
+            "name":"spawn anchor FRC Field 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":5759.84,"y":144.91,"z":9003.39}
+        },
+        {
+            "name":"spawn anchor CW Water 22m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2243.05,"y":111.01,"z":5699.65}
+        },
+        {
+            "name":"spawn anchor CME Mine 30m",
+            "type":"demonstratorSpawn",
+            "position":{"x":15541.85,"y":179.9383,"z":11026.77}
+        },
+        {
+            "name":"spawn anchor MF Roundhouse 50m",
+            "type":"demonstratorSpawn",
+            "position":{"x":2267.709,"y":159.193,"z":10657.35}
+        }
+    ]
 }
 ]
