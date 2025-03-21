@@ -38,7 +38,7 @@ window.addEventListener('resize', () => {MapData.view.dirty = true});
 
 /** Handling for the map scrolling and zooming */
 function mapNavigationSetup(){
-    const touchCache = [];
+    let touchCache = [];
     let touchCount = 0;
     let pinchDistance = null;
     let previousScale = null;
@@ -59,17 +59,24 @@ function mapNavigationSetup(){
             previousScale = MapData.view.scale;
         }
         mapContainer.style.cursor = 'grabbing';
-        isNavigating = true;
     }
     const touchMoveHandler = e => {
-        if(!touchCache[e.pointerId]) return;
+        if(!touchCache[e.pointerId]){
+            touchCache = [];
+            return;
+        }
         if(touchCount == 1){
             MapData.view.x += e.clientX - touchCache[e.pointerId].x;
             MapData.view.y -= e.clientY - touchCache[e.pointerId].y;
         }else if(touchCount == 2){
             getTouchAverage();
             zoomAtPosition(touchCenter_x, touchCenter_y, (previousScale * getTouchDistance()/pinchDistance)/MapData.view.scale);
+        }else{
+            touchCache = [];
+            MapData.view.dirty = true;
+            return;
         }
+        isNavigating = true;
         touchCache[e.pointerId].x = e.clientX;
         touchCache[e.pointerId].y = e.clientY;
         MapData.view.dirty = true;
@@ -80,7 +87,6 @@ function mapNavigationSetup(){
         touchCount--;
         if(touchCount <= 0){
             mapContainer.style.cursor = '';
-            isNavigating = false;
         }
     }
     const scrollHandler = e => {
@@ -203,6 +209,7 @@ function tooltipSetup(){
                 tooltip.style.display = 'none';
                 mapCanvas.style.cursor = '';
             }
+            isNavigating = false;
             tooltipDirty = false;
         }
         cursorCoordDisplay.innerHTML = `X: ${MapData.view.unconvertX(tooltipX).toFixed(2)} / Z: ${MapData.view.unconvertY(tooltipY).toFixed(2)}`;
