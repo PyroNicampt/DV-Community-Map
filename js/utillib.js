@@ -16,7 +16,7 @@ export const gradeIncrements = [
     0.001
 ];
 
-const gradeArrowDimensions = 64;
+const gradeArrowDimensions = 64 * window.devicePixelRatio;
 export const gradeArrows = new OffscreenCanvas(11*gradeArrowDimensions, 2*gradeArrowDimensions);
 
 export function generateGradeArrows(){

@@ -46,8 +46,9 @@ export let view = {
         const mapContainer = document.getElementById('mapContainer');
         let isLandscape = mapContainer.clientWidth > mapContainer.clientHeight;
         view.scale = Math.min(mapContainer.clientWidth/(matrix.width + Config.defaultMapPadding*2), mapContainer.clientHeight/(matrix.height + Config.defaultMapPadding*2));
+        view.pixelRatio = window.devicePixelRatio;
         if(isLandscape){
-            view.x = mapContainer.clientWidth*0.6 - (matrix.width * 0.5 + matrix.minX)*view.scale;
+            view.x = (mapContainer.clientWidth*0.6 - (matrix.width * 0.5 + matrix.minX)*view.scale);
             view.y = (matrix.minY - Config.defaultMapPadding) * view.scale;
         }else{
             view.x = -(matrix.minX - Config.defaultMapPadding) * view.scale;
@@ -56,10 +57,10 @@ export let view = {
         view.dirty = false;
 
         view.convertX = x => {
-            return x * view.scale + view.x;
+            return x * view.scale * view.pixelRatio + view.x * view.pixelRatio;
         }
         view.convertY = y => {
-            return (matrix.minY+matrix.maxY-y) * view.scale - view.y;
+            return (matrix.minY+matrix.maxY-y) * view.scale * view.pixelRatio - view.y * view.pixelRatio;
         }
 
         view.unconvertX = x => {

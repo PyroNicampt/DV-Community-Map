@@ -250,21 +250,22 @@ async function loadPoiData(file){
 let railTrack = {};
 let curve = {};
 function redrawMap(){
-    mapCanvas.width = mapContainer.clientWidth;
-    mapCanvas.height = mapContainer.clientHeight;
-    zoomLevelDisplay.innerHTML = `Zoom: ${MapData.view.scale.toFixed(3)}x / ${(1/MapData.view.scale).toFixed(2)} m/px`;
+    MapData.view.pixelRatio = window.devicePixelRatio;
+    mapCanvas.width = mapContainer.clientWidth * MapData.view.pixelRatio;
+    mapCanvas.height = mapContainer.clientHeight * MapData.view.pixelRatio;
+    zoomLevelDisplay.innerHTML = `Zoom: ${(MapData.view.scale*MapData.view.pixelRatio).toFixed(3)}x / ${(1/(MapData.view.scale*MapData.view.pixelRatio)).toFixed(2)} m/px`;
 
     if(MapData.layers.terrain){
         mapctx.drawImage(
             mapTerrain,
             MapData.view.convertX(0),
             MapData.view.convertY(16384),
-            16384 * MapData.view.scale,
-            16384 * MapData.view.scale
+            16384 * MapData.view.scale * MapData.view.pixelRatio,
+            16384 * MapData.view.scale * MapData.view.pixelRatio
         );
     }
     // Game gauge is 1.5 meter
-    const trackWidth = Math.min(Math.max(6, MapData.view.scale * 1.5), MapData.view.scale * 100);
+    const trackWidth = Math.min(Math.max(6, MapData.view.scale * 1.5), MapData.view.scale * 100) * MapData.view.pixelRatio;
     mapctx.lineWidth = trackWidth;
 
     for(const railTrack of MapData.railTracks){
@@ -308,7 +309,7 @@ function redrawMap(){
                 spriteSize = 30;
                 mapctx.translate(markerX, markerY);
                 mapctx.rotate(marker.rotation);
-                mapctx.translate(-0.5*spriteSize, -0.5*spriteSize);
+                mapctx.translate(-0.5*spriteSize * MapData.view.pixelRatio, -0.5*spriteSize * MapData.view.pixelRatio);
                 mapctx.drawImage(
                     Utils.gradeArrows,
                     curSprite.x,
@@ -317,8 +318,8 @@ function redrawMap(){
                     curSprite.height,
                     0,
                     0,
-                    spriteSize,
-                    spriteSize
+                    spriteSize * MapData.view.pixelRatio,
+                    spriteSize * MapData.view.pixelRatio
                 );
                 mapctx.resetTransform();
                 curSprite = null;
@@ -332,7 +333,7 @@ function redrawMap(){
             case 'service':
                 if(!(MapData.layers.services && MapData.layers.poi)) break;
                 marker.visible = true;
-                spriteSize = 30;
+                spriteSize = 30 * MapData.view.pixelRatio;
                 if(marker.serviceTypes.length == 0) marker.serviceTypes.push('');
                 if(marker.serviceTypes.length > 1){
                     mapctx.fillStyle = '#239a96';
@@ -355,8 +356,8 @@ function redrawMap(){
                 }
                 if(!marker.tooltipHitzone){
                     marker.tooltipHitzone = {
-                        width: spriteSize * marker.serviceTypes.length,
-                        height: spriteSize
+                        width: spriteSize/MapData.view.pixelRatio * marker.serviceTypes.length,
+                        height: spriteSize/MapData.view.pixelRatio
                     };
                 }
                 curSprite = null;
@@ -383,20 +384,20 @@ function redrawMap(){
                 mapctx.fillStyle = marker.color;
                 mapctx.strokeStyle = '#000';
                 mapctx.lineJoin = 'round';
-                mapctx.lineWidth = 20*MapData.view.scale;
-                mapctx.font = `bold ${400*MapData.view.scale}px "Noto Sans"`;
+                mapctx.lineWidth = 20*MapData.view.scale*MapData.view.pixelRatio;
+                mapctx.font = `bold ${400*MapData.view.scale*MapData.view.pixelRatio}px "Noto Sans"`;
                 textMeasure = mapctx.measureText(marker.shorthand);
                 mapctx.strokeText(marker.shorthand, markerX - textMeasure.width * 0.5, markerY);
                 mapctx.fillText(marker.shorthand, markerX - textMeasure.width * 0.5, markerY);
                 if(!marker.tooltipHitzone) marker.tooltipHitzone = {};
-                marker.tooltipHitzone.width = textMeasure.width;
-                marker.tooltipHitzone.height = textMeasure.actualBoundingBoxAscent;
+                marker.tooltipHitzone.width = textMeasure.width/MapData.view.pixelRatio;
+                marker.tooltipHitzone.height = textMeasure.actualBoundingBoxAscent/MapData.view.pixelRatio;
                 marker.tooltipHitzone.offsetY = marker.tooltipHitzone.height * 0.5;
                 if(MapData.view.scale < 0.14) break;
-                mapctx.font = `bold ${70*MapData.view.scale}px "Noto Sans"`;
+                mapctx.font = `bold ${70*MapData.view.scale*MapData.view.pixelRatio}px "Noto Sans"`;
                 textMeasure = mapctx.measureText(marker.nickname ?? marker.name);
-                mapctx.strokeText(marker.nickname ?? marker.name, markerX - textMeasure.width * 0.5, markerY+80*MapData.view.scale);
-                mapctx.fillText(marker.nickname ?? marker.name, markerX - textMeasure.width * 0.5, markerY+80*MapData.view.scale);
+                mapctx.strokeText(marker.nickname ?? marker.name, markerX - textMeasure.width * 0.5, markerY+80*MapData.view.scale*MapData.view.pixelRatio);
+                mapctx.fillText(marker.nickname ?? marker.name, markerX - textMeasure.width * 0.5, markerY+80*MapData.view.scale*MapData.view.pixelRatio);
                 break;
             case 'yardSiding':
             case 'yard':
@@ -405,21 +406,21 @@ function redrawMap(){
                 mapctx.fillStyle = '#fff';
                 mapctx.strokeStyle = '#000';
                 mapctx.lineJoin = 'round';
-                mapctx.lineWidth = 2;
-                mapctx.font = `14px "Noto Sans Mono"`;
+                mapctx.lineWidth = 2*MapData.view.pixelRatio;
+                mapctx.font = `${14*MapData.view.pixelRatio}px "Noto Sans Mono"`;
                 textMeasure = mapctx.measureText(marker.name);
                 tempMeasure.width = textMeasure.actualBoundingBoxLeft + textMeasure.actualBoundingBoxRight;
                 tempMeasure.height = textMeasure.fontBoundingBoxAscent + textMeasure.fontBoundingBoxDescent;
                 if(!marker.tooltipHitzone){
                     marker.tooltipHitzone = {
-                        width: tempMeasure.width + 20,
-                        height: tempMeasure.height + 8,
-                        offsetY: -tempMeasure.height * 0.5 + 3,
+                        width: (tempMeasure.width + 20)/MapData.view.pixelRatio,
+                        height: (tempMeasure.height + 8)/MapData.view.pixelRatio,
+                        offsetY: (-tempMeasure.height * 0.5 + 3)/MapData.view.pixelRatio,
                     };
                 }
                 mapctx.beginPath();
                 mapctx.moveTo(markerX, markerY);
-                mapctx.roundRect(markerX - 0.5*tempMeasure.width - 4, markerY - textMeasure.fontBoundingBoxDescent + 1, tempMeasure.width + 12, tempMeasure.height - 4, 3);
+                mapctx.roundRect(markerX - 0.5*tempMeasure.width - 4*MapData.view.pixelRatio, markerY - textMeasure.fontBoundingBoxDescent + 1*MapData.view.pixelRatio, tempMeasure.width + 12*MapData.view.pixelRatio, tempMeasure.height - 4*MapData.view.pixelRatio, 3*MapData.view.pixelRatio);
                 mapctx.fill();
                 mapctx.stroke();
                 mapctx.fillStyle = '#000';
@@ -438,7 +439,7 @@ function redrawMap(){
                 marker.tooltipHitzone.radius = marker.radius * MapData.view.scale;
                 mapctx.beginPath();
                 mapctx.moveTo(markerX, markerY);
-                mapctx.arc(markerX, markerY, marker.radius*MapData.view.scale, 0, Math.PI*2);
+                mapctx.arc(markerX, markerY, marker.radius*MapData.view.scale*MapData.view.pixelRatio, 0, Math.PI*2);
                 mapctx.fillStyle = '#894b35';
                 mapctx.globalAlpha = 0.65;
                 mapctx.fill();
@@ -458,10 +459,10 @@ function redrawMap(){
                 curSprite.y,
                 curSprite.width,
                 curSprite.height,
-                markerX-(0.5*spriteSize),
-                markerY-(0.5*spriteSize),
-                spriteSize,
-                spriteSize
+                markerX-(0.5*spriteSize)*MapData.view.pixelRatio,
+                markerY-(0.5*spriteSize)*MapData.view.pixelRatio,
+                spriteSize*MapData.view.pixelRatio,
+                spriteSize*MapData.view.pixelRatio
             );
         }
     }
