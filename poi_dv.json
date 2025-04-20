@@ -963,7 +963,7 @@
         {
             "name":"spawn anchor CW Bush 22m",
             "type":"demonstratorSpawn",
-            "position":{"x":1827.585,"y":122.213,"z":5668.852}
+            "position":{"x":1823.676,"y":122.213,"z":5664.788}
         },
         {
             "name":"spawn anchor CS Field 50m",
@@ -1088,7 +1088,7 @@
         {
             "name":"spawn anchor CME Mine 30m",
             "type":"demonstratorSpawn",
-            "position":{"x":15541.85,"y":179.9383,"z":11026.77}
+            "position":{"x":15552.81,"y":181.5,"z":11033.37}
         },
         {
             "name":"spawn anchor MF Roundhouse 50m",

@@ -5,13 +5,14 @@ using System.Text;
 using UnityEngine;
 using UnityModManagerNet;
 using DV.LocoRestoration;
-using DV;
+using DV.OriginShift;
 
 namespace CommunityMapTool {
     [EnableReloading]
     static class Main {
         private static string trackOutputPath = "map_dump.json";
         private static string demonstratorOutputPath = "demo_dump.json";
+        private static string statusText = "";
         static bool Load(UnityModManager.ModEntry modEntry) {
             modEntry.OnUpdate = OnUpdate;
             modEntry.OnUnload = Unload;
@@ -28,20 +29,27 @@ namespace CommunityMapTool {
         }
         static void OnGUI(UnityModManager.ModEntry modEntry) {
             if(PlayerManager.PlayerTransform != null) GUILayout.Label($"Player Position: {PlayerManager.PlayerTransform.AbsolutePosition()}");
-            GUILayout.Label($"WorldMover offset: {WorldMover.currentMove}");
+            GUILayout.Label($"WorldMover offset: {OriginShift.currentMove}");
             if(GUILayout.Button("Dump All Tracks")) DumpAllTracks();
             if(GUILayout.Button("Dump Demonstrator Spawnpoints")) DemonstratorDump();
             if(GUILayout.Button("Copy Position To Clipboard")) ClipboardPlayerPosition();
+            if(statusText != "") GUILayout.Label(statusText);
         }
 
         static void ClipboardPlayerPosition() {
             if(PlayerManager.PlayerTransform == null) return;
             Vector3 pos = PlayerManager.PlayerTransform.AbsolutePosition();
             GUIUtility.systemCopyBuffer = $"{{\"x\":{pos.x},\"y\":{pos.y},\"z\":{pos.z}}}";
+            statusText = $"Copied \"{GUIUtility.systemCopyBuffer}\" to clipboard";
         }
         static void DumpAllTracks() {
             List<string> records = new List<string>();
-            foreach(RailTrack railTrack in WorldData.RailTracks) {
+            RailTrackRegistry registry = UnityEngine.Object.FindObjectOfType<RailTrackRegistry>();
+            if(registry == null) {
+                statusText = "Could not find RailtrackRegistry";
+                return;
+            }
+            foreach(RailTrack railTrack in registry.OrderedRailtracks) {
                 StringBuilder sb = new StringBuilder();
                 string[] baseCurveData = new[] {
                     "type", "bezier",
@@ -57,16 +65,16 @@ namespace CommunityMapTool {
                 for(int i = 0; i < railTrack.curve.pointCount; i++) {
                     BezierPoint point = railTrack.curve[i];
                     sb.Append("\n\t\t{");
-                    sb.Append($"\"position\":{{\"x\":{point.position.x - WorldMover.currentMove.x},\"y\":{point.position.y - WorldMover.currentMove.y},\"z\":{point.position.z - WorldMover.currentMove.z}}}, ");
-                    sb.Append($"\"h1\":{{\"x\":{point.globalHandle1.x - WorldMover.currentMove.x},\"y\":{point.globalHandle1.y - WorldMover.currentMove.y},\"z\":{point.globalHandle1.z - WorldMover.currentMove.z}}}, ");
-                    sb.Append($"\"h2\":{{\"x\":{point.globalHandle2.x - WorldMover.currentMove.x},\"y\":{point.globalHandle2.y - WorldMover.currentMove.y},\"z\":{point.globalHandle2.z - WorldMover.currentMove.z}}}, ");
+                    sb.Append($"\"position\":{{\"x\":{point.position.x - OriginShift.currentMove.x},\"y\":{point.position.y - OriginShift.currentMove.y},\"z\":{point.position.z - OriginShift.currentMove.z}}}, ");
+                    sb.Append($"\"h1\":{{\"x\":{point.globalHandle1.x - OriginShift.currentMove.x},\"y\":{point.globalHandle1.y - OriginShift.currentMove.y},\"z\":{point.globalHandle1.z - OriginShift.currentMove.z}}}, ");
+                    sb.Append($"\"h2\":{{\"x\":{point.globalHandle2.x - OriginShift.currentMove.x},\"y\":{point.globalHandle2.y - OriginShift.currentMove.y},\"z\":{point.globalHandle2.z - OriginShift.currentMove.z}}}, ");
                     sb.Append($"\"type\":\"{point.handleStyle}\"");
                     sb.Append(i + 1 < railTrack.curve.pointCount ? "}," : "}");
                 }
                 sb.Append("\n\t]\n}");
                 records.Add(sb.ToString());
             }
-            foreach(Junction junction in WorldData.Junctions) {
+            foreach(Junction junction in registry.OrderedJunctions) {
                 StringBuilder sb = new StringBuilder();
 
                 string[] baseJunctionData = new[] {
@@ -91,6 +99,7 @@ namespace CommunityMapTool {
                 records.Add(sb.ToString());
             }
             File.WriteAllText(trackOutputPath, "[" + string.Join(",", records.ToArray()) + "\n]");
+            statusText = $"Dumped to {trackOutputPath}";
         }
         static void DemonstratorDump() {
             List<string> records = new List<string>();
@@ -100,7 +109,7 @@ namespace CommunityMapTool {
                 string[] jsonKVP = new[] {
                     "name", $"\"{spawnPoint.name}\"",
                     "type", $"\"demonstratorSpawn\"",
-                    "position", $"{{\"x\":{spawnPoint.transform.position.x - WorldMover.currentMove.x},\"y\":{spawnPoint.transform.position.y - WorldMover.currentMove.y},\"z\":{spawnPoint.transform.position.z - WorldMover.currentMove.z}}}"
+                    "position", $"{{\"x\":{spawnPoint.transform.position.x - OriginShift.currentMove.x},\"y\":{spawnPoint.transform.position.y - OriginShift.currentMove.y},\"z\":{spawnPoint.transform.position.z - OriginShift.currentMove.z}}}"
                 };
                 for(int i = 0; i < jsonKVP.Length; i++) {
                     if(i % 2 == 0) sb.Append($"\n\t\"{jsonKVP[i]}\":");
@@ -114,6 +123,7 @@ namespace CommunityMapTool {
             }
 
             File.WriteAllText(demonstratorOutputPath, "[" + string.Join(",", records.ToArray()) + "\n]");
+            statusText = $"Dumped to {demonstratorOutputPath}";
         }
     }
 }
