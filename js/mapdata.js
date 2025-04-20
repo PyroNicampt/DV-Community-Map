@@ -15,6 +15,10 @@ let uniqueTrackNames = {};
 
 export let testPoint = {x:0,y:0};
 
+export let Shops = {
+    Common:[]
+}
+
 export let matrix = {
     initialize: () => {
         matrix.minX = Infinity;
@@ -110,6 +114,14 @@ export function sortMarkers(){
         if(b.type == 'demonstratorSpawnHint') return 1;
         return 0;
     });
+}
+
+export function sortShops(){
+    for(let shop in Shops){
+        Shops[shop].sort((a,b) => {
+            return a.name.localeCompare(b.name);
+        });
+    }
 }
 
 export function filterToTrack(trackName, trackNum = 0){
@@ -247,7 +259,16 @@ export function addPoi(poiData, level = 0){
             newPoi.tooltip = `<h1>${poiData.name}</h1>`;
             break;
         case 'shop':
-            newPoi.tooltip = `<h1>Shop</h1>${poiData.stock ? '<hr>'+poiData.stock.sort().join('\n') : ''}`;
+            newPoi.tooltip = '<h1>Shop</h1><hr><div class="smol" style="columns:2">';
+            if(poiData.shopId){
+                for(let item of Shops[poiData.shopId]){
+                    newPoi.tooltip += `<div>${item.name}${item.count > 1 ? ` (x${item.count})` : ''} - $${item.price}</div>`;
+                }
+                for(let item of Shops.Common){
+                    newPoi.tooltip += `<div class="quiet">${item.name}${item.count > 1 ? ` (x${item.count})` : ''} - $${item.price}</div>`;
+                }
+            }
+            newPoi.tooltip += '</div>';
             break;
         case 'water':
             newPoi.tooltip = '<h1>Water Tower</h1>';
@@ -280,6 +301,35 @@ export function addPoi(poiData, level = 0){
     if(poiData.children){
         for(let child of poiData.children){
             addPoi(child, level+(poiData.type == 'dummy' ? 0 : 1));
+        }
+    }
+}
+
+export function addShopItem(itemData){
+    let newItem = {
+        name: itemData.name,
+        price: itemData.price,
+        count: itemData.count,
+    };
+    if(itemData.soldOnlyAt.length == 0){
+        for(let item of Shops.Common){
+            if(item.name == newItem.name && item.price == newItem.price){
+                item.count += newItem.count;
+                return;
+            }
+        }
+        Shops.Common.push(newItem);
+    }else{
+        for(let shop of itemData.soldOnlyAt){
+            if(!Shops[shop]) Shops[shop] = [];
+
+            for(let item of Shops[shop]){
+                if(item.name == newItem.name && item.price == newItem.price){
+                    item.count += newItem.count;
+                    return;
+                }
+            }
+            Shops[shop].push(newItem);
         }
     }
 }

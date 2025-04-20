@@ -20,6 +20,7 @@ const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 let isNavigating = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await loadShopData('shop_items.json');
     await loadTrackData('trackdata_dv.json');
     await loadPoiData('poi_dv.json');
     MapData.sortMarkers();
@@ -244,6 +245,14 @@ async function loadPoiData(file){
     for(let poi of poiData){
         MapData.addPoi(poi);
     }
+}
+
+async function loadShopData(file) {
+    let shopData = await (await fetch(new Request(file))).json();
+    for(let item of shopData){
+        MapData.addShopItem(item);
+    }
+    MapData.sortShops();
 }
 
 

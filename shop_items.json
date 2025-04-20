@@ -1,0 +1,1019 @@
+[
+{
+	"name":"Shovel",
+	"price":750,
+	"count":4,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Lighter",
+	"price":350,
+	"count":12,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Locomotive Remote Controller",
+	"price":35000,
+	"count":1,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Old Bob's Garage Key",
+	"price":17000,
+	"count":1,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Pocketwatch",
+	"price":3500,
+	"count":2,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Golden shovel",
+	"price":7000,
+	"count":1,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Reginald's Garage Key",
+	"price":4000,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Expert shovel",
+	"price":2500,
+	"count":1,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Boombox",
+	"price":5000,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette A1",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette A2",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette A3",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Cassette A4",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Cassette A5",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Cassette A6",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Cassette A7",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette A8",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Cassette A9",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Cassette A10",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Cassette A11",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Cassette A12",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Cassette A13",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Cassette A14",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Cassette A15",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Cassette A16",
+	"price":300,
+	"count":1,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Cassette P1",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P2",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P3",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P4",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P5",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P6",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P7",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P8",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P9",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cassette P10",
+	"price":100,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Lantern",
+	"price":1500,
+	"count":8,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Flashlight",
+	"price":7000,
+	"count":4,
+	"soldOnlyAt":[]
+},
+{
+	"name":"EOT Lantern",
+	"price":750,
+	"count":3,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Steve's Garage Key",
+	"price":7000,
+	"count":1,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Handheld Game Console",
+	"price":1800,
+	"count":1,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Oiler",
+	"price":400,
+	"count":3,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Electric Hand Drill",
+	"price":9000,
+	"count":3,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Soldering Gun",
+	"price":5000,
+	"count":3,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Crimping Tool",
+	"price":3000,
+	"count":3,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Filler Gun",
+	"price":600,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Hammer",
+	"price":300,
+	"count":10,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Duct Tape",
+	"price":180,
+	"count":10,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Soldering Wire Reel",
+	"price":200,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Distance Tracker",
+	"price":12000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Anti-Wheelslip Computer",
+	"price":28000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Automatic Train Stop",
+	"price":4000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Amp Limiter",
+	"price":18000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Wireless MU Controller",
+	"price":24000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Clinometer",
+	"price":7500,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Infrared Thermometer",
+	"price":3500,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Digital Speedometer",
+	"price":5000,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Digital Clock",
+	"price":3500,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Shelf",
+	"price":400,
+	"count":20,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Steam Locomotive Checklist",
+	"price":400,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Olaf's Garage Key",
+	"price":18000,
+	"count":1,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Button Controller",
+	"price":400,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory",
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Rotary Controller",
+	"price":400,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory",
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Analog Controller",
+	"price":400,
+	"count":20,
+	"soldOnlyAt":[
+		"GoodsFactory",
+		"MachineFactory"
+	]
+},
+{
+	"name":"Mount Slanted Medium",
+	"price":100,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Upright Small",
+	"price":100,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Upright Small - Long Base",
+	"price":150,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Upright Small Wide",
+	"price":200,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Strip Medium",
+	"price":100,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Strip Small",
+	"price":75,
+	"count":30,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Plate Medium",
+	"price":100,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Strip Long - Small Base",
+	"price":300,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Strip Long",
+	"price":250,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Swivel Light",
+	"price":5000,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Headlight",
+	"price":4000,
+	"count":30,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Brake Cylinder LED Bar",
+	"price":6000,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Hanger",
+	"price":400,
+	"count":10,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Sticky Tape",
+	"price":300,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Sun Visor",
+	"price":1900,
+	"count":20,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Blue Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Cyan Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Green Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Orange Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Purple Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Red Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"White Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Yellow Flag Marker",
+	"price":300,
+	"count":6,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Blue Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Cyan Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Green Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Orange Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Purple Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Red Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"White Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Yellow Light Bar",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"DVRT Paint Can",
+	"price":15000,
+	"count":10,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Demonstrator Paint Can",
+	"price":30000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Sand Can",
+	"price":200,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Wooden Crate",
+	"price":70,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor",
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Plastic Crate",
+	"price":100,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor",
+		"CitySouthWest"
+	]
+},
+{
+	"name":"File Box",
+	"price":50,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor",
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Amber Beacon",
+	"price":2000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Red Beacon",
+	"price":2500,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor",
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Blue Beacon",
+	"price":2500,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor",
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Mount Upright Large",
+	"price":250,
+	"count":20,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Plate Large",
+	"price":250,
+	"count":60,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Mount Stand Large",
+	"price":1000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Overheating Protection",
+	"price":20000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Switch Setter",
+	"price":3500,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Alternating Controller",
+	"price":650,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory",
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Briefcase",
+	"price":3000,
+	"count":10,
+	"soldOnlyAt":[
+		"CitySouthWest",
+		"Harbor"
+	]
+},
+{
+	"name":"Crate",
+	"price":7500,
+	"count":10,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Folder",
+	"price":50,
+	"count":10,
+	"soldOnlyAt":[]
+},
+{
+	"name":"Folder",
+	"price":100,
+	"count":5,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Folder",
+	"price":100,
+	"count":5,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Folder",
+	"price":100,
+	"count":5,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Registrator",
+	"price":300,
+	"count":10,
+	"soldOnlyAt":[
+		"CitySouthWest"
+	]
+},
+{
+	"name":"Toolbox",
+	"price":3500,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory",
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Taillight",
+	"price":1000,
+	"count":30,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Defect Detector",
+	"price":8000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Shovel Mount",
+	"price":500,
+	"count":20,
+	"soldOnlyAt":[
+		"GoodsFactory",
+		"FoodFactory"
+	]
+},
+{
+	"name":"High-tech Headlight Right",
+	"price":12000,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"High-tech Headlight Left",
+	"price":12000,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"High-tech Taillight Right",
+	"price":4000,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"High-tech Taillight Left",
+	"price":4000,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Remote Signal Booster",
+	"price":18000,
+	"count":2,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Battery Charger",
+	"price":15000,
+	"count":4,
+	"soldOnlyAt":[
+		"MachineFactory",
+		"GoodsFactory"
+	]
+},
+{
+	"name":"Nameplate",
+	"price":6000,
+	"count":20,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Brake Checklist",
+	"price":400,
+	"count":10,
+	"soldOnlyAt":[
+		"Harbor"
+	]
+},
+{
+	"name":"Proximity Sensor",
+	"price":8500,
+	"count":20,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Proximity Reader",
+	"price":12000,
+	"count":10,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+},
+{
+	"name":"Label Maker",
+	"price":6000,
+	"count":3,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
+},
+{
+	"name":"Universal Control Stand",
+	"price":30000,
+	"count":4,
+	"soldOnlyAt":[
+		"MachineFactory"
+	]
+}
+]

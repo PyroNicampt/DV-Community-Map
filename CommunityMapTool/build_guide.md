@@ -3,8 +3,10 @@ Assuming Visual Studio Community:
 1. Add the following to the `lib` folder from `[steam common dir]/Derail Valley/DerailValley_Data/Managed/UnityModManager`:
 - `Assembly-CSharp.dll`
 - `BezierCurves.dll`
+- `DV.Common.dll`
 - `DV.OriginShiftInfo.dll`
 - `DV.RailTrack.dll`
+- `DV.UserManagement.dll`
 - `DV.Utils.dll`
 - `UnityEngine.dll`
 - `UnityEngine.UI.dll`

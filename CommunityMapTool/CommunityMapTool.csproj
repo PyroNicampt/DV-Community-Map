@@ -46,12 +46,20 @@
       <HintPath>lib\BezierCurves.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DV.Common">
+      <HintPath>lib\DV.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="DV.OriginShiftInfo">
       <HintPath>lib\DV.OriginShiftInfo.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DV.RailTrack">
       <HintPath>lib\DV.RailTrack.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DV.UserManagement">
+      <HintPath>lib\DV.UserManagement.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DV.Utils">

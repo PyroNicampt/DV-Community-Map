@@ -32,6 +32,15 @@ a:visited{
     color: #e79830;
 }
 
+.quiet{
+    opacity: 0.7;
+}
+
+.smol{
+    font-size: 11px;
+    color: #fff;
+}
+
 .panel{
     border: 2px solid #b3b3b396;
     background: linear-gradient(120deg, #2c3f58, #191e2e);

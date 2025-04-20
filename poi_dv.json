@@ -136,39 +136,7 @@
         },
         {
             "type":"shop",
-            "stock":[
-                "Boombox",
-                "Red Beacon",
-                "Plastic Crate",
-                "Cassette A7",
-                "Cassette P6",
-                "Cassette P9",
-                "Red Light Bar",
-                "File Box",
-                "Purple Flag Marker",
-                "Reginald's Garage Key",
-                "Cassette P10",
-                "Cassette P5",
-                "Cassette P7",
-                "Handheld Game Console",
-                "Wooden Crate",
-                "Cassette A1",
-                "Cassette P2",
-                "Yellow Flag Marker",
-                "Green Flag Marker",
-                "Orange Flag Marker",
-                "Cyan Flag Marker",
-                "Cassette P4",
-                "Green Light Bar",
-                "Cassette P1",
-                "Blue Flag Marker",
-                "Cassette P8",
-                "White Flag Marker",
-                "Red Flag Marker",
-                "Cassette A2",
-                "Blue Beacon",
-                "Cassette P3"
-            ],
+            "shopId":"CitySouthWest",
             "position":{"x":1911.48,"y":122.26,"z":5788.65}
         }
     ]
@@ -198,13 +166,7 @@
         },
         {
             "type":"shop",
-            "stock":[
-                "Cassette A12",
-                "Cassette A15",
-                "Cassette A6",
-                "Cassette A3",
-                "Old Bob's Garage Key"
-            ],
+            "shopId":"FoodFactory",
             "position":{"x":9528.669,"y":119.3432,"z":13419.99}
         }
     ]
@@ -289,30 +251,7 @@
         },
         {
             "type":"shop",
-            "stock":[
-                "Shelf",
-                "Rotary Controller",
-                "Analog Controller",
-                "Cassette A16",
-                "Crimping Tool",
-                "Blue Light Bar",
-                "Brake Cylinder LED Bar",
-                "Electric Hand Drill",
-                "Digital Speedometer",
-                "Golden Shovel",
-                "Infrared Thermometer",
-                "Button Controller",
-                "Filler Gun",
-                "Sun Visor",
-                "Cassette A10",
-                "Expert Shovel",
-                "Digital Clock",
-                "Alternating Controller",
-                "White Light Bar",
-                "Soldering Gun",
-                "Clinometer",
-                "Cassette A8"
-            ],
+            "shopId":"GoodsFactory",
             "position":{"x":13035.07,"y":140.1661,"z":11158.79}
         }
     ]
@@ -351,20 +290,7 @@
         },
         {
             "type":"shop",
-            "stock":[
-                "Plastic Crate",
-                "Steve's Garage Key",
-                "Wooden Crate",
-                "Red Beacon",
-                "Steam Locomotive Checklist",
-                "File Box",
-                "Cassette A11",
-                "Purple Light Bar",
-                "Cassette A4",
-                "Pocketwatch",
-                "Blue Beacon",
-                "Cyan Light Bar"
-            ],
+            "shopId":"Harbor",
             "position":{"x":13423.26,"y":113.1099,"z":3611.852}
         }
     ]
@@ -475,30 +401,7 @@
         },
         {
             "type":"shop",
-            "stock":[
-                "Amber Beacon",
-                "Headlight",
-                "Button Controller",
-                "Automatic Train Stop",
-                "Analog Controller",
-                "Cassette A13",
-                "Rotary Controller",
-                "Locomotive Remote",
-                "Alternating Controller",
-                "Olaf's Garage Key",
-                "Demonstrator Paint Can",
-                "Yellow Light Bar",
-                "Wireless MU Controller",
-                "Anti-Wheelslip Computer",
-                "Overheat Protection",
-                "Cassette A14",
-                "Orange Light Bar",
-                "Cassette A9",
-                "Distance Tracker",
-                "Amp Limiter",
-                "Switch Setter",
-                "Cassette A5"
-            ],
+            "shopId":"MachineFactory",
             "position":{"x":2236.745,"y":159.266,"z":10834.23}
         }
     ]
