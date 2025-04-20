@@ -278,7 +278,7 @@ async function setLastUpdateData(){
     };
     let updateDate = new Date(commits[0].commit.author.date);
     lastUpdateElement.innerHTML = `<a href="https://github.com/PyroNicampt/DV-Community-Map/commits/main/" title="${updateDate.toString()}">${Utils.formattedTimeBetweenDates(new Date(), updateDate)} ${new Date() >= updateDate ? 'ago' : 'from now'}</a>`;
-    document.getElementById('changelog').innerHTML = commits[0].commit.message.replace('\n','<br>');
+    document.getElementById('changelog').innerHTML = commits[0].commit.message.replaceAll(/\n+/g, '\n').replaceAll('\n','<br>');
     if(pageLoadUpdateDate == null){
         pageLoadUpdateDate = updateDate;
     }else{
