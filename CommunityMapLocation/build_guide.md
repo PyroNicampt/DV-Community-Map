@@ -2,15 +2,8 @@ Assuming Visual Studio Community:
 
 1. Add the following to the `lib` folder from `[steam common dir]/Derail Valley/DerailValley_Data/Managed`:
 - `Assembly-CSharp.dll`
-- `BezierCurves.dll`
-- `DV.Common.dll`
 - `DV.OriginShiftInfo.dll`
-- `DV.RailTrack.dll`
-- `DV.UserManagement.dll`
-- `DV.Utils.dll`
 - `UnityEngine.dll`
-- `UnityEngine.UI.dll`
-- `UnityEngine.InputLegacyModule.dll`
 - `UnityEngine.IMGUIModule.dll`
 - `UnityEngine.CoreModule.dll`
 - `/UnityModManager/0Harmony.dll`
