@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadShopData('shop_items.json');
     await loadTrackData('trackdata_dv.json');
     await loadPoiData('poi_dv.json');
+    MapData.markers.push(MapData.playerMarker);
     MapData.sortMarkers();
 
     Utils.generateGradeArrows();
@@ -300,7 +301,7 @@ function redrawMap(){
     for(const marker of MapData.markers){
         curSprite = null;
         marker.visible = false;
-        if((marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
+        if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
         let markerX = MapData.view.convertX(marker.position.x);
         let markerY = MapData.view.convertY(marker.position.z);
         if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
@@ -453,6 +454,29 @@ function redrawMap(){
                 mapctx.globalAlpha = 0.65;
                 mapctx.fill();
                 mapctx.globalAlpha = 1.0;
+                break;
+            case 'player':
+                if(!(MapData.layers.poi)) break;
+                marker.visible = true;
+                curSprite = Config.spriteBounds.player;
+                spriteSize = 45;
+                
+                mapctx.translate(markerX, markerY);
+                mapctx.rotate(marker.rotation);
+                mapctx.translate(-0.5*spriteSize * MapData.view.pixelRatio, -0.5*spriteSize * MapData.view.pixelRatio);
+                mapctx.drawImage(
+                    mapSprites,
+                    curSprite.x,
+                    curSprite.y,
+                    curSprite.width,
+                    curSprite.height,
+                    0,
+                    0,
+                    spriteSize * MapData.view.pixelRatio,
+                    spriteSize * MapData.view.pixelRatio
+                );
+                mapctx.resetTransform();
+                curSprite = null;
                 break;
             default:
                 if(!MapData.layers.poi) break;
