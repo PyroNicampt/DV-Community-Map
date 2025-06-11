@@ -1,15 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityModManagerNet;
 
 namespace CommunityMapLocation.Config
 {
-    public class Settings : UnityModManager.ModSettings
+    public class Settings : UnityModManager.ModSettings, INotifyPropertyChanged
     {
-        public int Port { get; set; } = 9090;
-        public RequestSourceType RequestSourceType { get; set; } = RequestSourceType.Specific;
-        public string RequestSource { get; set; } = "https://pyronicampt.github.io";
+        private int port = 9090;
+        public int Port { get => port; set => Set(ref port, value); }
+
+        private RequestSourceType requestSourceType = RequestSourceType.Specific;
+        public RequestSourceType RequestSourceType { get => requestSourceType; set => Set(ref requestSourceType, value); }
+
+        private string requestSource = "https://pyronicampt.github.io";
+        public string RequestSource { get => requestSource; set => Set(ref requestSource, value); }
 
         public void Draw()
         {
@@ -29,6 +36,18 @@ namespace CommunityMapLocation.Config
             }
 
             GUILayout.EndVertical();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // Todo: store and hold back property changes until Settings is saved to prevent rapidly reconfiguring server on each keypress?
+        private void Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (!EqualityComparer<T>.Default.Equals(field, value))
+            {
+                field = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ namespace CommunityMapLocation
         {
             Settings.Save(modEntry);
 
-            apiServer.Reload();
+            apiServer.UpdateSettings();
         }
     }
 }

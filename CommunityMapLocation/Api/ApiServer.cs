@@ -28,6 +28,8 @@ namespace CommunityMapLocation.Api
             this.logger = logger;
         }
 
+        private static string GetPrefix(int port) => $"http://localhost:{port}/";
+
         private readonly Settings settings;
         private readonly UnityModManager.ModEntry.ModLogger logger;
 
@@ -66,7 +68,7 @@ namespace CommunityMapLocation.Api
         {
             try
             {
-                listener.Prefixes.Add($"http://localhost:{settings.Port}/");
+                listener.Prefixes.Add(GetPrefix(settings.Port));
                 listener.Start();
                 listener.BeginGetContext(HandleConnection, null);
             }
@@ -126,10 +128,15 @@ namespace CommunityMapLocation.Api
             }
         }
 
-        internal void Reload()
+        public void UpdateSettings()
         {
-            Stop();
-            Start();
+            var prefix = GetPrefix(settings.Port);
+
+            if (listener.Prefixes.Count != 1 || listener.Prefixes.Single() != prefix)
+            {
+                listener.Prefixes.Clear();
+                listener.Prefixes.Add(prefix);
+            }
         }
 
         public void Stop()
