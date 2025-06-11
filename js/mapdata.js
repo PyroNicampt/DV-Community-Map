@@ -15,6 +15,17 @@ let uniqueTrackNames = {};
 
 export let testPoint = {x:0,y:0};
 
+let playerLocation = null;
+export let playerMarker = {
+    type: 'player',
+    name: 'Player',
+    position: {x:8192, y:200, z:8192},
+    rotation: 0.0,
+    minZoom: 0.0,
+    hidden: true,
+};
+let locationUpdateRate = 500;
+
 export let Shops = {
     Common:[]
 }
@@ -93,6 +104,8 @@ export function sortTracks(){
 
 export function sortMarkers(){
     markers.sort((a,b) => {
+        if(a.type == 'player') return 1;
+        if(b.type == 'player') return -1;
         if(a.type == b.type){
             switch(a.type){
                 case 'speed':
@@ -634,4 +647,60 @@ export function setTrackColorMode(mode){
         }
     }
     view.dirty = true;
+}
+
+export function setLocationUpdateRate(rate){
+    locationUpdateRate = rate;
+}
+
+export function connectPlayerLocation(address, status){
+    if(!address.startsWith('http://')){
+        address.replaceAll(/.*:\/\//g, '');
+        address = 'http://' + address;
+    }
+    address += '/location';
+    console.log(`Connecting to game at ${address}`);
+    let started = false;
+    const endConnect = () => {
+        playerLocation = null;
+        status.value = 'Connect';
+        playerMarker.hidden = true;
+        view.dirty = true;
+    }
+    const pingLocation = async () => {
+        if(playerLocation == null && started){
+            endConnect();
+            return;
+        }
+        status.value = 'Disconnect...';
+        try {
+            const fetchRequest = await fetch(new Request(address), {signal: AbortSignal.timeout(5000)});
+            if(!fetchRequest.ok || (playerLocation == null && started)){
+                endConnect();
+                return;
+            }
+            status.value = 'Disconnect   ';
+            playerLocation = await (fetchRequest).json();
+            playerMarker.position = {
+                x: playerLocation.X,
+                y: playerLocation.Y,
+                z: playerLocation.Z,
+            };
+            playerMarker.rotation = playerLocation.Rotation;
+            playerMarker.tooltip = `<h1>Player</h1>X: ${playerMarker.position.x.toFixed(2)}\nY: ${playerMarker.position.y.toFixed(2)}\nZ: ${playerMarker.position.z.toFixed(2)}\nBearing ${(playerMarker.rotation * (180/Math.PI)).toFixed(1)} (${Utils.angleToCardinalDirection(playerMarker.rotation)})`;
+            playerMarker.hidden = false;
+            started = true;
+            view.dirty = true;
+            setTimeout(pingLocation, locationUpdateRate);
+        }catch(e){
+            endConnect();
+            console.log(e);
+        }
+    }
+    pingLocation();
+}
+
+export function disconnectPlayerLocation(){
+    console.log('Disconnecting');
+    playerLocation = null;
 }

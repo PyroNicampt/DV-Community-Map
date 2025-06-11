@@ -122,8 +122,11 @@ a:visited{
 
 #settingsPanel{
     user-select: none;
-    input, label{
+    input:not([type=text]), label{
         cursor: pointer;
+    }
+    input[type=text], div{
+        cursor:unset;
     }
 }
 
