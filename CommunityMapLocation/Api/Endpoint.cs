@@ -9,7 +9,7 @@ namespace CommunityMapLocation.Api
     {
         public abstract HttpMethod HttpMethod { get; }
         public abstract string RoutePattern { get; }
-        public bool Matches(Uri uri)
+        public virtual bool Matches(Uri uri)
         {
             return String.Concat(uri.Segments).Equals(RoutePattern, StringComparison.OrdinalIgnoreCase);
         }
