@@ -10,9 +10,13 @@ import * as Legend from './legend.js';
 
 const mapContainer = document.getElementById('mapContainer');
 const mapCanvas = document.getElementById('mapCanvas');
+const dynCanvas = document.getElementById('dynCanvas');
 /** The main map drawing context.
  * @type {CanvasRenderingContext2D} */
 const mapctx = mapCanvas.getContext('2d');
+/** The dynamic map drawing context.
+ * @type {CanvasRenderingContext2D} */
+const dynctx = dynCanvas.getContext('2d');
 const mapSprites = document.getElementById('mapSprites');
 const mapTerrain = document.getElementById('mapTerrain');
 const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
@@ -109,6 +113,9 @@ function mapNavigationSetup(){
     const navUpdate = ts => {
         if(ts && MapData.view.dirty){
             redrawMap();
+        }
+        if(ts && MapData.view.dynDirty){
+            redrawDynamics();
         }
         requestAnimationFrame(navUpdate);
     }
@@ -297,10 +304,11 @@ function redrawMap(){
     let spriteSize;
     let textMeasure;
     let tempMeasure = {};
+    //Draw Static Markers
     for(const marker of MapData.markers){
         curSprite = null;
         marker.visible = false;
-        if((marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
+        if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
         let markerX = MapData.view.convertX(marker.position.x);
         let markerY = MapData.view.convertY(marker.position.z);
         if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
@@ -475,5 +483,103 @@ function redrawMap(){
             );
         }
     }
+    
     MapData.view.dirty = false;
+
+    redrawDynamics();
+}
+
+function redrawDynamics(){
+    dynCanvas.width = mapCanvas.width;
+    dynCanvas.height = mapCanvas.height;
+    let curSprite;
+    let spriteSize;
+    for(const marker of MapData.dynamicMarkers){
+        curSprite = null;
+        marker.visible = false;
+        if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
+        let markerX = MapData.view.convertX(marker.position.x);
+        let markerY = MapData.view.convertY(marker.position.z);
+        if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
+        switch(marker.type){
+            case 'player':
+                if(!(MapData.layers.poi)) break;
+                marker.visible = true;
+                curSprite = Config.spriteBounds.player;
+                spriteSize = 45;
+                
+                dynctx.translate(markerX, markerY);
+                dynctx.rotate(marker.rotation);
+                dynctx.translate(-0.5 * spriteSize * MapData.view.pixelRatio, -0.5 * spriteSize * MapData.view.pixelRatio);
+                dynctx.drawImage(
+                    mapSprites,
+                    curSprite.x,
+                    curSprite.y,
+                    curSprite.width,
+                    curSprite.height,
+                    0,
+                    0,
+                    spriteSize * MapData.view.pixelRatio,
+                    spriteSize * MapData.view.pixelRatio
+                );
+                dynctx.resetTransform();
+                curSprite = null;
+                break;
+            case 'car':
+                if(!(MapData.layers.poi)) break;
+                let scale = MapData.view.pixelRatio * MapData.view.scale;
+                let limitScaleRatio = (MapData.view.pixelRatio * Math.max(MapData.view.scale, 3)) / scale;
+                let width = marker.width * scale;
+                let length = marker.length * scale;
+
+                marker.visible = true;
+                dynctx.beginPath();
+                dynctx.translate(markerX, markerY);
+                dynctx.rotate(marker.rotation);
+                dynctx.translate(-0.5 * width, -0.5 * length);
+                dynctx.rect(0, 0, width, length);
+                dynctx.moveTo(0, width);
+                dynctx.lineTo(0.5 * width, 0);
+                dynctx.lineTo(width, width);
+                dynctx.moveTo(0.5 * width, 0);
+                dynctx.arc(0.5 * width, 0.5 * length, 15, -0.5*Math.PI, 1.5*Math.PI);
+                dynctx.resetTransform();
+                dynctx.strokeStyle = '#fff';
+                dynctx.lineWidth = 0.75 * scale * limitScaleRatio;
+                dynctx.miterLimit = 1.5;
+                dynctx.stroke();
+
+                dynctx.fillStyle = marker.isLoco ? '#e79830aa' : '#559bd4aa';
+                dynctx.fill();
+                dynctx.strokeStyle = '#000';
+                dynctx.lineWidth = 0.3 * scale * limitScaleRatio;
+                dynctx.stroke();
+                if(!marker.tooltipHitzone){
+                    marker.tooltipHitzone = {
+                        radius: 15,
+                    };
+                }
+                break;
+            default:
+                if(!MapData.layers.poi) break;
+                marker.visible = true;
+                curSprite = Config.spriteBounds.unknown;
+                spriteSize = 30;
+                break;
+        }
+        if(curSprite != null){
+            dynctx.drawImage(
+                mapSprites,
+                curSprite.x,
+                curSprite.y,
+                curSprite.width,
+                curSprite.height,
+                markerX-(0.5*spriteSize)*MapData.view.pixelRatio,
+                markerY-(0.5*spriteSize)*MapData.view.pixelRatio,
+                spriteSize*MapData.view.pixelRatio,
+                spriteSize*MapData.view.pixelRatio
+            );
+        }
+    }
+    MapData.view.dynDirty = false;
 }

@@ -162,6 +162,51 @@ let settingEntries = [
                 }
             }
         }
+    },
+    {
+        label: '<hr><div class="quiet">Community Map Location Mod</div>',
+        id: 'header_cmlm',
+    },
+    {
+        label: 'Location Host',
+        id: 'field_locationHost',
+        state: 'localhost:9090',
+        button: 'Wait',
+        func: state =>{
+            let button = document.getElementById('field_locationHost').nextSibling;
+            if(button.value.startsWith('Connect')){
+                MapData.connectPlayerLocation(state, button);
+            }else if(button.value.startsWith('Disconnect')){
+                button.value = 'Disconnect';
+                MapData.disconnectPlayerLocation();
+            }else if(!button.value.startsWith('Fetch')){
+                button.value = 'Connect';
+                MapData.disconnectPlayerLocation();
+            }else{
+                MapData.disconnectPlayerLocation();
+            }
+        }
+    },
+    {
+        label: 'Location Update Rate (seconds)',
+        id: 'dropdown_locationFrequency',
+        tooltip: 'Lower update intervals may cause poor performance',
+        state: '0.2',
+        options: [
+            '0.05',
+            '0.1',
+            '0.2',
+            '0.25',
+            '0.5',
+            '1',
+            '2',
+            '5',
+            '10',
+            '30',
+        ],
+        func: state =>{
+            MapData.setLocationUpdateRate(Number(state) * 1000);
+        }
     }
 ];
 
@@ -194,8 +239,8 @@ function addSettingEntry(thisSetting, parent, indent=0){
     thisSetting.labelElement = document.createElement('label');
     thisSetting.divContainer.appendChild(thisSetting.labelElement);
 
-    let settingType = thisSetting.id.split('_')[0];
-    switch(settingType){
+    thisSetting.settingType = thisSetting.id.split('_')[0];
+    switch(thisSetting.settingType){
         case 'toggle':
             thisSetting.inputElement = document.createElement('input');
             thisSetting.inputElement.type = 'checkbox';
@@ -244,6 +289,23 @@ function addSettingEntry(thisSetting, parent, indent=0){
                 });
             }
             break;
+        case 'field':
+            thisSetting.inputElement = document.createElement('input');
+            thisSetting.inputElement.type = 'text';
+            thisSetting.inputElement.value = thisSetting.state;
+            if(thisSetting.button){
+                thisSetting.buttonElement = document.createElement('input');
+                thisSetting.buttonElement.type = 'button';
+                thisSetting.buttonElement.value = thisSetting.button;
+                if(thisSetting.func){
+                    thisSetting.buttonElement.addEventListener('click', e => {
+                        thisSetting.func(thisSetting.inputElement.value);
+                    });
+                }
+            }
+            break;
+        case 'header':
+            break;
         default:
             thisSetting.divContainer.remove();
             return;
@@ -251,10 +313,18 @@ function addSettingEntry(thisSetting, parent, indent=0){
     parent.appendChild(thisSetting.divContainer);
     thisSetting.labelElement.innerHTML = thisSetting.label;
     thisSetting.labelElement.htmlFor = thisSetting.id;
-    thisSetting.inputElement.id = thisSetting.id;
+    if(thisSetting.tooltip) thisSetting.labelElement.title = thisSetting.tooltip;
 
-    thisSetting.inputElement.style.margin = `0 0.5em 0 ${indent}em`;
-    thisSetting.divContainer.prepend(thisSetting.inputElement);
+    if(thisSetting.settingType == 'field'){
+        thisSetting.buttonElement.style.margin = `0 0.5em 0 ${indent}em`;
+        thisSetting.buttonElement.style.padding = `0 0.2em`;
+        thisSetting.divContainer.prepend(thisSetting.buttonElement);
+    }
+    if(thisSetting.inputElement){
+        thisSetting.inputElement.id = thisSetting.id;
+        thisSetting.inputElement.style.margin = `0 0.5em 0 ${indent}em`;
+        thisSetting.divContainer.prepend(thisSetting.inputElement);
+    }
 
     if(thisSetting.func){
         thisSetting.func(thisSetting.state);
@@ -304,10 +374,11 @@ function populateKey(){
     addKeyEntry('landmark', 'Landmark');
     addKeyEntry('garage', 'Garage');
     addKeyEntry('demonstrator', 'Demonstrator Spawn');
+    addKeyEntry('player', 'Player');
     //Add empty entries to make entries align right in the columns.
-    for(let i=0; i<3; i++){
+    /*for(let i=0; i<1; i++){
         addKeyEntry();
-    }
+    }*/
 }
 
 /**
