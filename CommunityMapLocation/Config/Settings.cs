@@ -41,6 +41,7 @@ namespace CommunityMapLocation.Config
         public event PropertyChangedEventHandler PropertyChanged;
 
         // Todo: store and hold back property changes until Settings is saved to prevent rapidly reconfiguring server on each keypress?
+        // Not yet used anywhere, so could revert to using standard auto-properties
         private void Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (!EqualityComparer<T>.Default.Equals(field, value))

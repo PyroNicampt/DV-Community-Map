@@ -20,7 +20,7 @@ namespace CommunityMapLocation.Api
             serializerOptions = new JsonSerializerOptions()
             {
                 ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                IncludeFields = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             };
 

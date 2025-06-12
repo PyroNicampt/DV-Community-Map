@@ -99,6 +99,7 @@
     <Compile Include="Api\ApiServer.cs" />
     <Compile Include="Api\Endpoint.cs" />
     <Compile Include="Api\IEndpoint.cs" />
+    <Compile Include="Api\Location\CarLocationResponse.cs" />
     <Compile Include="Api\Location\LocationEndpoint.cs" />
     <Compile Include="Api\Location\LocationResponse.cs" />
     <Compile Include="Config\RequestSourceType.cs" />

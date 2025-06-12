@@ -1,5 +1,6 @@
 ﻿using DV.HUD;
-using DV.OriginShift;
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using UnityEngine;
@@ -15,26 +16,36 @@ namespace CommunityMapLocation.Api.Location
 
         public override LocationResponse Handle(UnityModManager.ModEntry.ModLogger logger, HttpListenerRequest request)
         {
-            float angle;
+            Transform rotationTransform;
+            var reverse = false;
 
             // If the player is in a loco, we want to get the heading of the loco instead of the play
             if (PlayerManager.Car?.IsLoco == true)
             {
-                angle = PlayerManager.Car.transform.rotation.eulerAngles.y;
+                rotationTransform = PlayerManager.Car.transform;
 
                 // If the loco is in reverse, rotate the direction 180 degrees to match the direction of travel
                 if (PlayerManager.Car.interior.GetComponentInChildren<InteriorControlsManager>().TryGetControl(InteriorControlsManager.ControlType.Reverser, out var control) &&
                     control.controlImplBase.Value <= 0.25)
                 {
-                    angle += 180;
+                    reverse = true;
                 }
             }
             else
             {
-                angle = PlayerManager.PlayerCamera.transform.rotation.eulerAngles.y;
+                rotationTransform = PlayerManager.PlayerCamera.transform;
             }
 
-            return new LocationResponse(PlayerManager.PlayerTransform.AbsolutePosition(), angle * Mathf.PI / 180);
+            var cars = Array.Empty<CarLocationResponse>();
+            if (PlayerManager.Car != null)
+            {
+                cars = PlayerManager.Car.trainset.cars.Select(c => new CarLocationResponse(c)).ToArray();
+            }
+
+            return new LocationResponse(PlayerManager.PlayerTransform, reverse)
+            {
+                Cars = cars
+            };
         }
     }
 }
