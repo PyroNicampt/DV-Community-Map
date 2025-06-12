@@ -400,7 +400,7 @@
 {
 	"name":"Wireless MU Controller",
 	"price":24000,
-	"count":10,
+	"count":0,
 	"soldOnlyAt":[
 		"MachineFactory"
 	]
@@ -731,33 +731,6 @@
 	"price":200,
 	"count":20,
 	"soldOnlyAt":[]
-},
-{
-	"name":"Wooden Crate",
-	"price":70,
-	"count":10,
-	"soldOnlyAt":[
-		"Harbor",
-		"CitySouthWest"
-	]
-},
-{
-	"name":"Plastic Crate",
-	"price":100,
-	"count":10,
-	"soldOnlyAt":[
-		"Harbor",
-		"CitySouthWest"
-	]
-},
-{
-	"name":"File Box",
-	"price":50,
-	"count":10,
-	"soldOnlyAt":[
-		"Harbor",
-		"CitySouthWest"
-	]
 },
 {
 	"name":"Amber Beacon",
