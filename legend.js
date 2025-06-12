@@ -191,7 +191,7 @@ let settingEntries = [
         label: 'Location Update Rate (seconds)',
         id: 'dropdown_locationFrequency',
         tooltip: 'Lower update intervals may cause poor performance',
-        state: '0.5',
+        state: '0.2',
         options: [
             '0.05',
             '0.1',

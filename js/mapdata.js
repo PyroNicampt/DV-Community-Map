@@ -8,6 +8,7 @@ import * as Config from './../config.js';
 
 export let railTracks = [];
 export let markers = [];
+export let dynamicMarkers = [];
 
 let visibleMarkers = [];
 
@@ -15,10 +16,9 @@ let uniqueTrackNames = {};
 
 export let testPoint = {x:0,y:0};
 
-let playerLocation = null;
+let locationData = null;
 export let playerMarker = {
     type: 'player',
-    name: 'Player',
     position: {x:8192, y:200, z:8192},
     rotation: 0.0,
     minZoom: 0.0,
@@ -70,6 +70,7 @@ export let view = {
             view.y = -(mapContainer.clientHeight*0.5 - (matrix.height * 0.5 + matrix.minY)*view.scale);
         }
         view.dirty = false;
+        view.dynDirty = false;
 
         view.convertX = x => {
             return x * view.scale * view.pixelRatio + view.x * view.pixelRatio;
@@ -103,7 +104,11 @@ export function sortTracks(){
 }
 
 export function sortMarkers(){
-    markers.sort((a,b) => {
+    markers.sort(markerSortFunction);
+}
+
+function markerSortFunction(a, b){
+    (a,b) => {
         if(a.type == 'player') return 1;
         if(b.type == 'player') return -1;
         if(a.type == b.type){
@@ -126,7 +131,7 @@ export function sortMarkers(){
         if(a.type == 'demonstratorSpawnHint') return -1;
         if(b.type == 'demonstratorSpawnHint') return 1;
         return 0;
-    });
+    }
 }
 
 export function sortShops(){
@@ -511,6 +516,32 @@ export function testTooltip(cursorX, cursorY){
     let radius = 0;
     let width = 0;
     let height = 0;
+    for(const marker of dynamicMarkers){
+        if(!marker.visible) continue;
+        if(marker.boundsCheck != null){
+            if(marker.boundsCheck(cursorX, cursorY))
+                finalTooltip = marker.tooltip ?? finalTooltip;
+        }else if(marker.tooltipHitzone && marker.tooltipHitzone.width && marker.tooltipHitzone.height){
+            width = marker.tooltipHitzone.width * 0.5/view.scale;
+            height = marker.tooltipHitzone.height * 0.5/view.scale;
+            if(    marker.position.x - cursorX + (marker.tooltipHitzone.offsetX ?? 0)/view.scale <= width
+                && marker.position.x - cursorX + (marker.tooltipHitzone.offsetX ?? 0)/view.scale >= -width
+                && marker.position.z - cursorY + (marker.tooltipHitzone.offsetY ?? 0)/view.scale <= height
+                && marker.position.z - cursorY + (marker.tooltipHitzone.offsetY ?? 0)/view.scale >= -height){
+                finalTooltip = marker.tooltip ?? finalTooltip;
+            }
+        }else{
+            if(marker.tooltipHitzone)
+                radius = (marker.tooltipHitzone.radius ?? Config.tooltipHitzone.default.radius) / view.scale;
+            else
+                radius = Config.tooltipHitzone.default.radius / view.scale;
+            if(Math.pow(marker.position.x - cursorX, 2) + Math.pow(marker.position.z - cursorY, 2) <= radius * radius){
+                finalTooltip = marker.tooltip ?? finalTooltip;
+            }
+        }
+    }
+    if(finalTooltip != '') return finalTooltip;
+
     for(const marker of markers){
         if(!marker.visible) continue;
         if(marker.boundsCheck != null){
@@ -662,35 +693,58 @@ export function connectPlayerLocation(address, status){
     console.log(`Connecting to game at ${address}`);
     let started = false;
     const endConnect = () => {
-        playerLocation = null;
+        locationData = null;
         status.value = 'Connect';
         playerMarker.hidden = true;
-        view.dirty = true;
+        view.dynDirty = true;
     }
     const pingLocation = async () => {
-        if(playerLocation == null && started){
+        if(locationData == null && started){
             endConnect();
             return;
         }
         status.value = 'Disconnect...';
         try {
             const fetchRequest = await fetch(new Request(address), {signal: AbortSignal.timeout(5000)});
-            if(!fetchRequest.ok || (playerLocation == null && started)){
+            if(!fetchRequest.ok || (locationData == null && started)){
                 endConnect();
                 return;
             }
             status.value = 'Disconnect   ';
-            playerLocation = await (fetchRequest).json();
+            locationData = await (fetchRequest).json();
             playerMarker.position = {
-                x: playerLocation.X,
-                y: playerLocation.Y,
-                z: playerLocation.Z,
+                x: locationData.x,
+                y: locationData.y,
+                z: locationData.z,
             };
-            playerMarker.rotation = playerLocation.Rotation;
+            playerMarker.rotation = locationData.rotation;
             playerMarker.tooltip = `<h1>Player</h1>X: ${playerMarker.position.x.toFixed(2)}\nY: ${playerMarker.position.y.toFixed(2)}\nZ: ${playerMarker.position.z.toFixed(2)}\nBearing ${(playerMarker.rotation * (180/Math.PI)).toFixed(1)} (${Utils.angleToCardinalDirection(playerMarker.rotation)})`;
             playerMarker.hidden = false;
+
+            dynamicMarkers = [];
+            if(!locationData.cars) locationData.cars = [];
+            for(let car of locationData.cars){
+                car.name = car.name.replaceAll('(Clone)', '').replaceAll('_',' ').replaceAll(/(Car|Loco)/g, '');
+                dynamicMarkers.push({
+                    type: 'car',
+                    name: 'car.id',
+                    position: {
+                        x: car.x,
+                        y: car.y,
+                        z: car.z
+                    },
+                    length: car.length,
+                    width: 2.0,
+                    rotation: car.rotation,
+                    guid: car.carGuid,
+                    isLoco: car.isLoco,
+                    tooltip: `<h1>${car.id}</h1>Type: ${car.name}\nLength: ${car.length.toFixed(1)}m`,
+                });
+            }
+            dynamicMarkers.push(playerMarker);
+
             started = true;
-            view.dirty = true;
+            view.dynDirty = true;
             setTimeout(pingLocation, locationUpdateRate);
         }catch(e){
             endConnect();
@@ -702,5 +756,5 @@ export function connectPlayerLocation(address, status){
 
 export function disconnectPlayerLocation(){
     console.log('Disconnecting');
-    playerLocation = null;
+    locationData = null;
 }
