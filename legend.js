@@ -5,10 +5,22 @@ import * as Config from './config.js';
 import { Color } from './js/colorlib.js';
 import * as MapData from './js/mapdata.js';
 
+const settingsVersion = 1;
+
 let settingEntries = [
+    {
+        label: 'Reset All',
+        id: 'button_resetSettings',
+        func: () =>{
+            for(let entry of settingEntries){
+                resetSettingEntry(entry);
+            }
+        }
+    },
     {
         label: 'Color Mode',
         id: 'dropdown_trackColor',
+        saveState: true,
         options: [
             'None',
             'Grade',
@@ -26,6 +38,7 @@ let settingEntries = [
     {
         label: 'Signage',
         id: 'toggle_signage',
+        saveState: true,
         state: true,
         func: state =>{
             MapData.layers.signage = state;
@@ -35,6 +48,7 @@ let settingEntries = [
             {
                 label: 'Speed Signage',
                 id: 'toggle_speedSigns',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.speedSigns = state;
@@ -44,6 +58,7 @@ let settingEntries = [
             {
                 label: 'Grade Arrows',
                 id: 'toggle_gradeSigns',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.gradeArrows = state;
@@ -53,6 +68,7 @@ let settingEntries = [
             {
                 label: 'Yard Signage',
                 id: 'toggle_yardSigns',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.yardSigns = state;
@@ -62,6 +78,7 @@ let settingEntries = [
             {
                 label: 'Junctions',
                 id: 'toggle_junctions',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.junctions = state;
@@ -73,6 +90,7 @@ let settingEntries = [
     {
         label: 'Points of Interest',
         id: 'toggle_poi',
+        saveState: true,
         state: true,
         func: state => {
             MapData.layers.poi = state;
@@ -82,6 +100,7 @@ let settingEntries = [
             {
                 label: 'Stations',
                 id: 'toggle_stations',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.stations = state;
@@ -91,6 +110,7 @@ let settingEntries = [
             {
                 label: 'Services',
                 id: 'toggle_services',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.services = state;
@@ -100,6 +120,7 @@ let settingEntries = [
             {
                 label: 'Landmarks',
                 id: 'toggle_landmarks',
+                saveState: true,
                 state: true,
                 func: state =>{
                     MapData.layers.landmarks = state;
@@ -109,6 +130,7 @@ let settingEntries = [
             {
                 label: 'Demonstrator Spawns',
                 id: 'dropdown_demonstrators',
+                saveState: true,
                 options: [
                     'None',
                     'Hint',
@@ -126,6 +148,7 @@ let settingEntries = [
     {
         label: 'Grade Arrow Direction',
         id: 'dropdown_gradeArrowDirection',
+        saveState: true,
         options: [
             'Uphill',
             'Downhill',
@@ -139,6 +162,7 @@ let settingEntries = [
     {
         label: 'Terrain',
         id: 'dropdown_terrain',
+        saveState: true,
         options: [
             'None',
             'Simple',
@@ -146,6 +170,7 @@ let settingEntries = [
         ],
         state: 'None',
         func: state =>{
+            console.log(state);
             let mapTerrain = document.getElementById('mapTerrain');
             if(state == 'None'){
                 MapData.layers.terrain = false;
@@ -171,6 +196,7 @@ let settingEntries = [
         label: 'Location Host',
         id: 'field_locationHost',
         state: 'localhost:9090',
+        saveState: true,
         button: 'Wait',
         func: state =>{
             let button = document.getElementById('field_locationHost').nextSibling;
@@ -191,6 +217,7 @@ let settingEntries = [
         label: 'Location Update Rate (seconds)',
         id: 'dropdown_locationFrequency',
         tooltip: 'Lower update intervals may cause poor performance',
+        saveState: true,
         state: '0.2',
         options: [
             '0.05',
@@ -214,9 +241,17 @@ const legendKey = document.getElementById('legendKey');
 
 export function initialize(){
     const settingsPanel = document.getElementById('settingsPanel');
+    const oldSettingVersion = loadSetting('version');
     for(let thisSetting of settingEntries){
-        addSettingEntry(thisSetting, settingsPanel);
+        if(oldSettingVersion != settingsVersion){
+            resetSetting(thisSetting.id);
+            addSettingEntry(thisSetting, settingsPanel);
+            resetSettingEntry(thisSetting);
+        }else{
+            addSettingEntry(thisSetting, settingsPanel);
+        }
     }
+    saveSetting('version', settingsVersion);
     const legend = document.getElementById('legend');
     const legendContents = document.getElementById('legendContents');
     const legendButton = document.getElementById('legendButton');
@@ -240,6 +275,8 @@ function addSettingEntry(thisSetting, parent, indent=0){
     thisSetting.divContainer.appendChild(thisSetting.labelElement);
 
     thisSetting.settingType = thisSetting.id.split('_')[0];
+    thisSetting.default = thisSetting.state;
+    if(thisSetting.saveState) thisSetting.state = loadSetting(thisSetting.id, thisSetting.state);
     switch(thisSetting.settingType){
         case 'toggle':
             thisSetting.inputElement = document.createElement('input');
@@ -249,12 +286,14 @@ function addSettingEntry(thisSetting, parent, indent=0){
             if(thisSetting.func){
                 thisSetting.inputElement.addEventListener('input', e =>{
                     thisSetting.func(e.target.checked);
+                    if(thisSetting.saveState) saveSetting(thisSetting.id, e.target.checked);
                     if(thisSetting.children){
                         for(const child of thisSetting.children){
                             document.getElementById(child.id).parentElement.style.display = e.target.checked ? '' : 'none';
                         }
                     }
                 });
+                thisSetting.func(thisSetting.state);
             }
             break;
         case 'dropdown':
@@ -274,7 +313,9 @@ function addSettingEntry(thisSetting, parent, indent=0){
             if(thisSetting.func){
                 thisSetting.inputElement.addEventListener('change', e =>{
                     thisSetting.func(e.target.value);
-                })
+                    if(thisSetting.saveState) saveSetting(thisSetting.id, e.target.value);
+                });
+                thisSetting.func(thisSetting.state);
             }
             break;
         case 'slider':
@@ -286,7 +327,9 @@ function addSettingEntry(thisSetting, parent, indent=0){
             if(thisSetting.func){
                 thisSetting.inputElement.addEventListener('input', e => {
                     thisSetting.func(e.target.value);
+                    if(thisSetting.saveState) saveSetting(thisSetting.id, e.target.value);
                 });
+                thisSetting.func(thisSetting.state);
             }
             break;
         case 'field':
@@ -300,8 +343,24 @@ function addSettingEntry(thisSetting, parent, indent=0){
                 if(thisSetting.func){
                     thisSetting.buttonElement.addEventListener('click', e => {
                         thisSetting.func(thisSetting.inputElement.value);
+                        if(thisSetting.saveState) saveSetting(thisSetting.id, e.target.value);
                     });
                 }
+            }
+            if(thisSetting.saveState){
+                thisSetting.inputElement.addEventListener('input', e => {
+                    saveSetting(thisSetting.id, e.target.value);
+                });
+            }
+            break;
+        case 'button':
+            thisSetting.inputElement = document.createElement('input');
+            thisSetting.inputElement.type = 'button';
+            thisSetting.inputElement.value = thisSetting.label;
+            if(thisSetting.func){
+                thisSetting.inputElement.addEventListener('click', e => {
+                    thisSetting.func(0);
+                });
             }
             break;
         case 'header':
@@ -311,9 +370,11 @@ function addSettingEntry(thisSetting, parent, indent=0){
             return;
     }
     parent.appendChild(thisSetting.divContainer);
-    thisSetting.labelElement.innerHTML = thisSetting.label;
-    thisSetting.labelElement.htmlFor = thisSetting.id;
-    if(thisSetting.tooltip) thisSetting.labelElement.title = thisSetting.tooltip;
+    if(thisSetting.settingType != 'button'){
+        thisSetting.labelElement.innerHTML = thisSetting.label;
+        thisSetting.labelElement.htmlFor = thisSetting.id;
+        if(thisSetting.tooltip) thisSetting.labelElement.title = thisSetting.tooltip;
+    }
 
     if(thisSetting.settingType == 'field'){
         thisSetting.buttonElement.style.margin = `0 0.5em 0 ${indent}em`;
@@ -326,14 +387,79 @@ function addSettingEntry(thisSetting, parent, indent=0){
         thisSetting.divContainer.prepend(thisSetting.inputElement);
     }
 
-    if(thisSetting.func){
-        thisSetting.func(thisSetting.state);
-    }
-
     if(thisSetting.children){
         for(let child of thisSetting.children){
             addSettingEntry(child, parent, indent+1);
         }
+    }
+}
+
+function resetSettingEntry(entry){
+    resetSetting(entry.id);
+    entry.state = entry.default;
+    switch(entry.settingType){
+        case 'toggle':
+            entry.inputElement.checked = entry.state;
+            if(entry.children){
+                for(const child of entry.children){
+                    document.getElementById(child.id).parentElement.style.display = entry.state ? '' : 'none';
+                }
+            }
+            break;
+        case 'dropdown':
+        case 'slider':
+        case 'field':
+            entry.inputElement.value = entry.state;
+            break;
+    }
+    switch(entry.settingType){
+        case 'toggle':
+        case 'dropdown':
+        case 'slider':
+            if(entry.func) entry.func(entry.state);
+    }
+    if(entry.children){
+        for(const child of entry.children){
+            resetSettingEntry(child);
+        }
+    }
+}
+
+function saveSetting(name, value){
+    //console.log(`saving 'setting_${name}=${encodeURIComponent(value)};'`);
+    if(value == null){
+        resetSetting(name);
+    }else{
+        document.cookie = `setting_${name}=${encodeURIComponent(value)};max-age=5000000`;
+    }
+}
+
+function loadSetting(name, defaultValue){
+    const cookies = document.cookie.split(/\s*;\s*/);
+    for(let cookie of cookies){
+        if(cookie.startsWith('setting_'+name+'=')){
+            let result = cookie.split('=');
+            //console.log(`Loading setting_${name}=${decodeURIComponent(result[1])}`);
+            return autocast(decodeURIComponent(result[1]));
+        }
+    }
+    //console.log(`Loading default setting_${name}=${defaultValue}`);
+    return defaultValue;
+}
+
+function resetSetting(name){
+    document.cookie = `setting_${name}=;expires=${new Date(0).toUTCString()};`;
+}
+
+function autocast(value){
+    if(value == 'true' || value == 'True'){
+        return true;
+    }else if(value == 'false' || value == 'False'){
+        return false;
+    }else if(!isNaN(value)){
+        return Number(value);
+    }else{
+        return value;
     }
 }
 
