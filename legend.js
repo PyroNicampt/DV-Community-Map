@@ -196,9 +196,12 @@ let settingEntries = [
         label: 'Location Host',
         id: 'field_locationHost',
         state: 'localhost:9090',
+        placeholder: 'localhost:9090',
         saveState: true,
-        button: 'Wait',
+        button: 'Connect',
         func: state =>{
+            if(state == '') state = 'localhost:9090';
+            document.getElementById('field_locationHost').value = state;
             let button = document.getElementById('field_locationHost').nextSibling;
             if(button.value.startsWith('Connect')){
                 MapData.connectPlayerLocation(state, button);
@@ -368,6 +371,7 @@ function addSettingEntry(thisSetting, parent, indent=0){
             thisSetting.inputElement = document.createElement('input');
             thisSetting.inputElement.type = 'text';
             thisSetting.inputElement.value = thisSetting.state;
+            if(thisSetting.placeholder) thisSetting.inputElement.placeholder = thisSetting.placeholder;
             if(thisSetting.button){
                 thisSetting.buttonElement = document.createElement('input');
                 thisSetting.buttonElement.type = 'button';
@@ -375,7 +379,7 @@ function addSettingEntry(thisSetting, parent, indent=0){
                 if(thisSetting.func){
                     thisSetting.buttonElement.addEventListener('click', e => {
                         thisSetting.func(thisSetting.inputElement.value);
-                        if(thisSetting.saveState) saveSetting(thisSetting.id, e.target.value);
+                        if(thisSetting.saveState) saveSetting(thisSetting.id, thisSetting.inputElement.value);
                     });
                 }
             }
@@ -458,7 +462,7 @@ function resetSettingEntry(entry){
 }
 
 function saveSetting(name, value){
-    //console.log(`saving 'setting_${name}=${encodeURIComponent(value)};'`);
+    //console.trace(`saving 'setting_${name}=${encodeURIComponent(value)};'`);
     if(value == null){
         resetSetting(name);
     }else{
@@ -472,6 +476,7 @@ function loadSetting(name, defaultValue){
         if(cookie.startsWith('setting_'+name+'=')){
             let result = cookie.split('=');
             //console.log(`Loading setting_${name}=${decodeURIComponent(result[1])}`);
+            if(result[1] == '') return defaultValue;
             return autocast(decodeURIComponent(result[1]));
         }
     }

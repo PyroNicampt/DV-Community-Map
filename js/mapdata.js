@@ -694,6 +694,7 @@ export function connectPlayerLocation(address, status){
     let started = false;
     const endConnect = () => {
         locationData = null;
+        dynamicMarkers = [];
         status.value = 'Connect';
         playerMarker.hidden = true;
         view.dynDirty = true;
