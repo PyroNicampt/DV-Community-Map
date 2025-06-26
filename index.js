@@ -503,7 +503,7 @@ function redrawDynamics(){
         if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
         switch(marker.type){
             case 'player':
-                if(!(MapData.layers.poi)) break;
+                if(!(MapData.layers.dynamic && MapData.layers.player)) break;
                 marker.visible = true;
                 curSprite = Config.spriteBounds.player;
                 spriteSize = 45;
@@ -526,7 +526,7 @@ function redrawDynamics(){
                 curSprite = null;
                 break;
             case 'car':
-                if(!(MapData.layers.poi)) break;
+                if(!(MapData.layers.dynamic && MapData.layers.cars)) break;
                 let scale = MapData.view.pixelRatio * MapData.view.scale;
                 let limitScaleRatio = (MapData.view.pixelRatio * Math.max(MapData.view.scale, 3)) / scale;
                 let width = marker.width * scale;

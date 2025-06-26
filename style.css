@@ -22,10 +22,13 @@ html, body{
 }
 
 a{
-    color: #85c4f7;
+    color: #79bcf3;
 }
 a:visited{
-    color: #559bd4;
+    color: #5ea8e4;
+}
+a:hover{
+    color: #e79830;
 }
 
 .orange{
@@ -54,6 +57,28 @@ a:visited{
 .panel hr {
     border: 0px;
     border-bottom: 2px solid #b3b3b396;
+}
+
+.linkpanel{
+    padding: 3px 3px;
+    >a{
+        display: inline-block;
+        white-space: nowrap;
+        text-decoration: none;
+        background: #191e2e;
+        padding: 2px 4px;
+        margin: 2px 1px;
+        border: 2px solid #b3b3b396;
+        border-radius: 8px;
+    }
+    a::after{
+        content: ' ⧉';
+        font-size: 10px;
+    }
+    a:hover{
+        color: #31281b;
+        background: #e79830;
+    }
 }
 
 #topleft{

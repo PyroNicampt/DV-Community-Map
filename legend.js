@@ -234,7 +234,39 @@ let settingEntries = [
         func: state =>{
             MapData.setLocationUpdateRate(Number(state) * 1000);
         }
-    }
+    },
+    {
+        label: 'Dynamic Objects',
+        id: 'toggle_dynamic',
+        saveState: true,
+        state: true,
+        func: state => {
+            MapData.layers.dynamic = state;
+            MapData.view.dynDirty = true;
+        },
+        children: [
+            {
+                label: 'Player',
+                id: 'toggle_player',
+                saveState: true,
+                state: true,
+                func: state =>{
+                    MapData.layers.player = state;
+                    MapData.view.dynDirty = true;
+                }
+            },
+            {
+                label: 'Cars',
+                id: 'toggle_cars',
+                saveState: true,
+                state: true,
+                func: state =>{
+                    MapData.layers.cars = state;
+                    MapData.view.dynDirty = true;
+                },
+            },
+        ]
+    },
 ];
 
 const legendKey = document.getElementById('legendKey');
