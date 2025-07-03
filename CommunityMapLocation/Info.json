@@ -2,7 +2,7 @@
     "Id":"CommunityMapLocation",
     "DisplayName":"Derail Valley Community Map Location",
     "Author":"BenjaminGreene",
-    "Version":"0.0.1",
+    "Version":"0.0.2",
     "ManagerVersion":"0.31.1.0",
     "EntryMethod":"CommunityMapLocation.Main.Load"
 }

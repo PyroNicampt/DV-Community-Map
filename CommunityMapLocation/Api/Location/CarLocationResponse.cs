@@ -11,6 +11,7 @@ namespace CommunityMapLocation.Api.Location
             Name = trainCar.name;
             Id = trainCar.ID;
             CarGuid = trainCar.CarGUID;
+            Derailed = trainCar.derailed;
 
             // Probable not needed. Commented to remove additional dll dependency
             //HandbrakePosition = trainCar.brakeSystem.handbrakePosition;
@@ -25,6 +26,11 @@ namespace CommunityMapLocation.Api.Location
             Z = transform.z;
 
             Rotation = trainCar.transform.rotation.eulerAngles.y * (Mathf.PI / 180);
+
+            Speed = trainCar.rb.velocity.magnitude;
+
+            IsActive = false;
+            IsPlayer = false;
         }
 
         public string Id { get; }
@@ -38,5 +44,9 @@ namespace CommunityMapLocation.Api.Location
         public float Z { get; }
         public float Length { get; }
         public float Rotation { get; }
+        public float Speed { get; }
+        public bool Derailed { get; }
+        public bool IsActive { get; set; }
+        public bool IsPlayer { get; set; }
     }
 }

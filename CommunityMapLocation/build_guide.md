@@ -2,9 +2,11 @@ Assuming Visual Studio Community:
 
 1. Add the following to the `lib` folder from `[steam common dir]/Derail Valley/DerailValley_Data/Managed`:
 - `Assembly-CSharp.dll`
+- `DV.Utils.dll`
 - `DV.OriginShiftInfo.dll`
 - `UnityEngine.dll`
 - `UnityEngine.IMGUIModule.dll`
+- `UnityEngine.PhysicsModule.dll`
 - `UnityEngine.CoreModule.dll`
 - `/UnityModManager/0Harmony.dll`
 - `/UnityModManager/UnityModManager.dll`
