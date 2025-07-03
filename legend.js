@@ -259,7 +259,7 @@ let settingEntries = [
                 }
             },
             {
-                label: 'Cars',
+                label: 'Train Cars',
                 id: 'toggle_cars',
                 saveState: true,
                 state: true,
@@ -267,6 +267,19 @@ let settingEntries = [
                     MapData.layers.cars = state;
                     MapData.view.dynDirty = true;
                 },
+                children:[
+                    {
+                        label: 'Non-Player Trains',
+                        tooltip: 'Other trains with active locomotives',
+                        id: 'toggle_otherCars',
+                        saveState: true,
+                        state: true,
+                        func: state =>{
+                            MapData.layers.otherCars = state;
+                            MapData.view.dynDirty = true;
+                        },
+                    }
+                ]
             },
         ]
     },

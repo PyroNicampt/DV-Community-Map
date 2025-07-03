@@ -527,6 +527,7 @@ function redrawDynamics(){
                 break;
             case 'car':
                 if(!(MapData.layers.dynamic && MapData.layers.cars)) break;
+                if(!MapData.layers.otherCars && !marker.isPlayer) break;
                 let scale = MapData.view.pixelRatio * MapData.view.scale;
                 let limitScaleRatio = (MapData.view.pixelRatio * Math.max(MapData.view.scale, 3)) / scale;
                 let width = marker.width * scale;
@@ -544,14 +545,17 @@ function redrawDynamics(){
                 dynctx.moveTo(0.5 * width, 0);
                 dynctx.arc(0.5 * width, 0.5 * length, 15, -0.5*Math.PI, 1.5*Math.PI);
                 dynctx.resetTransform();
-                dynctx.strokeStyle = '#fff';
+                dynctx.strokeStyle = marker.derailed ? '#f83' : '#fff';
                 dynctx.lineWidth = 0.75 * scale * limitScaleRatio;
                 dynctx.miterLimit = 1.5;
                 dynctx.stroke();
 
-                dynctx.fillStyle = marker.isLoco ? '#e79830aa' : '#559bd4aa';
+                if(marker.derailed)
+                    dynctx.fillStyle = marker.isLoco ? '#db4f18aa' : '#9e54d3aa';
+                else
+                    dynctx.fillStyle = marker.isLoco ? '#e79830aa' : '#559bd4aa';
                 dynctx.fill();
-                dynctx.strokeStyle = '#000';
+                dynctx.strokeStyle = marker.derailed ? '#410' : '#000';
                 dynctx.lineWidth = 0.3 * scale * limitScaleRatio;
                 dynctx.stroke();
                 if(!marker.tooltipHitzone){

@@ -734,12 +734,15 @@ export function connectPlayerLocation(address, status){
                         y: car.y,
                         z: car.z
                     },
-                    length: car.length,
+                    length: car.length - 0.5,
                     width: 2.0,
                     rotation: car.rotation,
                     guid: car.carGuid,
                     isLoco: car.isLoco,
-                    tooltip: `<h1>${car.id}</h1>Type: ${car.name}\nLength: ${car.length.toFixed(1)}m`,
+                    tooltip: `<h1>${car.id}</h1>Type: ${car.name}\nLength: ${car.length.toFixed(1)}m${car.speed >= 0.1 ? `\nSpeed: ${(car.speed * 3.6).toFixed(1)} km/h` : '' }${car.derailed ? '\nDerailed!' : ''}`,
+                    derailed: car.derailed,
+                    isPlayer: car.isPlayer,
+                    isActive: car.isActive,
                 });
             }
             dynamicMarkers.push(playerMarker);
