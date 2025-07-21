@@ -988,5 +988,13 @@
 	"soldOnlyAt":[
 		"MachineFactory"
 	]
+},
+{
+	"name":"Googly Eye (Missing Translation)",
+	"price":1000,
+	"count":60,
+	"soldOnlyAt":[
+		"FoodFactory"
+	]
 }
 ]
