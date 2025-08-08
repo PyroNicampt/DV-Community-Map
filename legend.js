@@ -256,7 +256,20 @@ let settingEntries = [
                 func: state =>{
                     MapData.layers.player = state;
                     MapData.view.dynDirty = true;
-                }
+                },
+                children: [
+                    {
+                        label: 'Follow Player',
+                        tooltip: 'Keep View centered on player',
+                        id: 'toggle_gps',
+                        saveState: true,
+                        state: true,
+                        func: state =>{
+                            MapData.layers.gps = state;
+                            MapData.view.dynDirty = true;
+                        }
+                    }
+                ]
             },
             {
                 label: 'Train Cars',
