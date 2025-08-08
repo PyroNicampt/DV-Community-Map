@@ -497,9 +497,20 @@ function redrawDynamics(){
     for(const marker of MapData.dynamicMarkers){
         curSprite = null;
         marker.visible = false;
-        if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
         let markerX = MapData.view.convertX(marker.position.x);
         let markerY = MapData.view.convertY(marker.position.z);
+        
+        // Placing this here means the map should always snap to the player if the toggle is on. 
+        // Placing it after culling means that if the user fast travels the map won't snap to them until manually scrolled to near their position. 
+        if(MapData.layers.gps && marker.type === 'player') {
+            //This works fine
+            MapData.view.x = -marker.position.x * MapData.view.scale + mapCanvas.width * 0.5;
+            //This does not
+            // MapData.view.y = -marker.position.z * MapData.view.scale;
+            MapData.view.dirty = true;
+        }
+
+        if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
         if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
         switch(marker.type){
             case 'player':
