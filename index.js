@@ -504,10 +504,14 @@ function redrawDynamics(){
         // Placing it after culling means that if the user fast travels the map won't snap to them until manually scrolled to near their position. 
         if(MapData.layers.gps && marker.type === 'player') {
             //This works fine
-            MapData.view.x = -marker.position.x * MapData.view.scale + mapCanvas.width * 0.5;
-            //This does not
+            let newX = -marker.position.x * MapData.view.scale + mapCanvas.width * 0.5;
+            if(Math.abs(MapData.view.x - newX) >= 10) { // Needs some tuning, but the idea is to not keep calling the map update _constantly_ when stationary.
+                MapData.view.x = newX;
+                MapData.view.dirty = true;
+            } 
+            //This calculation does not
             // MapData.view.y = -marker.position.z * MapData.view.scale;
-            MapData.view.dirty = true;
+
         }
 
         if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
