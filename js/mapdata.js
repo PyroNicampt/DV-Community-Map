@@ -108,30 +108,28 @@ export function sortMarkers(){
 }
 
 function markerSortFunction(a, b){
-    (a,b) => {
-        if(a.type == 'player') return 1;
-        if(b.type == 'player') return -1;
-        if(a.type == b.type){
-            switch(a.type){
-                case 'speed':
-                    return b.value-a.value;
-                default:
-                    return 0;
-            }
+    if(a.type == 'player') return 1;
+    if(b.type == 'player') return -1;
+    if(a.type == b.type){
+        switch(a.type){
+            case 'speed':
+                return b.value-a.value;
+            default:
+                return 0;
         }
-        if(a.type == 'station') return 1;
-        if(b.type == 'station') return -1;
-        if(a.type == 'speed') return 1;
-        if(b.type == 'speed') return -1;
-        if(a.type == 'junction') return 1;
-        if(b.type == 'junction') return -1;
-        if(a.type == 'service') return 1;
-        if(b.type == 'service') return -1;
-
-        if(a.type == 'demonstratorSpawnHint') return -1;
-        if(b.type == 'demonstratorSpawnHint') return 1;
-        return 0;
     }
+    if(a.type == 'station') return 1;
+    if(b.type == 'station') return -1;
+    if(a.type == 'speed') return 1;
+    if(b.type == 'speed') return -1;
+    if(a.type == 'junction') return 1;
+    if(b.type == 'junction') return -1;
+    if(a.type == 'service') return 1;
+    if(b.type == 'service') return -1;
+
+    if(a.type == 'demonstratorSpawnHint') return -1;
+    if(b.type == 'demonstratorSpawnHint') return 1;
+    return 0;
 }
 
 export function sortShops(){
