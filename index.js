@@ -172,6 +172,10 @@ function mapNavigationSetup(){
 	
     mapContainer.addEventListener('pointerdown', touchDownHandler);
     mapContainer.addEventListener('wheel', scrollHandler);
+    mapContainer.addEventListener('contextmenu', e => {
+        touchCache = {};
+        touchCount = 0;
+    });
 
     document.getElementById('navZoomIn').addEventListener('click', e => {navButtonInput('zoomIn');});
     document.getElementById('navZoomOut').addEventListener('click', e => {navButtonInput('zoomOut');});
