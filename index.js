@@ -217,9 +217,11 @@ function tooltipSetup(){
                 tooltip.style.transform = `translate(${tooltipX}px, ${tooltipY}px)`;
                 tooltip.style.display = '';
                 mapCanvas.style.cursor = 'crosshair';
+                dynCanvas.style.cursor = 'crosshair';
             }else{
                 tooltip.style.display = 'none';
                 mapCanvas.style.cursor = '';
+                dynCanvas.style.cursor = '';
             }
             isNavigating = false;
             tooltipDirty = false;
