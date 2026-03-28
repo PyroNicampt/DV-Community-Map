@@ -39,6 +39,30 @@
                 <span id="redrawTrigger"></span>DV Community Map
             </div>
         </div>
+        <div id="directionsPanel">
+            <div id="directionsContents" class="panel">
+                <div id="directionsHeader">
+                    <span>Pathfinding</span>
+                    <div id="directionsHeaderRight">
+                        <span class="quiet">Click map to set stops</span>
+                    </div>
+                </div>
+                <div id="directionsBody">
+                    <div id="directionsStops"></div>
+                    <div id="directionsControls">
+                        <button id="directionsAddStop" class="directionButton">Add stop</button>
+                        <button id="directionsClear" class="directionButton">Clear</button>
+                    </div>
+                    <div id="directionsOptions">
+                        <label title="Caps the speed used for estimation and routing, even if the track limit is higher.">Max Speed <input id="routeMaxSpeed" type="number" min="10" max="200" step="5"></label>
+                        <label title="Disallow routes with grades steeper than this percentage.">Max Grade <input id="routeMaxGrade" type="number" min="0" max="12" step="0.5"></label>
+                        <label title="Penalizes speed as grade increases to simulate reduced climbing ability.">Grade Penalty <input id="routeGradePenalty" type="number" min="0" max="0.2" step="0.01"></label>
+                    </div>
+                    <div id="directionsSummary" class="quiet"></div>
+                </div>
+            </div>
+            <button id="directionsToggle" class="panel orange directionToggle" title="Collapse or expand pathfinding panel">&lt;</button>
+        </div>
         <div id="legend">
             <div id="legendContents">
                 <div class="panel linkpanel">
