@@ -7,6 +7,7 @@ import {Color} from './js/colorlib.js';
 import * as Config from './config.js';
 import * as MapData from './js/mapdata.js';
 import * as Legend from './legend.js';
+import * as Directions from './js/directions.js';
 
 const mapContainer = document.getElementById('mapContainer');
 const mapCanvas = document.getElementById('mapCanvas');
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     MapData.matrix.initialize();
     MapData.view.initialize();
+    Directions.initialize();
     redrawMap();
     mapNavigationSetup();
     Legend.initialize();
@@ -49,6 +51,7 @@ function mapNavigationSetup(){
     let previousScale = null;
     const touchDownHandler = e => {
         if(e.button != 0) return;
+        if(Directions.handlePointerDown(e)) return;
         if(touchCache.length == 0){
             document.addEventListener('pointermove', touchMoveHandler);
 
@@ -66,6 +69,7 @@ function mapNavigationSetup(){
         mapContainer.style.cursor = 'grabbing';
     }
     const touchMoveHandler = e => {
+        if(Directions.handlePointerMove(e)) return;
         if(!touchCache[e.pointerId]){
             touchCache = [];
             return;
@@ -87,6 +91,7 @@ function mapNavigationSetup(){
         MapData.view.dirty = true;
     }
     const touchUpHandler = e => {
+        if(Directions.handlePointerUp(e)) return;
         if(!touchCache[e.pointerId]) return;
         touchCache[e.pointerId] = null;
         touchCount--;
@@ -498,6 +503,7 @@ function redrawMap(){
 function redrawDynamics(){
     dynCanvas.width = mapCanvas.width;
     dynCanvas.height = mapCanvas.height;
+    Directions.draw(dynctx);
     let curSprite;
     let spriteSize;
     for(const marker of MapData.dynamicMarkers){

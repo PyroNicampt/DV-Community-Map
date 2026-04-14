@@ -57,6 +57,23 @@ export const maxZoneLength = 700;
 /** How many pixels around the view is still considered "visible", beyond this and items are culled. */
 export const viewCullMargin = 60;
 
+export const routing = {
+    maxSpeed: 120,
+    maxGrade: 6,
+    gradePenalty: 0.04,
+    minGradeFactor: 0.35,
+    snapSearchSteps: 48,
+    polylineStepMeters: 25,
+    markerRadius: 10,
+    maxSnapDistance: 1200,
+    assumedUnpostedSpeed: 120,
+    unpostedSpeedLimit: 90,
+    tightCurveRadius: 170,
+    tightCurveSpeed: 40,
+    accel: 0.35,
+    decel: 0.5,
+};
+
 export const tooltipHitzone = {
     default: {radius:12},
     junction: {width:24, height:35},
