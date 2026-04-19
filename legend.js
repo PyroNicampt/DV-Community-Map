@@ -371,6 +371,7 @@ function addSettingEntry(thisSetting, parent, indent=0){
                 if(inputEntry == thisSetting.state) optionElement.selected = true;
                 thisSetting.inputElement.appendChild(optionElement);
             }
+            if(thisSetting.state) thisSetting.inputElement.value = thisSetting.state;
             if(thisSetting.func){
                 thisSetting.inputElement.addEventListener('change', e =>{
                     thisSetting.func(e.target.value);
@@ -385,6 +386,7 @@ function addSettingEntry(thisSetting, parent, indent=0){
             thisSetting.inputElement.min = thisSetting.min ?? 0;
             thisSetting.inputElement.max = thisSetting.max ?? 100;
             thisSetting.inputElement.step = thisSetting.step ?? 1;
+            thisSetting.inputElement.value = thisSetting.state ?? 0;
             if(thisSetting.func){
                 thisSetting.inputElement.addEventListener('input', e => {
                     thisSetting.func(e.target.value);
