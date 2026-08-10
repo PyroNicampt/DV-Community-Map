@@ -221,11 +221,11 @@ export function drawPolyline(ctx, trackWidth){
         if(i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = '#0b1220cc';
+    ctx.strokeStyle = '#0b122088';
     ctx.lineWidth = outline;
     ctx.stroke();
 
-    ctx.strokeStyle = '#4fa3ff';
+    ctx.strokeStyle = '#4fa3ffdd';
     ctx.lineWidth = width;
     ctx.stroke();
     ctx.restore();

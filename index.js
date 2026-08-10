@@ -313,7 +313,6 @@ function redrawMap(){
             mapctx.stroke();
         }
     }
-    Directions.drawPolyline(mapctx, trackWidth);
     let curSprite;
     let spriteSize;
     let textMeasure;
@@ -322,10 +321,10 @@ function redrawMap(){
     for(const marker of MapData.markers){
         curSprite = null;
         marker.visible = false;
-        if(marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom)) continue;
+        if(!marker.ignoreCulling && (marker.hidden || (marker.minZoom && MapData.view.scale < marker.minZoom) || (marker.maxZoom && MapData.view.scale > marker.maxZoom))) continue;
         let markerX = MapData.view.convertX(marker.position.x);
         let markerY = MapData.view.convertY(marker.position.z);
-        if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
+        if(!marker.ignoreCulling && (markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin)) continue; // View Culling
         switch(marker.type){
             case 'dummy_polyline':
                 Directions.drawPolyline(mapctx, trackWidth);

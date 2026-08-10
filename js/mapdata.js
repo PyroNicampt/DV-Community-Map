@@ -308,7 +308,10 @@ export function addPoi(poiData, level = 0){
             newPoi.radius = poiData.radius;
             break;
         default:
-            if(poiData.type.startsWith('dummy_')) break;
+            if(poiData.type.startsWith('dummy_')){
+                newPoi.ignoreCulling = true;
+                break;
+            }
             newPoi.tooltip = `<h1>${newPoi.name}</h1>${poiData.description ? '<hr>'+poiData.description : ''}`;
             newPoi.minZoom = 0.07;
             break;
