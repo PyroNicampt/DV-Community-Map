@@ -3,6 +3,9 @@
 :root{
     --absScale: 1;
     --legendButtonSize: 50px;
+    --accentCol: #e79830;
+    --bg1: #2c3f58;
+    --bg2: #191e2e;
 }
 
 html *{
@@ -28,11 +31,11 @@ a:visited{
     color: #5ea8e4;
 }
 a:hover{
-    color: #e79830;
+    color: var(--accentCol);
 }
 
-.orange{
-    color: #e79830;
+.orange, .tabButton{
+    color: var(--accentCol);
 }
 
 .quiet{
@@ -44,9 +47,9 @@ a:hover{
     color: #fff;
 }
 
-.panel{
+.panel, .tabContent, .tabButton{
     border: 2px solid #b3b3b396;
-    background: linear-gradient(120deg, #2c3f58, #191e2e);
+    background: linear-gradient(120deg, var(--bg1), var(--bg2));
     text-shadow: 2px 2px 5px #0003;
     margin: 5px;
     padding: 8px 13px;
@@ -54,7 +57,7 @@ a:hover{
     pointer-events: all;
 }
 
-.panel hr {
+.panel hr, .tabContent hr {
     border: 0px;
     border-bottom: 2px solid #b3b3b396;
 }
@@ -77,7 +80,7 @@ a:hover{
     }
     a:hover{
         color: #31281b;
-        background: #e79830;
+        background: var(--accentCol);
     }
 }
 
@@ -88,9 +91,40 @@ a:hover{
     pointer-events: none;
     height: 100vh;
     overflow: hidden;
-    max-width: min(500px,100vw);
     display: flex;
     flex-direction: column;
+}
+
+#tabContents{
+    margin-left: 5px;
+    >div{
+        position: fixed;
+        display: flex;
+        align-items: flex-start;
+        >div{
+            max-width: min(500px,100vw);
+            margin: 0;
+        }
+    }
+}
+#tabContents.active>div{
+    transition: transform 400ms cubic-bezier(0.445, 0.050, 0.550, 0.950);
+}
+
+.tabButton{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+    font-size: 25px;
+    padding: 8px;
+    background: var(--bg1);
+    cursor: pointer;
+    transition: all 0.1s cubic-bezier(0.250, 0.460, 0.450, 0.940);
+}
+
+.tabButton:hover{
+    background: var(--accentCol);
+    color: #000;
 }
 
 #headerbar{
@@ -164,6 +198,7 @@ a:hover{
 #directionsBody{
     display: flex;
     flex-direction: column;
+    max-width: 250px;
 }
 
 .directionToggle{
@@ -254,9 +289,9 @@ a:hover{
 }
 
 .directionButton.active{
-    border-color: #e79830;
+    border-color: var(--accentCol);
     color: #31281b;
-    background: #e79830;
+    background: var(--accentCol);
 }
 
 .directionButton:disabled{

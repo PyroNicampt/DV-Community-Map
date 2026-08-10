@@ -316,18 +316,10 @@ export function initialize(){
     const legend = document.getElementById('legend');
     const legendContents = document.getElementById('legendContents');
     const legendButton = document.getElementById('legendButton');
-    const legendArrow = legendButton.children[0];
-    let legendState = true;
-    let legendButtonEvent = e => {
-        legendArrow.style.transform = `rotate(${legendState ? 180 : 0}deg) translateY(${legendState ? -0 : 0}px)`;
-        legend.style.transform = `translateX(${legendState ? 0 : -legendContents.clientWidth}px)`;
-        legendState = !legendState;
-    };
-    legendButton.addEventListener('click', legendButtonEvent);
-    legendButtonEvent();
-    if(document.body.clientWidth <= 700) legendButtonEvent();
     populateKey();
     setLastUpdateData();
+    initTabs();
+    document.getElementById('sidepanel').style.visibility = '';
 };
 
 function addSettingEntry(thisSetting, parent, indent=0){
@@ -549,6 +541,50 @@ async function setLastUpdateData(){
     }
 
     setTimeout(() => {setLastUpdateData()}, 600000);
+}
+
+async function initTabs(){
+    const tabContents = document.getElementById('tabContents');
+    let tabs = [];
+    let totalOffset = 5;
+    let maxButtonWidth = 0;
+    const updateTabPosition = tabData => {
+        //tabData.element.style.zIndex = tabData.visible ? 10 : '';
+        tabData.element.style.transform = `translateX(${tabData.visible ? maxButtonWidth : -(tabData.content.clientWidth + 10)}px)`;
+    };
+    for(let tabButton of document.querySelectorAll('#tabContents .tabButton')){
+        maxButtonWidth = Math.max(maxButtonWidth, tabButton.clientWidth);
+    }
+    for(let tabElement of tabContents.children){
+        let newTab = {
+            element: tabElement,
+            button: tabElement.getElementsByClassName('tabButton')[0],
+            content: tabElement.getElementsByClassName('tabContent')[0],
+            visible: tabElement.dataset.tab,
+        };
+        newTab.button.style.transform = `translateY(${totalOffset}px)`;
+        totalOffset += newTab.button.clientHeight + 6;
+        updateTabPosition(newTab);
+        tabs.push(newTab);
+
+        newTab.button.addEventListener('click', () => {
+            for(let tab of tabs){
+                if(tab == newTab)
+                    tab.visible = !tab.visible;
+                else
+                    tab.visible = false;
+
+                if(tab.visible)
+                    tab.element.dataset.tab = 'open';
+                else
+                    delete tab.element.dataset.tab;
+                
+                updateTabPosition(tab);
+            }
+        });
+    }
+    await new Promise(requestAnimationFrame);
+    tabContents.classList.add('active');
 }
 
 function populateKey(){

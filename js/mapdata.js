@@ -122,6 +122,8 @@ function markerSortFunction(a, b){
     if(b.type == 'station') return -1;
     if(a.type == 'speed') return 1;
     if(b.type == 'speed') return -1;
+    if(a.type == 'dummy_polyline') return 1;
+    if(b.type == 'dummy_polyline') return -1;
     if(a.type == 'junction') return 1;
     if(b.type == 'junction') return -1;
     if(a.type == 'service') return 1;
@@ -306,6 +308,7 @@ export function addPoi(poiData, level = 0){
             newPoi.radius = poiData.radius;
             break;
         default:
+            if(poiData.type.startsWith('dummy_')) break;
             newPoi.tooltip = `<h1>${newPoi.name}</h1>${poiData.description ? '<hr>'+poiData.description : ''}`;
             newPoi.minZoom = 0.07;
             break;

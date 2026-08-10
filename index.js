@@ -254,6 +254,8 @@ async function loadTrackData(file){
         }
     }
 
+    MapData.addPoi({type:'dummy_polyline', position:{x:0,y:0,z:0}});
+
     MapData.sortTracks();
     MapData.generateTrackSignage();
 }
@@ -311,6 +313,7 @@ function redrawMap(){
             mapctx.stroke();
         }
     }
+    Directions.drawPolyline(mapctx, trackWidth);
     let curSprite;
     let spriteSize;
     let textMeasure;
@@ -324,6 +327,9 @@ function redrawMap(){
         let markerY = MapData.view.convertY(marker.position.z);
         if(markerX > mapCanvas.width + Config.viewCullMargin || markerX < -Config.viewCullMargin || markerY > mapCanvas.height + Config.viewCullMargin || markerY < -Config.viewCullMargin) continue; // View Culling
         switch(marker.type){
+            case 'dummy_polyline':
+                Directions.drawPolyline(mapctx, trackWidth);
+                break;
             case 'junction':
                 if(!(MapData.layers.junctions && MapData.layers.signage)) break;
                 marker.visible = true;
@@ -494,6 +500,7 @@ function redrawMap(){
             );
         }
     }
+    Directions.drawMarkers(mapctx);
     
     MapData.view.dirty = false;
 
@@ -503,7 +510,6 @@ function redrawMap(){
 function redrawDynamics(){
     dynCanvas.width = mapCanvas.width;
     dynCanvas.height = mapCanvas.height;
-    Directions.draw(dynctx);
     let curSprite;
     let spriteSize;
     for(const marker of MapData.dynamicMarkers){

@@ -14,6 +14,21 @@
     <script type="module" src="index.js"></script>
   </head>
   <body>
+    <svg width="0" height="0" style="display: none;">
+        <symbol id="Info" fill="currentColor" viewBox="0 0 100 100">
+            <path d="M50 2C23 2 2 23 2 50 2 77 23 98 50 98 77 98 98 77 98 50 98 23 77 2 50 2Zm0 12C70 14 86 30 86 50 86 70 70 86 50 86 30 86 14 70 14 50 14 30 30 14 50 14Zm0 8c-2 0-3 0-5 1-1 1-2 3-2 4 0 2 1 4 2 4 1 1 2 1 5 1 2 0 3 0 5-1 1-1 2-3 2-4 0-2-1-4-2-4C53 22 52 22 50 22Zm-6 16V78H56V38Z"></path>
+        </symbol>
+        <symbol id="Key" fill="currentColor" viewBox="0 0 100 100">
+            <path d="m3 71.3c0 12 9 22 22 22 12 0 21-10 21-22 0-4-1-8-3-12l18-21 10 8 5 4 8-9-5-4-10-9 6-7 11 10 5 4 8-9-5-4L74 5.3 34 51.3c-3-1-6-2-9-2-13 0-22 10-22 22zm12 0c0-5 4-10 10-10 5 0 9 5 9 10 0 6-4 10-9 10-6 0-10-4-10-10z"></path>
+        </symbol>
+        <symbol id="Settings" fill="currentColor" viewBox="0 0 100 100">
+            <path d="M45 2C42 2 39 5 39 8L39 16C34 17 30 20 26 23L20 20C19 19 18 19 17 19 15 18 12 20 11 22L6 30C4 33 6 37 8 39L15 42C14 45 14 47 14 50 14 53 14 55 15 58L8 61C6 63 4 67 6 70L11 78C12 81 17 82 20 80L26 77C30 80 34 83 39 84L39 92C39 95 42 98 45 98L55 98C58 98 61 95 61 92L61 84C66 83 70 80 74 77L80 80C83 82 88 81 89 78L94 70C96 67 94 63 92 61L85 58C86 55 86 53 86 50 86 47 86 45 85 42L92 39C94 37 96 33 94 30L89 22C88 20 85 18 83 19 82 19 81 19 80 20L74 23C70 20 66 17 61 16L61 8C61 5 58 2 55 2L45 2zM50 28C62 28 72 38 72 50 72 62 62 72 50 72 38 72 28 62 28 50 28 38 38 28 50 28z"></path>
+        </symbol>
+        <symbol id="Pathfinding" fill="currentColor" viewBox="0 0 100 100">
+            <path d="M62 5C55 5 46 8 36 12A7 7 0 0032 22 7 7 0 0042 25C54 19 62 19 66 19 71 20 71 21 71 23 71 28 64 40 45 43 21 46 9 65 15 80 18 88 25 94 34 95 43 96 54 93 67 85A7 7 0 0069 75 7 7 0 0059 73C48 80 41 82 36 81 31 80 29 78 28 76 26 70 29 59 47 57 71 53 86 38 85 23 84 15 78 8 69 6 67 5 65 5 62 5zM15 11C10 11 6 15 6 20 6 24 10 31 15 41 20 31 24 24 24 20 24 15 20 11 15 11zM84 53C80 53 76 57 76 61 76 66 79 73 84 82 90 73 93 66 93 61 93 57 89 53 84 53z"></path>
+        </symbol>
+    </svg>
+
     <div id="mapContainer">
         <canvas id="mapCanvas"></canvas>
         <canvas id="dynCanvas"></canvas>
@@ -27,7 +42,7 @@
         </div>
         <div id="zoomLevelDisplay"></div>
         <div id="cursorCoordDisplay"></div>
-        Map v0.6.7 alpha
+        Map v0.6.9 alpha
         <br>
         Updated for Game Build 99.7
         <br>
@@ -39,65 +54,81 @@
                 <span id="redrawTrigger"></span>DV Community Map
             </div>
         </div>
-        <div id="directionsPanel">
-            <div id="directionsContents" class="panel">
-                <div id="directionsHeader">
-                    <span>Pathfinding</span>
-                    <div id="directionsHeaderRight">
-                        <span class="quiet">Click map to set stops</span>
+        <div id="sidepanel" style="visibility: hidden;">
+            <div class="panel linkpanel">
+                <a href="https://github.com/PyroNicampt/DV-Community-Map">Source</a>
+                <a href="https://github.com/PyroNicampt/DV-Community-Map/issues">Issue Tracker</a>
+                <a href="https://derailvalley.wiki.gg/wiki/Derail_Valley_Wiki">DV Wiki</a>
+                <a href="https://wiki.derailvalley.com/wiki/Main_Page">Official Manual</a>
+                <a href="https://github.com/PyroNicampt/DV-Community-Map/releases">Location Mod</a>
+            </div>
+            <div id="tabContents">
+                <div data-tab="open">
+                    <div class="tabContent">
+                        Welcome to the WIP community map of <a href="https://www.derailvalley.com/" style="white-space:nowrap;">Derail Valley</a>, a resource for documenting and displaying all tracks and points of interest.
+                        <p>
+                            Problems? Suggestions? Head over to <a href="https://github.com/PyroNicampt/DV-Community-Map/issues">the issue tracker</a> and see if it's already there, or submit if not. Or contribute a fix yourself if you really want!
+                        </p>
+                        <p>
+                            Click the tabs to the left to view the Legend, Options, and more.
+                        </p>
+                        <hr style="margin: 5px 0;">
+                        Hover over tracks and objects for detailed information.
+                        <hr style="margin: 5px 0;">
+                        Last update <span id="lastUpdate"></span>:
+                        <div id="changelog"></div>
+                    </div>
+                    <div class="tabButton" title="Info">
+                        <svg class="inlineSvg"><use href="#Info"></use></svg>
                     </div>
                 </div>
-                <div id="directionsBody">
-                    <div id="directionsStops"></div>
-                    <div id="directionsControls">
-                        <button id="directionsAddStop" class="directionButton">Add stop</button>
-                        <button id="directionsClear" class="directionButton">Clear</button>
+                <div>
+                    <div class="tabContent">
+                        <h3>Key</h3>
+                        <hr>
+                        <div id="legendKey"></div>
+                        <hr>
+                        Track Colors:
+                        <div id="legendKeyColors"></div>
                     </div>
-                    <div id="directionsOptions">
-                        <label title="Caps the speed used for estimation and routing, even if the track limit is higher.">Max Speed <input id="routeMaxSpeed" type="number" min="10" max="200" step="5"></label>
-                        <label title="Disallow routes with grades steeper than this percentage.">Max Grade <input id="routeMaxGrade" type="number" min="0" max="12" step="0.5"></label>
-                        <label title="Penalizes speed as grade increases to simulate reduced climbing ability.">Grade Penalty <input id="routeGradePenalty" type="number" min="0" max="0.2" step="0.01"></label>
+                    <div class="tabButton" title="Legend">
+                        <svg class="inlineSvg"><use href="#Key"></use></svg>
                     </div>
-                    <div id="directionsSummary" class="quiet"></div>
+                </div>
+                <div id="directionsTab">
+                    <div class="tabContent">
+                        <h3>Pathfinding</h3>
+                        <hr>
+                        Click map to set stops.
+                        <div id="directionsBody">
+                            <div id="directionsStops"></div>
+                            <div id="directionsControls">
+                                <button id="directionsAddStop" class="directionButton">Add stop</button>
+                                <button id="directionsClear" class="directionButton">Clear</button>
+                            </div>
+                            <div id="directionsOptions">
+                                <label title="Caps the speed used for estimation and routing, even if the track limit is higher.">Max Speed <input id="routeMaxSpeed" type="number" min="10" max="200" step="5"></label>
+                                <label title="Disallow routes with grades steeper than this percentage.">Max Grade <input id="routeMaxGrade" type="number" min="0" max="12" step="0.5"></label>
+                                <label title="Penalizes speed as grade increases to simulate reduced climbing ability.">Grade Penalty <input id="routeGradePenalty" type="number" min="0" max="0.2" step="0.01"></label>
+                            </div>
+                            <div id="directionsSummary" class="quiet"></div>
+                        </div>
+                    </div>
+                    <div class="tabButton" title="Pathfinding">
+                        <svg class="inlineSvg"><use href="#Pathfinding"></use></svg>
+                    </div>
+                </div>
+                <div>
+                    <div id="settingsPanel" class="tabContent">
+                        <h3>Map Settings</h3>
+                        <div class="quiet" style="margin: 0 0 5px 0;font-size: 10px;">(Page uses local-only cookies to keep settings)</div>
+                        <hr>
+                    </div>
+                    <div class="tabButton" title="Settings">
+                        <svg class="inlineSvg"><use href="#Settings"></use></svg>
+                    </div>
                 </div>
             </div>
-            <button id="directionsToggle" class="panel orange directionToggle" title="Collapse or expand pathfinding panel">&lt;</button>
-        </div>
-        <div id="legend">
-            <div id="legendContents">
-                <div class="panel linkpanel">
-                    <a href="https://github.com/PyroNicampt/DV-Community-Map">Source</a>
-                    <a href="https://github.com/PyroNicampt/DV-Community-Map/issues">Issue Tracker</a>
-                    <a href="https://derailvalley.wiki.gg/wiki/Derail_Valley_Wiki">DV Wiki</a>
-                    <a href="https://wiki.derailvalley.com/wiki/Main_Page">Official Manual</a>
-                    <a href="https://github.com/PyroNicampt/DV-Community-Map/releases">Location Mod</a>
-                </div>
-                <div class="panel">
-                    Welcome to the WIP community map of <a href="https://www.derailvalley.com/" style="white-space:nowrap;">Derail Valley</a>, a resource for documenting and displaying all tracks and points of interest.
-                    <p>
-                        Problems? Suggestions? Head over to <a href="https://github.com/PyroNicampt/DV-Community-Map/issues">the issue tracker</a> and see if it's already there, or submit if not. Or contribute a fix yourself if you really want!
-                    </p>
-                    <hr style="margin: 5px 0;">
-                    Hover over tracks and objects for detailed information.
-                    <hr style="margin: 5px 0;">
-                    Last update <span id="lastUpdate"></span>:
-                    <div id="changelog"></div>
-                </div>
-                <div class="panel">
-                    <h3>Key</h3>
-                    <hr>
-                    <div id="legendKey"></div>
-                    <hr>
-                    Track Colors:
-                    <div id="legendKeyColors"></div>
-                </div>
-                <div id="settingsPanel" class="panel">
-                    <h3>Map Settings</h3>
-                    <div class="quiet" style="margin: 0 0 5px 0;font-size: 10px;">(Page uses local-only cookies to keep settings)</div>
-                    <hr>
-                </div>
-            </div>
-            <button id="legendButton" class="panel orange"><svg style="transform:rotate(180deg) translateY(0px)" viewBox="0 0 32 32"><path fill="currentColor" d="M31 16 20 31l-16 0L15 16 4 1l16 0Z"/></svg></button>
         </div>
     </div>
     <div style="display:none">

@@ -61,7 +61,7 @@ function clearPoints(){
     state.route = null;
     renderStops();
     renderSummary('Click the map to set a start point.');
-    MapData.view.dynDirty = true;
+    MapData.view.dirty = true;
 }
 
 function stopLabel(index){
@@ -146,7 +146,7 @@ function updateRoute(){
     if(!state.graph || state.points.length < 2){
         state.route = null;
         renderSummary('Click the map to set a start and end point.');
-        MapData.view.dynDirty = true;
+        MapData.view.dirty = true;
         return;
     }
 
@@ -160,7 +160,7 @@ function updateRoute(){
         if(!result){
             state.route = null;
             renderSummary('No route found with current limits.');
-            MapData.view.dynDirty = true;
+            MapData.view.dirty = true;
             return;
         }
         combinedEdges = combinedEdges.concat(result.edges);
@@ -193,7 +193,7 @@ function updateRoute(){
         `<span title="Highest effective speed used in estimation after applying limits, grade penalty, and curve caps.">Max speed ${Math.round(stats.maxSpeed)} km/h</span>`,
         `<span title="Highest posted track speed limit encountered (with realistic caps for unposted sections).">Max speed limit ${Math.round(stats.maxSpeedLimit)} km/h</span>`,
     ].join(' | ');
-    MapData.view.dynDirty = true;
+    MapData.view.dirty = true;
 }
 
 function scheduleRouteUpdate(){
@@ -205,13 +205,13 @@ function scheduleRouteUpdate(){
     });
 }
 
-function drawPolyline(ctx){
+export function drawPolyline(ctx, trackWidth){
     if(!state.route || !state.route.polyline || state.route.polyline.length < 2) return;
     ctx.save();
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
-    const width = 6 * MapData.view.pixelRatio;
-    const outline = 10 * MapData.view.pixelRatio;
+    const width = trackWidth * 1.3;
+    const outline = trackWidth * 1.3 + 5;
 
     ctx.beginPath();
     for(let i=0; i<state.route.polyline.length; i++){
@@ -231,7 +231,7 @@ function drawPolyline(ctx){
     ctx.restore();
 }
 
-function drawMarkers(ctx){
+export function drawMarkers(ctx){
     const radius = Config.routing.markerRadius * MapData.view.pixelRatio;
     ctx.save();
     ctx.textAlign = 'center';
@@ -257,6 +257,7 @@ function drawMarkers(ctx){
 function handleMapPointerUp(e){
     if(e.button !== 0) return;
     if(state.draggingIndex != null) return;
+    if(!state.ui.tab.dataset.tab) return;
     const down = state.ui.lastPointerDown;
     if(!down) return;
     const dx = e.clientX - down.x;
@@ -283,8 +284,7 @@ function handleMapPointerUp(e){
 export function initialize(){
     state.graph = Pathfinder.buildGraph(MapData.railTracks);
 
-    state.ui.panel = document.getElementById('directionsPanel');
-    state.ui.contents = document.getElementById('directionsContents');
+    state.ui.tab = document.getElementById('directionsTab');
     state.ui.stops = document.getElementById('directionsStops');
     state.ui.summary = document.getElementById('directionsSummary');
     state.ui.addStop = document.getElementById('directionsAddStop');
@@ -323,24 +323,6 @@ export function initialize(){
         clearPoints();
     });
 
-    const updatePanelState = () => {
-        const width = state.ui.contents.offsetWidth;
-        if(state.ui.panel.classList.contains('collapsed')){
-            state.ui.panel.style.transform = `translateX(${-width}px)`;
-            state.ui.toggle.textContent = '>';
-        }else{
-            state.ui.panel.style.transform = 'translateX(0px)';
-            state.ui.toggle.textContent = '<';
-        }
-    };
-
-    state.ui.toggle.addEventListener('click', () => {
-        state.ui.panel.classList.toggle('collapsed');
-        updatePanelState();
-    });
-
-    window.addEventListener('resize', updatePanelState);
-
     const mapContainer = document.getElementById('mapContainer');
     mapContainer.addEventListener('pointerdown', e => {
         state.ui.lastPointerDown = {x:e.clientX, y:e.clientY};
@@ -349,12 +331,6 @@ export function initialize(){
 
     renderStops();
     renderSummary('Click the map to set a start point.');
-    updatePanelState();
-}
-
-export function draw(ctx){
-    drawPolyline(ctx);
-    drawMarkers(ctx);
 }
 
 function hitTestMarker(e){
