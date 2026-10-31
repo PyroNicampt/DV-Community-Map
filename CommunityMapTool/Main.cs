@@ -88,7 +88,7 @@ namespace CommunityMapTool {
                     "position", $"{{\"x\":{junction.junctionData.position.x},\"y\":{junction.junctionData.position.y},\"z\":{junction.junctionData.position.z}}}",
                     "excludeFromJunctionMap", junction.junctionData.excludeFromJunctionMap ? "true" : "false",
                     "isValid", junction.junctionData.isValid ? "true" : "false",
-                    "linkedJunctions", $"[{string.Join(", ", junction.junctionData.linkedJunctions)}]",
+                    "linkedJunctions", $"[{(junction.junctionData.linkedJunctions == null ? "" : string.Join(", ", junction.junctionData.linkedJunctions))}]",
                     "index", junction.junctionData.junctionIndex.ToString(),
                     "id", junction.junctionData.junctionId.ToString()
                 };
