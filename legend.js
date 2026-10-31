@@ -4,6 +4,7 @@ import * as Utils from './js/utillib.js';
 import * as Config from './config.js';
 import { Color } from './js/colorlib.js';
 import * as MapData from './js/mapdata.js';
+import * as Index from './index.js';
 
 const settingsVersion = 1;
 
@@ -187,6 +188,24 @@ let settingEntries = [
                     document.getElementById('mapTerrain').src = 'terrains/dvrt.jpg';
                 }
             }
+        }
+    },
+    {
+        label: 'Track Layout',
+        id: 'dropdown_track_layout',
+        saveState: true,
+        options: [
+            'Vanilla',
+        ],
+        state: 'Vanilla',
+        func: async state => {
+            switch(state){
+                default:
+                    await Index.LoadMap('shop_items.json', 'trackdata_dv.json', 'poi_dv.json');
+                    Index.redrawMap();
+                    break;
+            }
+            MapData.setTrackColorMode(document.getElementById('dropdown_trackColor').value);
         }
     },
     {

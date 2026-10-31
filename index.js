@@ -25,21 +25,26 @@ const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
 let isNavigating = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadShopData('shop_items.json');
-    await loadTrackData('trackdata_dv.json');
-    await loadPoiData('poi_dv.json');
-    MapData.sortMarkers();
-
     Utils.generateGradeArrows();
 
-    MapData.matrix.initialize();
     MapData.view.initialize();
-    Directions.initialize();
     redrawMap();
     mapNavigationSetup();
     Legend.initialize();
+    Directions.initialize();
     tooltipSetup();
 });
+
+export async function LoadMap(shopData, trackData, poiData){
+    MapData.reset();
+    
+    await loadShopData(shopData);
+    await loadTrackData(trackData);
+    await loadPoiData(poiData);
+
+    MapData.sortMarkers();
+    MapData.matrix.initialize();
+}
 
 window.addEventListener('resize', () => {MapData.view.dirty = true});
 
@@ -278,7 +283,7 @@ async function loadShopData(file) {
 
 let railTrack = {};
 let curve = {};
-function redrawMap(){
+export function redrawMap(){
     MapData.view.pixelRatio = window.devicePixelRatio;
     mapCanvas.width = mapContainer.clientWidth * MapData.view.pixelRatio;
     mapCanvas.height = mapContainer.clientHeight * MapData.view.pixelRatio;

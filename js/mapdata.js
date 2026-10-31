@@ -31,6 +31,14 @@ export let Shops = {
 }
 
 export let matrix = {
+    minX: 1200,
+    minY: 1200,
+    minAlt: 0,
+    maxX: 16000,
+    maxY: 16000,
+    maxAlt: 100,
+    width: 14800,
+    height: 14800,
     initialize: () => {
         matrix.minX = Infinity;
         matrix.minY = Infinity;
@@ -93,6 +101,7 @@ export let layers = {};
 export function reset(){
     railTracks = [];
     markers = [];
+    Shops = {Common:[]};
 }
 
 export function sortTracks(){
