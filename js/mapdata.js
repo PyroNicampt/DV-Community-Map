@@ -226,6 +226,7 @@ export function addTrack(trackData){
         newTrack.curves[i].gradeClass = Utils.gradeToClass(newTrack.curves[i].grade);
         newTrack.curves[i].postedSpeed = Utils.radiusToSpeed(1/newTrack.curves[i].curvature);
         if(newTrack.isYard || newTrack.isTurntable) newTrack.curves[i].postedSpeed = Math.min(newTrack.curves[i].postedSpeed, 50);
+        if(newTrack.isYard && newTrack.yardName == 'Abandoned') newTrack.curves[i].postedSpeed = 0;
 
         newTrack.curves[i].tooltip = [
             `<h2>Rail</h2>"${trackData.name}"${uniqueTrackNames[trackData.name] > 0 ? ' #'+uniqueTrackNames[trackData.name] : ''} Sec${i}`,
@@ -467,7 +468,7 @@ export function generateTrackSignage(){
             }
         }
 
-        if(railTrack.yardDesignation && railTrack.yardDesignation != '--'){
+        if(railTrack.yardDesignation && railTrack.yardDesignation != '--' && railTrack.yardName != 'Abandoned'){
             if(!yardMarkers[railTrack.yardStation]) yardMarkers[railTrack.yardStation] = {};
             let centerIndex = Math.floor(railTrack.curves.length/2);
             let yardSignPos = railTrack.curves[centerIndex].start;
@@ -490,7 +491,7 @@ export function generateTrackSignage(){
                 minZoom: 2.5,
             };
             if(railTrack.yardName && railTrack.yardSidingNumber && railTrack.yardUsage){
-                if(!Config.sidingUsageMeanings[railTrack.yardUsage]) console.log(`Unknown siding usage for ${railTrack.yardDesignation} at ${railTrack.yardStation}`);
+                if(!Config.sidingUsageMeanings[railTrack.yardUsage]) console.log(`Unknown siding usage for ${railTrack.yardDesignation} at ${railTrack.yardStation}: (${yardSignPos.x}, ${yardSignPos.y}, ${yardSignPos.z})`);
                 newMarker.tooltip = `<h2>Siding</h2>${railTrack.yardDesignation}\n${Config.sidingUsageMeanings[railTrack.yardUsage]}`;
             }else{
                 newMarker.tooltip = `<h2>Siding</h2>${railTrack.yardDesignation}`;
@@ -617,7 +618,8 @@ export function setTrackColorMode(mode){
         case 'Track Type':
             modeFunction = (curve, railTrack) => {
                 let finalColor = '#aaa';
-                if(railTrack.isYard && railTrack.yardDesignation) finalColor = '#4bf';
+                if(railTrack.yardName == 'Abandoned') finalColor = '#e31';
+                else if(railTrack.isYard && railTrack.yardDesignation) finalColor = '#4bf';
                 else if(railTrack.isYard) finalColor = '#4fb';
                 else if(railTrack.isJunction) finalColor = '#fb4';
                 else if(railTrack.isTurntable) finalColor = '#b4f';

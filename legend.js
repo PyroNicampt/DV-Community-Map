@@ -196,10 +196,20 @@ let settingEntries = [
         saveState: true,
         options: [
             'Vanilla',
+            'Double Tracked Valley',
+            'Double Tracked Valley (Hard)',
         ],
         state: 'Vanilla',
         func: async state => {
             switch(state){
+                case 'Double Tracked Valley':
+                    await Index.LoadMap('shop_items.json', 'trackdata_dv_dt.json', 'poi_dv.json');
+                    Index.redrawMap();
+                    break;
+                case 'Double Tracked Valley (Hard)':
+                    await Index.LoadMap('shop_items.json', 'trackdata_dv_dt_hard.json', 'poi_dv.json');
+                    Index.redrawMap();
+                    break;
                 default:
                     await Index.LoadMap('shop_items.json', 'trackdata_dv.json', 'poi_dv.json');
                     Index.redrawMap();
