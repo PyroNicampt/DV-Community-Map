@@ -33,6 +33,7 @@ let settingEntries = [
         state: 'Grade',
         func: state =>{
             MapData.setTrackColorMode(state);
+            updateAllTabs();
         }
     },
     {
@@ -543,6 +544,8 @@ async function setLastUpdateData(){
     setTimeout(() => {setLastUpdateData()}, 600000);
 }
 
+let updateAllTabs = () => {};
+
 async function initTabs(){
     const tabContents = document.getElementById('tabContents');
     let tabs = [];
@@ -551,6 +554,11 @@ async function initTabs(){
     const updateTabPosition = tabData => {
         //tabData.element.style.zIndex = tabData.visible ? 10 : '';
         tabData.element.style.transform = `translateX(${tabData.visible ? maxButtonWidth : -(tabData.content.clientWidth + 10)}px)`;
+    };
+    updateAllTabs = () => {
+        for(let tab of tabs){
+            updateTabPosition(tab);
+        }
     };
     for(let tabButton of document.querySelectorAll('#tabContents .tabButton')){
         maxButtonWidth = Math.max(maxButtonWidth, tabButton.clientWidth);
