@@ -84,6 +84,7 @@ export const spriteBounds = {
     junction: new SpriteBounds(0,20,20,20),
     gradeArrow: new SpriteBounds(20,20,20,20),
     gradeArrowDown: new SpriteBounds(40,20,20,20),
+    speed_0: new SpriteBounds(0,40,20,20),
     speed_1: new SpriteBounds(20,40,20,20),
     speed_2: new SpriteBounds(40,40,20,20),
     speed_3: new SpriteBounds(60,40,20,20),

@@ -248,6 +248,7 @@ export function addTrack(trackData){
 }
 
 export function addJunction(junctionData){
+    if(!junctionData.isValid) return;
     if(junctionData.name.startsWith('S-') || junctionData.excludeFromJunctionMap)
         junctionData.minZoom = 1;
     else if(junctionData.name.startsWith('W-'))
@@ -458,6 +459,8 @@ export function generateTrackSignage(){
 
                 if(newMarker.zoneLength < 35 && newMarker.value > 40) newMarker.minZoom *= 6; 
 
+                if(newMarker.value == 0) newMarker.scale = 0.7;
+
                 newMarker.tooltip = `<h2>Speed</h2>${Math.round(newMarker.value)} km/h\nSection Length: ${newMarker.zoneLength.toFixed(1)} meters\nCovers ${newMarker.zoneCount} track sections`;
                 markers.push(newMarker);
                 resetTzdSpeed(nextIndex);
@@ -607,6 +610,9 @@ export function setTrackColorMode(mode){
     const keyElement = document.getElementById('legendKeyColors');
     let gradientString = '';
     keyElement.innerHTML = '';
+    const tweakCol = col => {
+        return Color.blendSrgb(new Color(col), new Color(0.5,0,0.1), 0.7).hex;
+    };
     switch(mode){
         case 'Track Type':
             modeFunction = (curve, railTrack) => {
@@ -628,6 +634,8 @@ export function setTrackColorMode(mode){
         case 'Grade':
             modeFunction = curve => {
                 curve.color = Config.gradeColors['grade_'+curve.gradeClass];
+                if(curve.postedSpeed == 0)
+                    curve.color = tweakCol(curve.color);
             };
             for(let grade in Config.gradeColors){
                 keyElement.innerHTML += `<span class="colorKey" style="${grade.replace('grade_','') < 6 || grade == 'grade_flat' ? 'color:#000;' : ''}padding:0px 3px;background:${Config.gradeColors[grade]}">${(Utils.classToGrade(grade.replace('grade_',''))*100).toFixed(1)}%</span>`;
@@ -636,6 +644,8 @@ export function setTrackColorMode(mode){
         case 'Altitude':
             modeFunction = (curve, railTrack) => {
                 curve.color = Color.blendGradient(Config.altitudeGradient, (curve.averageHeight-matrix.minAlt)/(matrix.maxAlt-matrix.minAlt)).hex;
+                if(curve.postedSpeed == 0)
+                    curve.color = tweakCol(curve.color);
             }
             gradientString = 'linear-gradient(to right';
             for(let col of Config.altitudeGradient) gradientString += ', '+col.hex;
@@ -680,6 +690,8 @@ export function setTrackColorMode(mode){
         default:
             modeFunction = curve => {
                 curve.color = '#fff';
+                if(curve.postedSpeed == 0)
+                    curve.color = tweakCol(curve.color);
             };
             break;
     }

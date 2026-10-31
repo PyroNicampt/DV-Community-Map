@@ -491,6 +491,7 @@ export function redrawMap(){
                 break;
         }
         if(curSprite != null){
+            spriteSize *= marker.scale ?? 1;
             mapctx.drawImage(
                 mapSprites,
                 curSprite.x,
