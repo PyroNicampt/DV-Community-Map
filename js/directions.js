@@ -281,9 +281,14 @@ function handleMapPointerUp(e){
     scheduleRouteUpdate();
 }
 
-export function initialize(){
+export function build(){
     state.graph = Pathfinder.buildGraph(MapData.railTracks);
+    clearPoints();
+    renderStops();
+    renderSummary('Click the map to set a start point.');
+}
 
+export function initialize(){
     state.ui.tab = document.getElementById('directionsTab');
     state.ui.stops = document.getElementById('directionsStops');
     state.ui.summary = document.getElementById('directionsSummary');
@@ -328,9 +333,6 @@ export function initialize(){
         state.ui.lastPointerDown = {x:e.clientX, y:e.clientY};
     });
     mapContainer.addEventListener('pointerup', handleMapPointerUp);
-
-    renderStops();
-    renderSummary('Click the map to set a start point.');
 }
 
 function hitTestMarker(e){

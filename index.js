@@ -44,6 +44,7 @@ export async function LoadMap(shopData, trackData, poiData){
 
     MapData.sortMarkers();
     MapData.matrix.initialize();
+    Directions.build();
 }
 
 window.addEventListener('resize', () => {MapData.view.dirty = true});
